@@ -9,13 +9,13 @@ import { useLearningProgress } from './useLearningProgress';
 import { ProgressStatus } from './ProgressStatus';
 import { VisualStage } from './visuals';
 
-export function LessonView({ config, chapterId, user, onSignIn, onBack, onMode }: { config: Config; chapterId: string; user: User | null; onSignIn: () => void; onBack: () => void; onMode: (mode: LearningMode) => void }) {
+export function LessonView({ config, chapterId, user, onSignIn, onBack, onMode, recommendationId }: { config: Config; chapterId: string; user: User | null; onSignIn: () => void; onBack: () => void; onMode: (mode: LearningMode) => void; recommendationId?: string }) {
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [retry, setRetry] = useState(0);
   const [reviewed, setReviewed] = useState<string[]>([]);
-  const progress = useLearningProgress(config, chapterId, user, 'learn');
+  const progress = useLearningProgress(config, chapterId, user, 'learn', recommendationId);
   const { language } = progress;
   useEffect(() => {
     const controller = new AbortController(); setLoading(true); setError('');

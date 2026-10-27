@@ -6,7 +6,8 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { gradeOptions, type AnswerKey, type OptionQuestion } from './grading.js';
-import { handleSchool } from './school/index.js';
+import { handleSchool, SchoolError } from './school/index.js';
+import { handleRecommendations, originProgress, originPractice, originCondition } from './recommendations/index.js';
 
 type Chapter = { id: string; title: string; languages: string[]; cardCount: number };
 type Catalog = { schemaVersion: number; chapters: Chapter[] };
@@ -141,6 +142,7 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
       const mode = learningMode(event.queryStringParameters?.mode);
       return json(200, await readContent<Lesson | PracticeBank>(modeKey(chapter.id, language, mode)));
     }
+    if (path.startsWith('/api/school/recommendations/')) return json(200, await handleRecommendations(event, await verifiedUser(event)));
     if (path.startsWith('/api/school/')) return await handleSchool(event, await verifiedUser(event));
     if (method === 'GET' && path === '/api/me') {
       const user = await verifiedUser(event);
@@ -160,13 +162,24 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
       const pk = `USER#${user.id}`;
       const stateKey = { PK: pk, SK: `PRACTICE_STATE#${chapter.id}` };
       if (method === 'GET' && practiceMatch[2] === 'session') {
+        const originId = event.queryStringParameters?.recommendation;
+        if (originId !== undefined) {
+          const origin = await originPractice(user, originId, chapter.id);
+          const language = validLanguage(event.queryStringParameters?.language || origin.activity!.language);
+          return json(200, { session: await practiceSession(user.id, chapter.id, origin.activity!.sessionId!, language) });
+        }
         const state = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: stateKey, ConsistentRead: true }));
         if (!state.Item) return json(200, { session: null });
         const language = validLanguage(event.queryStringParameters?.language || state.Item.language || 'en');
         return json(200, { session: await practiceSession(user.id, chapter.id, state.Item.sessionId, language) });
       }
       if (method === 'PUT' && practiceMatch[2] === 'session') {
-        const language = validLanguage(requestBody(event).language);
+        const body = requestBody(event); const language = validLanguage(body.language);
+        if (body.recommendationId !== undefined) {
+          if (typeof body.recommendationId !== 'string') throw new HttpError(400, 'INVALID_ORIGIN', 'Open a valid learning recommendation.');
+          const origin = await originPractice(user, body.recommendationId, chapter.id, undefined, language);
+          return json(200, { session: await practiceSession(user.id, chapter.id, origin.activity!.sessionId!, language) });
+        }
         const state = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: stateKey, ConsistentRead: true }));
         if (!state.Item) throw new HttpError(404, 'SESSION_NOT_FOUND', 'Start a practice round first.');
         await db.send(new UpdateCommand({ TableName: process.env.TABLE_NAME, Key: stateKey, UpdateExpression: 'SET #language = :language', ExpressionAttributeNames: { '#language': 'language' }, ExpressionAttributeValues: { ':language': language } }));
@@ -174,10 +187,17 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
       }
       if (method === 'POST' && practiceMatch[2] === 'sessions') {
         const body = requestBody(event);
+        if (body.recommendationId !== undefined) {
+          if (typeof body.recommendationId !== 'string') throw new HttpError(400, 'INVALID_ORIGIN', 'Open a valid learning recommendation.');
+          const language = validLanguage(body.language);
+          const origin = await originPractice(user, body.recommendationId, chapter.id, undefined, language);
+          return json(200, { session: await practiceSession(user.id, chapter.id, origin.activity!.sessionId!, language) });
+        }
         const sessionId = validSessionId(body.sessionId);
         const language = validLanguage(body.language);
         const sessionKey = { PK: pk, SK: `PRACTICE#${chapter.id}#SESSION#${sessionId}` };
         const existing = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: sessionKey, ConsistentRead: true }));
+        if (existing.Item?.recommendationId) throw new HttpError(409, 'ORIGIN_REQUIRED', 'Open this practice round through its recommendation.');
         if (!existing.Item) {
           const now = new Date().toISOString();
           try { await db.send(new TransactWriteCommand({ TransactItems: [
@@ -199,6 +219,11 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
         const sessionKey = `PRACTICE#${chapter.id}#SESSION#${sessionId}`;
         const meta = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: { PK: pk, SK: sessionKey }, ConsistentRead: true }));
         if (!meta.Item) throw new HttpError(404, 'SESSION_NOT_FOUND', 'Start a practice round in your account first.');
+        let origin: Awaited<ReturnType<typeof originPractice>> | undefined;
+        if (body.recommendationId !== undefined || meta.Item.recommendationId) {
+          if (typeof body.recommendationId !== 'string' || body.recommendationId !== meta.Item.recommendationId) throw new HttpError(409, 'ORIGIN_REQUIRED', 'Use the practice round linked to this recommendation.');
+          origin = await originPractice(user, body.recommendationId, chapter.id, sessionId, language);
+        }
         const bank = await readContent<PracticeBank>(modeKey(chapter.id, language, 'practice'));
         const question = bank.questions.find((item) => item.id === body.questionId);
         if (!question) throw new HttpError(400, 'INVALID_QUESTION', 'This question does not belong to the chapter.');
@@ -209,12 +234,20 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
         try { correct = gradeOptions(question, answerKey, body.selectedOptionIds); }
         catch (issue) { throw new HttpError(400, 'INVALID_ANSWER', (issue as Error).message); }
         try {
-          await db.send(new PutCommand({ TableName: process.env.TABLE_NAME, Item: {
+          const answer = { TableName: process.env.TABLE_NAME, Item: {
             PK: pk, SK: `${sessionKey}#ANSWER#${question.id}`, kind: 'practice-answer', chapterId: chapter.id,
             sessionId, questionId: question.id, language, selectedOptionIds: body.selectedOptionIds,
             correct, answeredAt: new Date().toISOString(),
-          }, ConditionExpression: 'attribute_not_exists(PK)' }));
-        } catch (issue) { if ((issue as Error).name !== 'ConditionalCheckFailedException') throw issue; }
+          }, ConditionExpression: 'attribute_not_exists(PK)' };
+          if (origin) await db.send(new TransactWriteCommand({ TransactItems: [originCondition(origin.record), { Put: answer }] }));
+          else await db.send(new PutCommand(answer));
+        } catch (issue) {
+          if (origin && (issue as Error).name === 'TransactionCanceledException') {
+            await originPractice(user, String(body.recommendationId), chapter.id, sessionId);
+            const first = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: { PK: pk, SK: `${sessionKey}#ANSWER#${question.id}` }, ConsistentRead: true }));
+            if (!first.Item) throw issue;
+          } else if ((issue as Error).name !== 'ConditionalCheckFailedException') throw issue;
+        }
         // A retry reads the first recorded answer; it cannot award duplicate credit.
         return json(200, { session: await practiceSession(user.id, chapter.id, sessionId, language) });
       }
@@ -226,6 +259,8 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
       const chapter = await chapterFor(progressMatch[1]);
       const mode = learningMode(event.queryStringParameters?.mode);
       if (mode === 'practice') throw new HttpError(400, 'INVALID_MODE', 'Practice results are recorded with each answer.');
+      const originId = event.queryStringParameters?.recommendation;
+      if (originId !== undefined) return json(200, await originProgress(user, originId, chapter.id, mode, method === 'PUT' ? requestBody(event) : undefined));
       const key = { PK: `USER#${user.id}`, SK: mode === 'learn' ? `PROGRESS#${chapter.id}` : `PROGRESS#${mode}#${chapter.id}` };
       if (method === 'GET') {
         const result = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: key, ConsistentRead: true }));
@@ -256,7 +291,7 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
     }
     throw new HttpError(404, 'NOT_FOUND', 'This page could not be found.');
   } catch (error) {
-    if (error instanceof HttpError) return json(error.status, { error: error.code, message: error.message });
+    if (error instanceof HttpError || error instanceof SchoolError) return json(error.status, { error: error.code, message: error.message });
     // Record only the exception category and request ID: never tokens, emails or bodies.
     console.error(JSON.stringify({ error: (error as Error).name, requestId: event.requestContext.requestId }));
     return json(503, { error: 'TEMPORARILY_UNAVAILABLE', message: 'Something is temporarily unavailable. Please try again.' });

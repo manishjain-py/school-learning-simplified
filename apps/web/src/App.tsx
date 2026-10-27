@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen, Check, Globe2, Headphones, HeartHandshake, LogOut
 import { GlobalSignOutCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthDialog } from './AuthDialog';
 import { SchoolWorkspace } from './school/SchoolWorkspace';
+import { GuidanceHome } from './guidance/GuidanceHome';
 import { EarthArt } from './Illustrations';
 import { LessonView } from './LessonView';
 import { PracticeView } from './PracticeView';
@@ -17,11 +18,11 @@ export default function App() {
   const [catalogError, setCatalogError] = useState('');
   const [user, setUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<'signin' | 'signup' | null>(null);
-  const [path, setPath] = useState(window.location.pathname);
+  const [path, setPath] = useState(window.location.pathname + window.location.search);
   const [sessionNotice, setSessionNotice] = useState('');
   const [retry, setRetry] = useState(0);
   useEffect(() => {
-    const pop = () => setPath(window.location.pathname);
+    const pop = () => setPath(window.location.pathname + window.location.search);
     window.addEventListener('popstate', pop); return () => window.removeEventListener('popstate', pop);
   }, []);
   useEffect(() => {
@@ -47,7 +48,9 @@ export default function App() {
     if (config && token) { try { await identityClient(config).send(new GlobalSignOutCommand({ AccessToken: token })); } catch { /* Local session is already removed. */ } }
   }
   const chapter = catalog?.chapters[0];
-  const learningMatch = path.match(/^\/(learn|practice|revise)\/([a-zA-Z0-9_-]+)\/?$/);
+  const pathname = path.split('?')[0];
+  const recommendationId = new URLSearchParams(path.split('?')[1] || '').get('recommendation') ?? undefined;
+  const learningMatch = pathname.match(/^\/(learn|practice|revise)\/([a-zA-Z0-9_-]+)\/?$/);
   function learningPage() {
     if (!config) return <main className="status-panel page-width" role="status">Opening your learning space…</main>;
     if (!catalog && learningMatch![1] !== 'learn') return <main className="status-panel page-width" role="status">{catalogError || 'Opening your learning space…'}</main>;
@@ -55,18 +58,20 @@ export default function App() {
     const chapterId = learningMatch![2];
     const entry = catalog?.chapters.find((item) => item.id === chapterId);
     if (mode !== 'learn' && !entry?.modes?.includes(mode)) return <main className="status-panel page-width"><h1>This learning mode is on its way.</h1><p>Explore the available lesson in the meantime.</p><button className="button primary" onClick={() => navigate(`/learn/${chapterId}`)}>Go to Learn<ArrowRight size={17} /></button></main>;
-    const props = { config, chapterId, user, onSignIn: () => setAuthMode('signin'), onBack: () => navigate('/'), onMode: (next: LearningMode) => navigate(`/${next}/${chapterId}`) };
-    if (mode === 'practice') return <PracticeView key={chapterId} {...props} />;
-    if (mode === 'revise') return <ReviseView key={chapterId} {...props} />;
-    return <LessonView key={chapterId} {...props} />;
+    const props = { config, chapterId, user, recommendationId, onSignIn: () => setAuthMode('signin'), onBack: () => navigate('/'), onMode: (next: LearningMode) => navigate(`/${next}/${chapterId}${next === mode && recommendationId !== undefined ? `?recommendation=${encodeURIComponent(recommendationId)}` : ''}`) };
+    if (mode === 'practice') return <PracticeView key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} />;
+    if (mode === 'revise') return <ReviseView key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} />;
+    return <LessonView key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} />;
   }
-  const isSchool = path === '/school' || path === '/school/';
+  const isSchool = pathname === '/school' || pathname === '/school/';
   return <>
     <a className="skip-link" href="#main">Skip to content</a>
     <header className="site-header page-width"><a className="brand" href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }} aria-label="School Learning Simplified home"><span className="brand-mark"><BookOpen size={25} strokeWidth={1.8} /><span /></span><span>School Learning<span>Simplified</span></span></a><nav aria-label="Main navigation"><a className={!isSchool ? 'nav-link current' : 'nav-link'} href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }}>Discover</a><a className={isSchool ? 'nav-link current' : 'nav-link'} href="/school" onClick={(event) => { event.preventDefault(); navigate('/school'); }}>For schools</a>{user ? <button className="button header-account" onClick={signOut} title={user.email}><LogOut size={16} />Sign out</button> : <button className="button header-account" onClick={() => setAuthMode('signin')} disabled={!config}>Sign in<ArrowRight size={16} /></button>}</nav></header>
     {sessionNotice && <div className="session-notice page-width" role="status">{sessionNotice}<button className="text-button" onClick={() => setSessionNotice('')} aria-label="Dismiss account notification">Dismiss</button></div>}
     <div id="main">
-      {configError ? <main className="status-panel page-width"><h1>A moment to reconnect.</h1><p role="alert">{configError}</p><button className="button primary" onClick={() => setRetry(retry + 1)}>Try again</button></main> : learningMatch ? learningPage() : isSchool ? config ? <SchoolWorkspace config={config} user={user} onSignIn={() => setAuthMode('signin')} /> : <main className="status-panel page-width" role="status">Opening your school workspace…</main> : path !== '/' ? <main className="status-panel page-width"><h1>Let’s find your way back.</h1><p>This page is not in our learning library.</p><button className="button primary" onClick={() => navigate('/')}>Go to the library<ArrowRight size={18} /></button></main> : <main>
+      {learningMatch && recommendationId !== undefined && <div className="recommendation-banner page-width">This activity was opened from classroom guidance. Its new progress is recorded for your teacher. <a href="/" onClick={event => { event.preventDefault(); navigate('/'); }}>Latest recommendations</a></div>}
+      {configError ? <main className="status-panel page-width"><h1>A moment to reconnect.</h1><p role="alert">{configError}</p><button className="button primary" onClick={() => setRetry(retry + 1)}>Try again</button></main> : learningMatch ? learningPage() : isSchool ? config ? <SchoolWorkspace config={config} user={user} onSignIn={() => setAuthMode('signin')} /> : <main className="status-panel page-width" role="status">Opening your school workspace…</main> : pathname !== '/' ? <main className="status-panel page-width"><h1>Let’s find your way back.</h1><p>This page is not in our learning library.</p><button className="button primary" onClick={() => navigate('/')}>Go to the library<ArrowRight size={18} /></button></main> : <main>
+        {config && user && <GuidanceHome key={user.id} config={config} user={user} navigate={navigate} />}
         <section className="hero page-width"><div className="hero-copy"><p className="eyebrow"><span className="tiny-star">✳</span> SMALL STEPS. BIG DISCOVERIES.</p><h1>A little wonder.<br />A little learning.<br /><em>Every day.</em></h1><p className="hero-description">Make sense of the world, one idea at a time.<br className="desktop-break" /> Thoughtful lessons to read, listen to and explore<br className="desktop-break" /> in English and Hindi.</p><div className="hero-actions"><button className="button primary large" disabled={!chapter} onClick={() => chapter && navigate(`/learn/${chapter.id}`)}>Let’s explore<ArrowRight size={19} /></button><span><Headphones size={18} />Learn at your own pace</span></div><div className="hero-footnote"><span className="tiny-check"><Check size={12} /></span>Start exploring. No school account needed.</div></div><div className="hero-visual"><div className="hero-art"><EarthArt /></div><div className="float-note language-note"><span className="note-icon"><Globe2 size={20} /></span><span>One idea.<strong>Two languages.</strong></span></div><div className="float-note curiosity-note"><span className="note-icon warm"><Sprout size={21} /></span><span>A world of<strong>“Oh, now I get it!”</strong></span></div><div className="orbit-caption">THERE’S SO MUCH TO DISCOVER</div></div></section>
         <section className="library-section page-width" aria-labelledby="library-title"><div className="section-heading"><div><p className="eyebrow">FOLLOW YOUR CURIOSITY</p><h2 id="library-title">Your next discovery</h2></div><span className="collection-label">Class 4 <span>·</span> Environmental Studies</span></div>
           {catalogError ? <div className="library-error"><p role="alert">The lesson library could not be loaded. {catalogError}</p><button className="text-button" onClick={() => setRetry(retry + 1)}>Try again<ArrowRight size={15} /></button></div> : !catalog ? <div className="library-loading" role="status">Getting your learning space ready…</div> : catalog.chapters.length === 0 ? <p className="library-loading">New lessons are on their way. Please check back soon.</p> : <div className={catalog.chapters.length > 1 ? "library-grid full-catalog" : "library-grid"}>{catalog.chapters.map((item, chapterIndex) => <article className="chapter-card" key={item.id}><div className="chapter-picture"><span className="preview-pill">{item.modes ? "LEARN · PRACTICE · REVISE" : "LESSON PREVIEW"}</span><EarthArt small /><span className="chapter-number">{String(chapterIndex + 1).padStart(2, '0')}</span></div><div className="chapter-details"><div className="chapter-meta"><span>CLASS {item.grade} · {item.subject}</span><span><Headphones size={14} />EN / हिन्दी</span></div><h3>{item.title}</h3><p>{item.description}</p>{item.modes && <div className="chapter-modes">{item.modes.map((mode) => <button key={mode} onClick={() => navigate(`/${mode}/${item.id}`)}>{mode === 'learn' ? 'Learn' : mode === 'practice' ? 'Practice' : 'Revise'}<ArrowRight size={13} /></button>)}</div>}<div className="chapter-bottom"><span>{item.cardCount} small ideas to explore</span>{!item.modes && <button aria-label={`Explore ${item.title}`} onClick={() => navigate(`/learn/${item.id}`)}><ArrowRight size={21} /></button>}</div></div></article>)}{catalog.chapters.length === 1 && <article className="coming-card"><div className="coming-art"><Sprout size={48} strokeWidth={1.2} /><span>IN THE MAKING</span></div><h3>Curiosity is growing.</h3><p>More of Our Earth, Animal Life, practice and revision are taking shape.</p><span className="coming-label">More learning, coming soon</span></article>}</div>}

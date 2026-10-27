@@ -7,8 +7,8 @@ import { ProgressStatus } from './ProgressStatus';
 import { useLearningProgress } from './useLearningProgress';
 import type { Config, LearningMode, Revision, User } from './types';
 
-export function ReviseView({ config, chapterId, user, onSignIn, onBack, onMode }: { config: Config; chapterId: string; user: User | null; onSignIn: () => void; onBack: () => void; onMode: (mode: LearningMode) => void }) {
-  const progress = useLearningProgress(config, chapterId, user, 'revise');
+export function ReviseView({ config, chapterId, user, onSignIn, onBack, onMode, recommendationId }: { config: Config; chapterId: string; user: User | null; onSignIn: () => void; onBack: () => void; onMode: (mode: LearningMode) => void; recommendationId?: string }) {
+  const progress = useLearningProgress(config, chapterId, user, 'revise', recommendationId);
   const [revision, setRevision] = useState<Revision | null>(null);
   const [face, setFace] = useState<'question' | 'answer'>('question');
   const [loading, setLoading] = useState(true);

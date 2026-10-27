@@ -75,7 +75,7 @@ export function SchoolWorkspace({ config, user, onSignIn }: Props) {
         </> : <FamilyPanel config={config} userId={user.id} kind={context} family={workspaces.family} />}
       </>}
     </>}
-    <aside className="school-next"><span>GROWING NEXT</span><p>Classroom notes, family updates and private replies connect school and home. Automatic learning guidance is the next step.</p></aside>
+    <aside className="school-next"><span>SCHOOL & HOME</span><p>Classroom notes, family updates and private replies connect school and home. Learning guidance publishes automatically when interpretation succeeds.</p></aside>
   </main>;
 }
 

@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { processTeacherLog } from '../recommendations/index.js';
 import type { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { SchoolError, bodyOf, classPK, fail, get, id, json, now, put, query, requireClassStaff, requireFamilyChild, staffDisplayName, version, write, type Student, type VerifiedAccount } from './index.js';
 
@@ -48,9 +49,9 @@ export async function getSchoolLog(schoolId: string, classId: string, logId: str
 export async function saveLogGuidance(log: SchoolLog, guidance: GuidanceState) {
   await write([put(commPK(log.schoolId, log.classId), `LOG#${log.id}`, { ...log, guidance }, log.version)]);
 }
-/** M4 replaces this seam with automatic interpretation after a committed revision. */
-export async function processSavedLog(log: SchoolLog, _actor: VerifiedAccount): Promise<SchoolLog> {
-  return log;
+/** Interpret automatically after the committed revision; no teacher preview gate. */
+export async function processSavedLog(log: SchoolLog, actor: VerifiedAccount): Promise<SchoolLog> {
+  return processTeacherLog(log, actor);
 }
 async function requireActiveStudent(schoolId: string, classId: string, childId: string) {
   const child = await get<Student>(classPK(schoolId, classId), `STUDENT#${id(childId)}`);

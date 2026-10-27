@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { request } from './api';
 import type { Config, Language, Progress, User } from './types';
 
-export function useLearningProgress(config: Config, chapterId: string, user: User | null, mode: 'learn' | 'revise') {
+export function useLearningProgress(config: Config, chapterId: string, user: User | null, mode: 'learn' | 'revise', recommendationId?: string) {
   const [language, setLanguage] = useState<Language>('en');
   const [currentCardId, setCurrentCardId] = useState<string | null>(null);
   const [completedIds, setCompletedIds] = useState<string[]>([]);
@@ -13,8 +13,9 @@ export function useLearningProgress(config: Config, chapterId: string, user: Use
   const queue = useRef<Promise<void>>(Promise.resolve());
   const owner = useRef<string | null>(user?.id || null);
   owner.current = user?.id || null;
+  useEffect(() => () => { owner.current = null; }, []);
   const pending = useRef(0);
-  const path = `/progress/${chapterId}?mode=${mode}`;
+  const path = `/progress/${chapterId}?mode=${mode}${recommendationId !== undefined ? `&recommendation=${encodeURIComponent(recommendationId)}` : ''}`;
   useEffect(() => {
     let alive = true; setError(''); setSaved(false);
     if (!user) { setCompletedIds([]); setLoading(false); return; }

@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { request } from '../api';
+import { TeacherLogGuidance } from '../guidance/TeacherLogGuidance';
 import type { Config } from '../types';
 import type { LinkedChild, RosterStudent } from './types';
 
@@ -50,6 +51,7 @@ function StaffLogs({ classPath, subject, admin, revision, onChanged, ...auth }: 
     {!data && !error ? <p role="status" className="school-help">Loading classroom notes…</p> : data?.logs.length === 0 ? <p className="school-help">Your first classroom note starts here.</p> : <div className="communication-feed">{data?.logs.map((log) => <article className="communication-entry" key={log.id}>
       <div className="communication-meta"><strong>{log.subject}</strong><span>{log.localDate} · {log.authorName}</span></div><p className="communication-text">{log.note}</p>
       <p className="guidance-state" role="status">{log.guidance.message || `Learning guidance: ${log.guidance.status}`}</p>
+      {log.authorId === auth.userId && <TeacherLogGuidance {...auth} schoolId={classPath.split('/')[3]} classId={classPath.split('/')[5]} logId={log.id} version={log.version} guidance={log.guidance} onChanged={onChanged} />}
       <div className="communication-actions"><button className="text-button" onClick={() => setSelected(selected === log.id ? null : log.id)}>{selected === log.id ? 'Close discussion' : 'Staff discussion & history'}</button>{(admin || log.authorId === auth.userId) && <button className="text-button" onClick={() => setEditing(log)}>Correct note</button>}<small>Revision {log.version}</small></div>
       {selected === log.id && <LogDiscussion key={log.id} {...auth} path={`${classPath}/logs/${log.id}`} revision={revision} onChanged={onChanged} />}
     </article>)}</div>}
