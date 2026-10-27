@@ -158,9 +158,16 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
       const pk = `USER#${user.id}`;
       const stateKey = { PK: pk, SK: `PRACTICE_STATE#${chapter.id}` };
       if (method === 'GET' && practiceMatch[2] === 'session') {
-        const language = validLanguage(event.queryStringParameters?.language || 'en');
         const state = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: stateKey, ConsistentRead: true }));
         if (!state.Item) return json(200, { session: null });
+        const language = validLanguage(event.queryStringParameters?.language || state.Item.language || 'en');
+        return json(200, { session: await practiceSession(user.id, chapter.id, state.Item.sessionId, language) });
+      }
+      if (method === 'PUT' && practiceMatch[2] === 'session') {
+        const language = validLanguage(requestBody(event).language);
+        const state = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: stateKey, ConsistentRead: true }));
+        if (!state.Item) throw new HttpError(404, 'SESSION_NOT_FOUND', 'Start a practice round first.');
+        await db.send(new UpdateCommand({ TableName: process.env.TABLE_NAME, Key: stateKey, UpdateExpression: 'SET #language = :language', ExpressionAttributeNames: { '#language': 'language' }, ExpressionAttributeValues: { ':language': language } }));
         return json(200, { session: await practiceSession(user.id, chapter.id, state.Item.sessionId, language) });
       }
       if (method === 'POST' && practiceMatch[2] === 'sessions') {

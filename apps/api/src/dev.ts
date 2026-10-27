@@ -17,7 +17,9 @@ createServer(async (req, res) => {
     }
     if (url.pathname.startsWith('/content/') || url.pathname.startsWith('/media/')) {
       const staticRoot = url.pathname.startsWith('/media/') ? mediaRoot : root;
-      const file = resolve(staticRoot, decodeURIComponent(url.pathname).replace(/^\/(?:content|media)\//, ''));
+      const prefix = url.pathname.startsWith('/media/') ? '/media/' : process.env.CONTENT_RELEASE === 'm2' ? '/content/releases/m2/' : '/content/';
+      if (!url.pathname.startsWith(prefix)) { res.writeHead(404).end(); return; }
+      const file = resolve(staticRoot, decodeURIComponent(url.pathname).slice(prefix.length));
       if (!file.startsWith(staticRoot + sep)) { res.writeHead(403).end(); return; }
       const bytes = await readFile(file);
       res.setHeader('Content-Type', file.endsWith('.mp3') ? 'audio/mpeg' : 'application/json');
