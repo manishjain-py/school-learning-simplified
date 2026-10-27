@@ -6,6 +6,7 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { gradeOptions, type AnswerKey, type OptionQuestion } from './grading.js';
+import { handleSchool } from './school/index.js';
 
 type Chapter = { id: string; title: string; languages: string[]; cardCount: number };
 type Catalog = { schemaVersion: number; chapters: Chapter[] };
@@ -140,6 +141,7 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
       const mode = learningMode(event.queryStringParameters?.mode);
       return json(200, await readContent<Lesson | PracticeBank>(modeKey(chapter.id, language, mode)));
     }
+    if (path.startsWith('/api/school/')) return await handleSchool(event, await verifiedUser(event));
     if (method === 'GET' && path === '/api/me') {
       const user = await verifiedUser(event);
       const now = new Date().toISOString();
