@@ -42,6 +42,9 @@ resource "aws_iam_role_policy" "api" {
       },
       {
         Effect = "Allow", Action = ["s3:GetObject"], Resource = "${aws_s3_bucket.content.arn}/*"
+      },
+      {
+        Effect = "Allow", Action = ["bedrock:InvokeModel"], Resource = "arn:aws:bedrock:us-east-2::foundation-model/meta.llama3-3-70b-instruct-v1:0"
       }
     ]
   })
@@ -61,7 +64,7 @@ resource "aws_lambda_function" "api" {
   reserved_concurrent_executions = 5
   environment {
     variables = {
-      TABLE_NAME = aws_dynamodb_table.application.name, CONTENT_BUCKET = aws_s3_bucket.content.id, RELEASE_SHA = "bootstrap", CONTENT_RELEASE = var.content_release
+      TABLE_NAME = aws_dynamodb_table.application.name, CONTENT_BUCKET = aws_s3_bucket.content.id, RELEASE_SHA = "bootstrap", CONTENT_RELEASE = var.content_release, SCHOOL_AI_ENABLED = tostring(var.school_ai_enabled)
     }
   }
   depends_on = [aws_iam_role_policy.api, aws_cloudwatch_log_group.api]

@@ -33,6 +33,12 @@ variable "content_release" {
   }
 }
 
+variable "school_ai_enabled" {
+  description = "Opt-in only after bounded inference and publication checks; disabled preserves school logs without AI calls."
+  type        = bool
+  default     = false
+}
+
 variable "github_oidc_subject" {
   description = "Exact current main-branch subject from the repository OIDC configuration; set privately."
   type        = string
