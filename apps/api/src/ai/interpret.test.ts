@@ -70,6 +70,39 @@ test('plain class lessons/tests and explicit class assignments remain valid', ()
   const result = validateGeneration(envelope(modelItem({ kind: 'lesson', mode: 'learn', sourceText: 'Finished Our Earth today', datePhrase: null }), modelItem(), modelItem({ kind: 'assignment', sourceText: 'All students should revise Our Earth tomorrow.' })), changed, prepareInput(changed));
   assert.equal(result.status, 'ready'); assert.equal(result.guidance.length, 3);
 });
+test('a two-sentence all-class quote supports its lesson and later test actions', () => {
+  const changed = { ...input, note: 'Finished Animal Life today. Test tomorrow.' };
+  for (const sourceText of [changed.note, changed.note.slice(0, -1)]) {
+    const result = validateGeneration(envelope(
+      modelItem({ chapterId: 'animals', kind: 'lesson', mode: 'learn', sourceText, datePhrase: 'today' }),
+      modelItem({ chapterId: 'animals', mode: 'revise', sourceText }),
+      modelItem({ chapterId: 'animals', mode: 'practice', sourceText }),
+    ), changed, prepareInput(changed));
+    assert.equal(result.status, 'ready'); assert.equal(result.guidance.length, 3);
+    assert.deepEqual(result.guidance.map((item) => [item.mode, item.date]), [['learn', '2026-10-27'], ['revise', '2026-10-28'], ['practice', '2026-10-28']]);
+  }
+});
+test('a safe class sentence cannot authorize a mixed personal evidence span', () => {
+  for (const note of [
+    'Finished Animal Life today. Riya has a test tomorrow.',
+    'Finished Animal Life today. Aarav should revise Animal Life tomorrow.',
+    'Finished Animal Life today. Test tomorrow for Riya.',
+  ]) {
+    const changed = { ...input, note, roster: [...input.roster, { id: 'student-b', name: 'Aarav Rao' }] };
+    const result = validateGeneration(envelope(modelItem({ chapterId: 'animals', sourceText: note })), changed, prepareInput(changed));
+    assert.equal(result.guidance.length, 0); assert.equal(result.unresolved[0].code, 'AMBIGUOUS_AUDIENCE');
+  }
+  const knownChild = { ...input, note: 'Finished Animal Life today. Aarav has a test tomorrow.' };
+  const prepared = prepareInput(knownChild);
+  assert.equal(validateGeneration(envelope(modelItem({ chapterId: 'animals', sourceText: prepared.note })), knownChild, prepared).guidance.length, 0);
+  const cropped = { ...input, note: 'Finished Animal Life today. Test tomorrow for Riya.' };
+  assert.equal(validateGeneration(envelope(modelItem({ chapterId: 'animals', sourceText: 'Finished Animal Life today. Test tomorrow' })), cropped, prepareInput(cropped)).guidance.length, 0);
+});
+test('an all-class evidence span still needs a clause matching the proposed kind', () => {
+  const changed = { ...input, note: 'Finished Animal Life today. All students should revise Animal Life tomorrow.' };
+  const result = validateGeneration(envelope(modelItem({ chapterId: 'animals', sourceText: changed.note })), changed, prepareInput(changed));
+  assert.equal(result.guidance.length, 0); assert.equal(result.unresolved[0].code, 'AMBIGUOUS_AUDIENCE');
+});
 test('kind/mode mismatches are rejected for individual and class actions', () => {
   const prepared = prepareInput(input);
   for (const item of [modelItem({ mode: 'learn' }), modelItem({ kind: 'lesson', mode: 'practice', sourceText: 'Finished Our Earth today', datePhrase: null }), modelItem({ kind: 'support', mode: 'revise', audience: 'student_001', sourceText: 'student_001 needs more practice', datePhrase: null })]) {

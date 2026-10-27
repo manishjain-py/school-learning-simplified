@@ -47,7 +47,7 @@ export function prepareInput(input: InterpretationInput): PreparedInput {
   const prompt = `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n${instruction}<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n${JSON.stringify(data)}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n`;
   if (Buffer.byteLength(prompt, 'utf8') > MAX_PROMPT_BYTES) throw new Error('This note and roster are too large for one bounded AI request. Shorten the note or reduce the class roster.');
   const requestKey = hash(JSON.stringify([input.schoolId, input.classId, input.logId, input.version, input.attempt]));
-  const fingerprint = hash(JSON.stringify(['sls-interpret-v2', prompt, [...aliasToStudent], input.actorId]));
+  const fingerprint = hash(JSON.stringify(['sls-interpret-v3', prompt, [...aliasToStudent], input.actorId]));
   return { prompt, note, aliasToStudent, fingerprint, requestKey };
 }
 
@@ -77,12 +77,18 @@ function classEvidenceIsClear(note: string, evidence: string, kind: GuidanceKind
     const ends = ['.', '!', '?', ';', '\n'].map((mark) => note.indexOf(mark, after)).filter((index) => index >= 0);
     // If the evidence itself ends at punctuation, that is the containing clause's end.
     const end = /[.!?;\n]$/.test(evidence) ? after : ends.length ? Math.min(...ends) : note.length;
-    let clause = normalized(note.slice(start, end));
-    for (const title of catalog.flatMap((item) => [item.title, ...(item.topics || [])]).sort((a, b) => b.length - a.length)) {
-      clause = clause.replace(new RegExp(`(?<![\\p{L}\\p{N}_])${escaped(normalized(title))}(?![\\p{L}\\p{N}_])`, 'gu'), 'topic');
+    let matchesKind = false;
+    const clauses = note.slice(start, end).split(/[.!?;\n]+/).map(normalized).filter(Boolean);
+    for (let clause of clauses) {
+      for (const title of catalog.flatMap((item) => [item.title, ...(item.topics || [])]).sort((a, b) => b.length - a.length)) {
+        clause = clause.replace(new RegExp(`(?<![\\p{L}\\p{N}_])${escaped(normalized(title))}(?![\\p{L}\\p{N}_])`, 'gu'), 'topic');
+      }
+      clause = clause.replace(/\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2}(?:st|nd|rd|th)? (?:january|february|march|april|may|june|july|august|september|october|november|december) \d{4}\b|\bday after tomorrow\b|\b(?:today|tomorrow|yesterday|sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/g, 'date').replace(/[:,]/g, ' ').replace(/\s+/g, ' ').trim();
+      // A multi-clause quote is safe only if every complete clause is class-scoped.
+      if (!clause.split(' ').every((word) => allowedWords.has(word)) || !kinds.some((clauseKind) => prefixes[clauseKind].test(clause))) return false;
+      matchesKind ||= prefixes[kind].test(clause);
     }
-    clause = clause.replace(/\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2}(?:st|nd|rd|th)? (?:january|february|march|april|may|june|july|august|september|october|november|december) \d{4}\b|\bday after tomorrow\b|\b(?:today|tomorrow|yesterday|sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/g, 'date').replace(/[.,!?;:]/g, ' ').replace(/\s+/g, ' ').trim();
-    if (!clause.split(' ').every((word) => allowedWords.has(word)) || !prefixes[kind].test(clause)) return false;
+    if (!matchesKind) return false;
     seen = true; offset = after;
   }
   return seen;
