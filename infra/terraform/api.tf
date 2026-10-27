@@ -41,6 +41,9 @@ resource "aws_iam_role_policy" "api" {
         Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:BatchGetItem", "dynamodb:BatchWriteItem", "dynamodb:TransactWriteItems"], Resource = [aws_dynamodb_table.application.arn, "${aws_dynamodb_table.application.arn}/index/*"]
       },
       {
+        Effect = "Allow", Action = ["dynamodb:ConditionCheckItem"], Resource = aws_dynamodb_table.application.arn
+      },
+      {
         Effect = "Allow", Action = ["s3:GetObject"], Resource = "${aws_s3_bucket.content.arn}/*"
       },
       {
