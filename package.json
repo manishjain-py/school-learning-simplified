@@ -1,0 +1,16 @@
+{
+  "name": "school-learning-simplified",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.12.0" },
+  "workspaces": ["apps/web", "apps/api"],
+  "scripts": {
+    "dev": "npm run dev --workspace @sls/web",
+    "dev:api": "npm run dev --workspace @sls/api",
+    "typecheck": "npm run typecheck --workspaces",
+    "build:web": "npm run build --workspace @sls/web",
+    "build:api": "npm run build --workspace @sls/api",
+    "build": "npm run typecheck && npm run build:web && npm run build:api"
+  }
+}

@@ -13,3 +13,5 @@ venv/
 *.tfstate
 *.tfstate.*
 *.tfplan
+dist/
+apps/web/public/config.json

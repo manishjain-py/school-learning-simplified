@@ -1,0 +1,7 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  server: { proxy: { '/api': 'http://127.0.0.1:4181', '/content': 'http://127.0.0.1:4181', '/media': 'http://127.0.0.1:4181', '/config.json': 'http://127.0.0.1:4181' } },
+});
