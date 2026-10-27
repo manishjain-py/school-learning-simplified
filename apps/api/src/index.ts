@@ -7,6 +7,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { gradeOptions, type AnswerKey, type OptionQuestion } from './grading.js';
 import { handleSchool, SchoolError } from './school/index.js';
+import { handlePreferences } from './preferences/index.js';
 import { handleRecommendations, originProgress, originPractice, originCondition } from './recommendations/index.js';
 
 type Chapter = { id: string; title: string; languages: string[]; cardCount: number };
@@ -142,6 +143,7 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
       const mode = learningMode(event.queryStringParameters?.mode);
       return json(200, await readContent<Lesson | PracticeBank>(modeKey(chapter.id, language, mode)));
     }
+    if (path === '/api/preferences') return await handlePreferences(event, await verifiedUser(event));
     if (path.startsWith('/api/school/recommendations/')) return json(200, await handleRecommendations(event, await verifiedUser(event)));
     if (path.startsWith('/api/school/')) return await handleSchool(event, await verifiedUser(event));
     if (method === 'GET' && path === '/api/me') {

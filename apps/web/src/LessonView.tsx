@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, Headphones } from 'lucide-react';
 import { request } from './api';
-import type { Config, LearningMode, Lesson, User } from './types';
+import type { Config, Language, LearningMode, Lesson, User } from './types';
 import { Narration } from './Narration';
 import { QuestionCard } from './QuestionCard';
 import { ModeTabs } from './learningShared';
@@ -9,13 +9,14 @@ import { useLearningProgress } from './useLearningProgress';
 import { ProgressStatus } from './ProgressStatus';
 import { VisualStage } from './visuals';
 
-export function LessonView({ config, chapterId, user, onSignIn, onBack, onMode, recommendationId }: { config: Config; chapterId: string; user: User | null; onSignIn: () => void; onBack: () => void; onMode: (mode: LearningMode) => void; recommendationId?: string }) {
+export function LessonView({ config, chapterId, user, onSignIn, onBack, onMode, recommendationId, preferredLanguage }: { config: Config; chapterId: string; user: User | null; onSignIn: () => void; onBack: () => void; onMode: (mode: LearningMode) => void; recommendationId?: string; preferredLanguage?: Language }) {
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [error, setError] = useState('');
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [retry, setRetry] = useState(0);
   const [reviewed, setReviewed] = useState<string[]>([]);
-  const progress = useLearningProgress(config, chapterId, user, 'learn', recommendationId);
+  const progress = useLearningProgress(config, chapterId, user, 'learn', recommendationId, preferredLanguage);
   const { language } = progress;
   useEffect(() => {
     const controller = new AbortController(); setLoading(true); setError('');
@@ -39,12 +40,12 @@ export function LessonView({ config, chapterId, user, onSignIn, onBack, onMode, 
     progress.visit(lesson.cards[next].id, [...new Set([...completed, card.id])]);
   }
   return <main className={`lesson-page page-width${full ? ' full-lesson' : ''}`}>
-    <button className="text-button back-link" onClick={onBack}><ArrowLeft size={16} />Back to your library</button>
+    <button className="text-button back-link" onClick={onBack}><ArrowLeft size={16} />Back to chapter</button>
     {full && <ModeTabs mode="learn" onMode={onMode} />}
     <div className="lesson-heading"><div><p className="eyebrow">CLASS 4 · EVS · {full ? 'LEARN' : 'LESSON PREVIEW'}</p><h1>{lesson?.title || 'Your next discovery'}</h1></div><div className="language-toggle" aria-label="Lesson language"><button onClick={() => progress.changeLanguage('en', card?.id)} disabled={progress.loading} aria-pressed={language === 'en'}>English</button><button onClick={() => progress.changeLanguage('hi', card?.id)} disabled={progress.loading} aria-pressed={language === 'hi'} lang="hi">हिन्दी</button></div></div>
     <div className="preview-note"><Headphones size={17} /><span>{full ? 'One idea at a time. Listen, explore the visuals and try the quick checks.' : 'A first look at this chapter. Read a few ideas and listen in either language.'}</span></div>
     {loading ? <div className="status-panel" role="status">Opening your lesson…</div> : error ? <div className="status-panel"><h2>Let’s try that again.</h2><p role="alert">{error}</p><button className="button primary" onClick={() => setRetry(retry + 1)}>Reload lesson</button></div> : lesson && card && <div className="lesson-layout">
-      <aside className="lesson-outline"><p className="eyebrow">YOUR SMALL STEPS</p>
+      <button className="mobile-learning-tools" aria-expanded={toolsOpen} onClick={() => setToolsOpen(!toolsOpen)}>{toolsOpen ? 'Hide chapter tools' : 'Chapter tools & progress'}<span>{toolsOpen ? '−' : '+'}</span></button><aside className={`lesson-outline${toolsOpen ? ' tools-open' : ''}`}><p className="eyebrow">YOUR SMALL STEPS</p>
         {full && lesson.parts && <div className="part-list">{lesson.parts.map((part) => <button key={part.id} className={part.id === activePart?.id ? 'part-button active' : 'part-button'} onClick={() => goTo(lesson.cards.findIndex((item) => item.id === part.cardIds[0]))}><span>PART {part.sequence}</span><strong>{part.title}</strong><small>{part.cardIds.filter((id) => completed.includes(id)).length} / {part.cardIds.length} cards</small></button>)}</div>}
         {full && <label className="card-jump">Jump to an idea<select value={card.id} onChange={(event) => goTo(lesson.cards.findIndex((item) => item.id === event.target.value))}>{lesson.cards.map((item, itemIndex) => <option key={item.id} value={item.id}>{itemIndex + 1}. {item.title}</option>)}</select></label>}
         {!full && <ol>{lesson.cards.map((item, itemIndex) => <li key={item.id}><button className={index === itemIndex ? 'active' : ''} aria-current={index === itemIndex ? 'step' : undefined} onClick={() => goTo(itemIndex)}><span className={completed.includes(item.id) ? 'step-number done' : 'step-number'}>{completed.includes(item.id) ? <Check size={15} /> : String(itemIndex + 1).padStart(2, '0')}</span><span>{item.title}</span></button></li>)}</ol>}
@@ -53,7 +54,7 @@ export function LessonView({ config, chapterId, user, onSignIn, onBack, onMode, 
       <section className="reading-card" aria-label="Lesson card"><div className="card-kicker"><span>{activePart ? `PART ${activePart.sequence} · ` : ''}{card.kind === 'check_in' ? 'QUICK CHECK' : 'IDEA'} {String(index + 1).padStart(2, '0')}</span><span>{index + 1} / {lesson.cards.length}</span></div><h2 lang={language}>{card.title}</h2>
         {card.kind === 'check_in' && card.question ? <>{card.visual && <VisualStage visual={card.visual} language={language} currentLine={0} currentTime={0} playing={false} replayKey={0} hasStarted={true} />}<QuestionCard key={`${card.id}-${language}`} question={card.question} language={language} onReviewed={() => setReviewed((current) => [...new Set([...current, card.id])])} /></> : <Narration key={`${card.id}-${language}`} lines={card.lines} language={language}>{card.visual ? (clock) => <VisualStage visual={card.visual!} language={language} {...clock} /> : undefined}</Narration>}
         <div className="lesson-actions"><button className="button secondary" onClick={() => goTo(index - 1)} disabled={index === 0 || progress.loading}><ArrowLeft size={16} />Previous</button><button className="button primary" onClick={finishCard} disabled={!checkinReady || progress.loading}>{index === lesson.cards.length - 1 ? (full ? 'Finish chapter' : 'Finish preview') : 'Got it, next idea'}{index === lesson.cards.length - 1 ? <Check size={17} /> : <ArrowRight size={17} />}</button></div>
-        {allComplete && <div className="completion" role="status"><CheckCircle2 size={23} /><div><strong>A little more understood.</strong><p>You’ve explored every idea in this {full ? 'chapter' : 'preview'}. Come back for a listen whenever you like.</p><button className="text-button" onClick={onBack}>Back to library<ArrowRight size={15} /></button></div></div>}
+        {allComplete && <div className="completion" role="status"><CheckCircle2 size={23} /><div><strong>A little more understood.</strong><p>You’ve explored every idea in this {full ? 'chapter' : 'preview'}. Come back for a listen whenever you like.</p><button className="text-button" onClick={onBack}>Back to chapter<ArrowRight size={15} /></button></div></div>}
         {user && <ProgressStatus {...progress} retry={() => progress.retry(card.id)} />}
       </section>
     </div>}

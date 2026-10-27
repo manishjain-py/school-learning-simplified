@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { request } from './api';
 import type { Config, Language, Progress, User } from './types';
 
-export function useLearningProgress(config: Config, chapterId: string, user: User | null, mode: 'learn' | 'revise', recommendationId?: string) {
-  const [language, setLanguage] = useState<Language>('en');
+export function useLearningProgress(config: Config, chapterId: string, user: User | null, mode: 'learn' | 'revise', recommendationId?: string, preferredLanguage?: Language) {
+  const [language, setLanguage] = useState<Language>(preferredLanguage || 'en');
   const [currentCardId, setCurrentCardId] = useState<string | null>(null);
   const [completedIds, setCompletedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(Boolean(user));
@@ -23,10 +23,10 @@ export function useLearningProgress(config: Config, chapterId: string, user: Use
     void request<Progress>(config, path, { authenticated: true, expectedUserId: user.id }).then((progress) => {
       if (!alive) return;
       setCurrentCardId(progress.currentCardId); setCompletedIds(progress.completedCardIds || []);
-      setLanguage(progress.language || 'en'); setSaved(Boolean(progress.updatedAt));
+      setLanguage(preferredLanguage || progress.language || 'en'); setSaved(Boolean(progress.updatedAt));
     }).catch((issue: Error) => { if (alive) setError(`Saved progress could not be loaded. ${issue.message}`); }).finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
-  }, [config, user?.id, path]);
+  }, [config, user?.id, path, preferredLanguage]);
   function persist(id: string, completed: string[], selectedLanguage: Language) {
     if (!user || loading) return;
     const expectedOwner = user.id;
