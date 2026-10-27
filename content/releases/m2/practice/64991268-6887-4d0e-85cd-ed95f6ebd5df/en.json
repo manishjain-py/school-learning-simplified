@@ -1,0 +1,1453 @@
+{
+  "schemaVersion": 2,
+  "release": "m2",
+  "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df",
+  "title": "Animal Life",
+  "language": "en",
+  "questions": [
+    {
+      "id": "1ebfd271-d1c6-405e-8823-0e36c21983a7",
+      "format": "pick_one",
+      "prompt": "Kabir sees a duck's nest beside the village pond at dawn. One egg is cracking open. What is making the crack?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The baby duck pushing out from inside"
+        },
+        {
+          "id": "option-1",
+          "text": "The mother duck's beak from outside"
+        },
+        {
+          "id": "option-2",
+          "text": "The water splashing on the egg"
+        }
+      ],
+      "audioUrl": "/media/35153017ecd13c73d326f7e1f84c0fe7d3dd259b5980d48f0788cc3328e5a13b.mp3",
+      "audioSha256": "35153017ecd13c73d326f7e1f84c0fe7d3dd259b5980d48f0788cc3328e5a13b",
+      "difficulty": "medium",
+      "conceptTag": "who_breaks_the_shell"
+    },
+    {
+      "id": "073f14c6-f3fc-4da0-9232-f2c98022ff02",
+      "format": "true_false",
+      "prompt": "Meera sees a sparrow's nest above the vegetable market. Is this right?\n\nA bird lays its egg with a ready baby bird inside.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/be5406165ce1a5b0bbad108c571a1feb470e8508f1c4e71681c3b60ef3b7d73d.mp3",
+      "audioSha256": "be5406165ce1a5b0bbad108c571a1feb470e8508f1c4e71681c3b60ef3b7d73d",
+      "difficulty": "medium",
+      "conceptTag": "not_ready_when_laid"
+    },
+    {
+      "id": "ae6a61ba-9140-4810-9fef-8536682409e9",
+      "format": "fill_blank",
+      "prompt": "Aarav looks at the fields from the train. He sees a butterfly, a buffalo and a goat. The one that lays eggs is the ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "buffalo"
+        },
+        {
+          "id": "option-1",
+          "text": "butterfly"
+        },
+        {
+          "id": "option-2",
+          "text": "goat"
+        }
+      ],
+      "audioUrl": "/media/30f575596b715be4df0aef5e182d76c35aac85f1faa14696ce855898785502dc.mp3",
+      "audioSha256": "30f575596b715be4df0aef5e182d76c35aac85f1faa14696ce855898785502dc",
+      "difficulty": "easy",
+      "conceptTag": "insect_lays_eggs"
+    },
+    {
+      "id": "bde6e39a-fe09-47c6-bd3f-1d3cb7e0bb8b",
+      "format": "multi_select",
+      "prompt": "Which of these are true about animals that lay eggs?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Every animal lays eggs."
+        },
+        {
+          "id": "option-1",
+          "text": "The young one grows inside the egg."
+        },
+        {
+          "id": "option-2",
+          "text": "Only birds lay eggs."
+        },
+        {
+          "id": "option-3",
+          "text": "The baby breaks out through the shell itself."
+        },
+        {
+          "id": "option-4",
+          "text": "The breaking out is called hatching."
+        }
+      ],
+      "audioUrl": "/media/c7e9dcbcf5fd7762288c21f6027267c97bcc2310667d3db35056d521f5bfc336.mp3",
+      "audioSha256": "c7e9dcbcf5fd7762288c21f6027267c97bcc2310667d3db35056d521f5bfc336",
+      "difficulty": "medium",
+      "conceptTag": "how_the_young_arrives"
+    },
+    {
+      "id": "228c76e5-2877-48bf-85d0-865fbbab648d",
+      "format": "true_false",
+      "prompt": "In the school garden, an insect eats the leaves. Is this right?\n\nThe food chain arrow goes from the leaves to the insect.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/a38025b292434f088dfab2c1404e6a1ad5908873a3ef28c7a54e8ca0ee574bb1.mp3",
+      "audioSha256": "a38025b292434f088dfab2c1404e6a1ad5908873a3ef28c7a54e8ca0ee574bb1",
+      "difficulty": "medium",
+      "conceptTag": "arrow_direction"
+    },
+    {
+      "id": "047cc9a5-e9dd-449c-826f-9777f887b00f",
+      "format": "fill_blank",
+      "prompt": "A rat eats a plant in a pot on Meera's terrace. An eagle eats the rat. Which one comes after the rat? It is the ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "plant"
+        },
+        {
+          "id": "option-1",
+          "text": "rat"
+        },
+        {
+          "id": "option-2",
+          "text": "eagle"
+        }
+      ],
+      "audioUrl": "/media/3508950dcf0ac3e8b31257c4e2f0f91240587661a447e32d89e71f5865b2fffd.mp3",
+      "audioSha256": "3508950dcf0ac3e8b31257c4e2f0f91240587661a447e32d89e71f5865b2fffd",
+      "difficulty": "easy",
+      "conceptTag": "next_link_in_chain"
+    },
+    {
+      "id": "b4675591-7606-42d1-94e9-8f048a4bf37d",
+      "format": "multi_select",
+      "prompt": "A fruit falls near the cattle shed. A rat eats the fruit, and a snake eats the rat. Which of these are true about this food chain?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The snake comes first in this chain."
+        },
+        {
+          "id": "option-1",
+          "text": "The fruit is eaten by the rat."
+        },
+        {
+          "id": "option-2",
+          "text": "The snake is eaten by the rat."
+        },
+        {
+          "id": "option-3",
+          "text": "The arrow points from the rat to the fruit."
+        },
+        {
+          "id": "option-4",
+          "text": "The rat is eaten by the snake."
+        }
+      ],
+      "audioUrl": "/media/a321201a860bab17df4afc3c16939600b1fb2d741f44acedd1d0b336fd8fb5f0.mp3",
+      "audioSha256": "a321201a860bab17df4afc3c16939600b1fb2d741f44acedd1d0b336fd8fb5f0",
+      "difficulty": "medium",
+      "conceptTag": "read_chain_who_eats_whom"
+    },
+    {
+      "id": "dc7cd9a7-b0c6-4a70-80ce-55d52d3785eb",
+      "format": "pick_one",
+      "prompt": "A frog lives near the grass at the school playground. The food chain is grass, then one animal, then the frog. Which animal goes in the middle?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "the deer"
+        },
+        {
+          "id": "option-1",
+          "text": "the eagle"
+        },
+        {
+          "id": "option-2",
+          "text": "the insect"
+        }
+      ],
+      "audioUrl": "/media/bc2d77e2cf2b8897a112489798b2f05962e7ffdfd1a03849984ae45497202928.mp3",
+      "audioSha256": "bc2d77e2cf2b8897a112489798b2f05962e7ffdfd1a03849984ae45497202928",
+      "difficulty": "medium",
+      "conceptTag": "missing_middle_link"
+    },
+    {
+      "id": "17179e35-3c7c-4086-a840-cb0539d55151",
+      "format": "true_false",
+      "prompt": "Aarav sees a monkey and its young one at the zoo. Is this right?\n\nA monkey's young one hatches from an egg inside its mother.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/c35c4a6de071ab83273b67f9a9427a797b09be776a58686b33f6646e12d0c4b6.mp3",
+      "audioSha256": "c35c4a6de071ab83273b67f9a9427a797b09be776a58686b33f6646e12d0c4b6",
+      "difficulty": "medium",
+      "conceptTag": "born_alive_not_hatched"
+    },
+    {
+      "id": "7c57e66d-23d2-4c8f-b08e-70a32b712f6f",
+      "format": "multi_select",
+      "prompt": "A goat and its young one stand on the riverbank. Which of these are true about the young goat?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "It hatched from an egg."
+        },
+        {
+          "id": "option-1",
+          "text": "It was born alive."
+        },
+        {
+          "id": "option-2",
+          "text": "It will drink milk all its life."
+        },
+        {
+          "id": "option-3",
+          "text": "It drinks its mother's milk."
+        },
+        {
+          "id": "option-4",
+          "text": "Its mother looks after it after birth."
+        }
+      ],
+      "audioUrl": "/media/920457709852a3a4df4804550acd3a317643cc542858ba7790d63a8076e47bc6.mp3",
+      "audioSha256": "920457709852a3a4df4804550acd3a317643cc542858ba7790d63a8076e47bc6",
+      "difficulty": "medium",
+      "conceptTag": "born_alive_and_milk"
+    },
+    {
+      "id": "6f49d73f-e49e-4fad-82fa-d12056a69088",
+      "format": "fill_blank",
+      "prompt": "Meera sits on her balcony with her baby brother. Like every mammal, he grew inside his mother's ___ before birth.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "nest"
+        },
+        {
+          "id": "option-1",
+          "text": "shell"
+        },
+        {
+          "id": "option-2",
+          "text": "womb"
+        }
+      ],
+      "audioUrl": "/media/140c964203c574e7ad732f149c9d4b81ec04a248c9320b032f0e2b3599cfd490.mp3",
+      "audioSha256": "140c964203c574e7ad732f149c9d4b81ec04a248c9320b032f0e2b3599cfd490",
+      "difficulty": "easy",
+      "conceptTag": "grows_in_womb"
+    },
+    {
+      "id": "266d3a36-cc72-4330-88b6-3b913a9f8743",
+      "format": "multi_select",
+      "prompt": "Kabir sits on the riverbank and sees these animals. Which of them have young ones that are born alive?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The sparrow"
+        },
+        {
+          "id": "option-1",
+          "text": "The bat"
+        },
+        {
+          "id": "option-2",
+          "text": "The snake"
+        },
+        {
+          "id": "option-3",
+          "text": "The goat"
+        },
+        {
+          "id": "option-4",
+          "text": "The butterfly"
+        }
+      ],
+      "audioUrl": "/media/940ce3051c67ea189b54f5740b384bc7921404faa075c43c3b11e5c2e8f55e9e.mp3",
+      "audioSha256": "940ce3051c67ea189b54f5740b384bc7921404faa075c43c3b11e5c2e8f55e9e",
+      "difficulty": "medium",
+      "conceptTag": "flying_mammal_bat"
+    },
+    {
+      "id": "66c96ecb-f17d-4e58-b57e-783e1b566865",
+      "format": "pick_one",
+      "prompt": "At the farm, a young horse is born alive. Which of these happens next?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "It grows in its mother's womb."
+        },
+        {
+          "id": "option-1",
+          "text": "It drinks its mother's milk."
+        },
+        {
+          "id": "option-2",
+          "text": "It hatches from an egg."
+        }
+      ],
+      "audioUrl": "/media/34d3874f1f019c303ad7a583f175c3b2883dba8d46ecbcf04284126a17515ef0.mp3",
+      "audioSha256": "34d3874f1f019c303ad7a583f175c3b2883dba8d46ecbcf04284126a17515ef0",
+      "difficulty": "medium",
+      "conceptTag": "stage_after_birth"
+    },
+    {
+      "id": "aec085ef-dc79-47fb-862d-60ef29d8272a",
+      "format": "pick_one",
+      "prompt": "Meera says a whale is a fish because it swims. Which sentence shows that a whale is a mammal?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "It swims in the sea."
+        },
+        {
+          "id": "option-1",
+          "text": "It is a very big animal."
+        },
+        {
+          "id": "option-2",
+          "text": "Its young one is born alive and drinks mother's milk."
+        }
+      ],
+      "audioUrl": "/media/eb33aa98e77bea42d283c68b7fd95df1a51154b096378f831dd67f75ebf42eb8.mp3",
+      "audioSha256": "eb33aa98e77bea42d283c68b7fd95df1a51154b096378f831dd67f75ebf42eb8",
+      "difficulty": "medium",
+      "conceptTag": "swimming_mammal_whale"
+    },
+    {
+      "id": "c9bc2bbb-add3-4d7d-bc76-33151cabd700",
+      "format": "fill_blank",
+      "prompt": "Kabir walks through the vegetable market with his mother. Only the ___ has young ones that are born alive.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "crow"
+        },
+        {
+          "id": "option-1",
+          "text": "dog"
+        },
+        {
+          "id": "option-2",
+          "text": "hen"
+        }
+      ],
+      "audioUrl": "/media/f5c1c40909f4807e7f3de1e7cbc3c1df24e8af3749f7e0dc2cd5f4f3b31fbe24.mp3",
+      "audioSha256": "f5c1c40909f4807e7f3de1e7cbc3c1df24e8af3749f7e0dc2cd5f4f3b31fbe24",
+      "difficulty": "easy",
+      "conceptTag": "born_alive_sorting"
+    },
+    {
+      "id": "d3f3a709-a8bd-425d-833e-19960e613c9a",
+      "format": "true_false",
+      "prompt": "Frogs sit near the monsoon puddles. Is this right?\n\nFrogs are mammals because their young ones are born alive.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/9c6846d699a4fc2eee660a6484e39eab23da8af854e071671f77ed1b05338f21.mp3",
+      "audioSha256": "9c6846d699a4fc2eee660a6484e39eab23da8af854e071671f77ed1b05338f21",
+      "difficulty": "easy",
+      "conceptTag": "egg_layer_not_mammal"
+    },
+    {
+      "id": "2ec6eb32-e52c-45d5-99fe-aa7865d094cc",
+      "format": "pick_one",
+      "prompt": "On their evening walk, Meera's family eats corn and boiled eggs. Which group does Meera's family belong to?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Plant eaters (herbivores)"
+        },
+        {
+          "id": "option-1",
+          "text": "Omnivores (mixed eaters)"
+        },
+        {
+          "id": "option-2",
+          "text": "Flesh eaters (carnivores)"
+        }
+      ],
+      "audioUrl": "/media/4348cc0fe91c0a04e725be44c9b2feaf26c97450612759709816589d75726985.mp3",
+      "audioSha256": "4348cc0fe91c0a04e725be44c9b2feaf26c97450612759709816589d75726985",
+      "difficulty": "easy",
+      "conceptTag": "omnivore_group_people"
+    },
+    {
+      "id": "14d93b29-70de-43e7-8284-c56aa7bbc72b",
+      "format": "fill_blank",
+      "prompt": "The milkman finds a leech on his buffalo's leg. The leech fastens on and ___ the blood.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "sucks"
+        },
+        {
+          "id": "option-1",
+          "text": "chews"
+        },
+        {
+          "id": "option-2",
+          "text": "grinds"
+        }
+      ],
+      "audioUrl": "/media/023e4f5440bfb5e7fa92e1eb6e619281a98c92bc6a23021c2eab615ef1454e47.mp3",
+      "audioSha256": "023e4f5440bfb5e7fa92e1eb6e619281a98c92bc6a23021c2eab615ef1454e47",
+      "difficulty": "easy",
+      "conceptTag": "leech_fastens_and_sucks"
+    },
+    {
+      "id": "c617c12a-7677-4cf0-8c38-8337522775f9",
+      "format": "multi_select",
+      "prompt": "A sparrow visits the school garden each morning. Which of these are foods a sparrow eats?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Seeds from the garden plants"
+        },
+        {
+          "id": "option-1",
+          "text": "Small insects on the leaves"
+        },
+        {
+          "id": "option-2",
+          "text": "Soil from the flower bed"
+        },
+        {
+          "id": "option-3",
+          "text": "Worms in the wet mud"
+        },
+        {
+          "id": "option-4",
+          "text": "Blood from a buffalo's leg"
+        }
+      ],
+      "audioUrl": "/media/3b8de9d3e4b6c3568936083e7633e149d53a007c8a86fdd41b3dd7fa52638796.mp3",
+      "audioSha256": "3b8de9d3e4b6c3568936083e7633e149d53a007c8a86fdd41b3dd7fa52638796",
+      "difficulty": "medium",
+      "conceptTag": "bird_both_halves"
+    },
+    {
+      "id": "90304688-6ded-4860-80cb-c41924c13230",
+      "format": "true_false",
+      "prompt": "Is this right?\n\nA mixed eater has more kinds of food to live on.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/6e4572ebc7ec9ca50ae7e430a8e34f82c75e6bb8d1ffcca96dc537de5831126a.mp3",
+      "audioSha256": "6e4572ebc7ec9ca50ae7e430a8e34f82c75e6bb8d1ffcca96dc537de5831126a",
+      "difficulty": "medium",
+      "conceptTag": "why_both_foods_help"
+    },
+    {
+      "id": "4493d500-9ffe-4d12-9783-93b2faaec8a3",
+      "format": "true_false",
+      "prompt": "Kabir looks at the big fish tank at the zoo. Is this right?\n\nSharks and piranhas eat only water plants.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/4329fc4a53c365db481eb8034b4c2822a9756f7081bdc41c0e8c664d1fcfbaf8.mp3",
+      "audioSha256": "4329fc4a53c365db481eb8034b4c2822a9756f7081bdc41c0e8c664d1fcfbaf8",
+      "difficulty": "medium",
+      "conceptTag": "flesh_eating_fish"
+    },
+    {
+      "id": "71bb9ef4-1653-4ab9-b4b5-4984f5403ef1",
+      "format": "multi_select",
+      "prompt": "Ria walks around a wildlife sanctuary. Which of these animals are flesh eaters?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Elephant"
+        },
+        {
+          "id": "option-1",
+          "text": "Tiger"
+        },
+        {
+          "id": "option-2",
+          "text": "Giraffe"
+        },
+        {
+          "id": "option-3",
+          "text": "Python"
+        }
+      ],
+      "audioUrl": "/media/31297d3ac1d8583f40aa15d0ccd7d8bd7a95b6465fe4df98d51534aaa3312cca.mp3",
+      "audioSha256": "31297d3ac1d8583f40aa15d0ccd7d8bd7a95b6465fe4df98d51534aaa3312cca",
+      "difficulty": "medium",
+      "conceptTag": "flesh_eaters_not_by_size"
+    },
+    {
+      "id": "5b90b70d-8d37-4ffe-82d8-aef59c493d44",
+      "format": "fill_blank",
+      "prompt": "It is harvest time. Rina sees three plant eaters in the field. They are a cow, a goat and a ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "snake"
+        },
+        {
+          "id": "option-1",
+          "text": "cat"
+        },
+        {
+          "id": "option-2",
+          "text": "rabbit"
+        }
+      ],
+      "audioUrl": "/media/32ebb62f7b21f37e22a0cf85525c10ef1ea98fdd2501f359b4d4c46ec227dd27.mp3",
+      "audioSha256": "32ebb62f7b21f37e22a0cf85525c10ef1ea98fdd2501f359b4d4c46ec227dd27",
+      "difficulty": "easy",
+      "conceptTag": "plant_eater_group"
+    },
+    {
+      "id": "2f8925e3-db98-48a6-b7f3-566d27eec536",
+      "format": "pick_one",
+      "prompt": "A cat drinks from the water bowl on Aarav's balcony. Why do we call the cat a flesh eater?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "It eats the flesh of other animals."
+        },
+        {
+          "id": "option-1",
+          "text": "It is quick and fierce."
+        },
+        {
+          "id": "option-2",
+          "text": "It lives close to people."
+        }
+      ],
+      "audioUrl": "/media/46fa2d8af55234239d2d5a3e27f194c0dc0b91fcdeb9aefb970cbcf691e53116.mp3",
+      "audioSha256": "46fa2d8af55234239d2d5a3e27f194c0dc0b91fcdeb9aefb970cbcf691e53116",
+      "difficulty": "easy",
+      "conceptTag": "food_decides_the_group"
+    },
+    {
+      "id": "88e852a1-077a-4340-8390-2a34cdb4d2df",
+      "format": "fill_blank",
+      "prompt": "From the train Meera sees goats eating grass in a field. A goat's wide front teeth ___ the grass.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "cut"
+        },
+        {
+          "id": "option-1",
+          "text": "grind"
+        },
+        {
+          "id": "option-2",
+          "text": "catch"
+        }
+      ],
+      "audioUrl": "/media/e65eceb3c9dd785c46e44d0fb88b732a242c9e731f5a24f8f034d925b4b09a80.mp3",
+      "audioSha256": "e65eceb3c9dd785c46e44d0fb88b732a242c9e731f5a24f8f034d925b4b09a80",
+      "difficulty": "easy",
+      "conceptTag": "plant_eater_front_teeth"
+    },
+    {
+      "id": "53141314-d87c-4040-b310-11658b2f2262",
+      "format": "pick_one",
+      "prompt": "A cat eats a piece of meat near the vegetable market. What do the cat's strong back teeth do?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "They grind grass into a soft mouthful."
+        },
+        {
+          "id": "option-1",
+          "text": "They cut through meat and bone."
+        },
+        {
+          "id": "option-2",
+          "text": "They take small bites of hard nuts."
+        }
+      ],
+      "audioUrl": "/media/17c633e4c38ef1137e0a38d845248d94bd32026d71aff09f4618a3de38c283df.mp3",
+      "audioSha256": "17c633e4c38ef1137e0a38d845248d94bd32026d71aff09f4618a3de38c283df",
+      "difficulty": "easy",
+      "conceptTag": "flesh_eater_back_teeth"
+    },
+    {
+      "id": "f72c9080-7fb4-45a6-8e80-1ed85ce8565b",
+      "format": "multi_select",
+      "prompt": "At dawn a deer drinks at the village pond. A wolf watches from the grass. Which of these are true about their teeth and claws?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The wolf's claws chew its food."
+        },
+        {
+          "id": "option-1",
+          "text": "The wolf's claws hold a deer so it cannot get free."
+        },
+        {
+          "id": "option-2",
+          "text": "The wolf's pointed front teeth rip meat away."
+        },
+        {
+          "id": "option-3",
+          "text": "The deer's flat back teeth grind its food."
+        },
+        {
+          "id": "option-4",
+          "text": "The deer's front teeth cut through bone."
+        }
+      ],
+      "audioUrl": "/media/4b6f26e256af324893be4af750189effde04fc71dd8067e55cb1c46cb8656bd9.mp3",
+      "audioSha256": "4b6f26e256af324893be4af750189effde04fc71dd8067e55cb1c46cb8656bd9",
+      "difficulty": "medium",
+      "conceptTag": "teeth_and_claws_jobs"
+    },
+    {
+      "id": "67b9113e-8f5f-448d-9eae-f2201caafa05",
+      "format": "true_false",
+      "prompt": "Is this right?\n\nA cow grinds its food with its tongue.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/7b21325a68e5f9b83efebe2550780cdeb57a90bf6681a04f913a4f4304348142.mp3",
+      "audioSha256": "7b21325a68e5f9b83efebe2550780cdeb57a90bf6681a04f913a4f4304348142",
+      "difficulty": "medium",
+      "conceptTag": "tongue_job_not_grinding"
+    },
+    {
+      "id": "82b858a7-2a7c-44d6-a751-94eee791354f",
+      "format": "pick_one",
+      "prompt": "A cow stands in the cattle shed and breathes. Which gas does the cow breathe out?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Carbon dioxide"
+        },
+        {
+          "id": "option-1",
+          "text": "Oxygen"
+        }
+      ],
+      "audioUrl": "/media/a64812be30f68f524d543341c0fbeb1df5c1bdde54dbc34030399c4a7d80cbd1.mp3",
+      "audioSha256": "a64812be30f68f524d543341c0fbeb1df5c1bdde54dbc34030399c4a7d80cbd1",
+      "difficulty": "easy",
+      "conceptTag": "carbon_dioxide_out_of_animal"
+    },
+    {
+      "id": "acbb2573-e055-4847-ace5-ebbf1a7ebac6",
+      "format": "multi_select",
+      "prompt": "A big neem tree grows in the school playground. Children sit under it every day. Which of these are true?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The tree gives out oxygen."
+        },
+        {
+          "id": "option-1",
+          "text": "The children breathe out carbon dioxide."
+        },
+        {
+          "id": "option-2",
+          "text": "The children give out oxygen."
+        },
+        {
+          "id": "option-3",
+          "text": "The tree gets nothing from the children."
+        },
+        {
+          "id": "option-4",
+          "text": "The tree gives shade to sit under."
+        }
+      ],
+      "audioUrl": "/media/483d6e97e65a1c08e86fc366499c4fc9e4847beebd5ed9c3d2db28e6961812e7.mp3",
+      "audioSha256": "483d6e97e65a1c08e86fc366499c4fc9e4847beebd5ed9c3d2db28e6961812e7",
+      "difficulty": "medium",
+      "conceptTag": "both_sides_give_and_take"
+    },
+    {
+      "id": "3bc32428-0361-4e50-86f9-a678d3ee6996",
+      "format": "true_false",
+      "prompt": "Meera grows tomato plants in pots on her terrace. Is this right?\n\nMeera breathes out oxygen and her plants give out carbon dioxide.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/ee022e06634894eeba90ba62893aabd62127a5283cc1b6679db79162013292f1.mp3",
+      "audioSha256": "ee022e06634894eeba90ba62893aabd62127a5283cc1b6679db79162013292f1",
+      "difficulty": "medium",
+      "conceptTag": "which_gas_each_way"
+    },
+    {
+      "id": "91fc5f03-0a57-4365-a239-657caea035cb",
+      "format": "fill_blank",
+      "prompt": "A guava tree grows in the school garden. Sparrows build their nests on its ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "roots"
+        },
+        {
+          "id": "option-1",
+          "text": "branches"
+        },
+        {
+          "id": "option-2",
+          "text": "seeds"
+        }
+      ],
+      "audioUrl": "/media/23b0f2f411efe63932817f4a764029738fb5a262508ec6cfaa429b509a03c5d5.mp3",
+      "audioSha256": "23b0f2f411efe63932817f4a764029738fb5a262508ec6cfaa429b509a03c5d5",
+      "difficulty": "easy",
+      "conceptTag": "useful_things_from_plants"
+    },
+    {
+      "id": "3c9b8b07-d896-4050-b690-e04134921fcc",
+      "format": "pick_one",
+      "prompt": "A pigeon and a sparrow drink from Meera's bird bowl. A tulsi plant grows beside it. Which one makes its own food?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The pigeon"
+        },
+        {
+          "id": "option-1",
+          "text": "The sparrow"
+        },
+        {
+          "id": "option-2",
+          "text": "The tulsi plant"
+        }
+      ],
+      "audioUrl": "/media/d91a935dc52a07a2143a636811e89714d0d05d910eac8a3d98269c9a65b5c088.mp3",
+      "audioSha256": "d91a935dc52a07a2143a636811e89714d0d05d910eac8a3d98269c9a65b5c088",
+      "difficulty": "easy",
+      "conceptTag": "plants_make_own_food"
+    },
+    {
+      "id": "1b97e730-c3a7-4ca0-83a4-d449925f04f1",
+      "format": "true_false",
+      "prompt": "At the riverbank, a stork catches a fish. The fish ate water plants. Is this right?\n\nThe stork gets its plant food indirectly.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/6d5854558bfde03314dd45842ae96903612d7135e208fb4f8eac40a830b56937.mp3",
+      "audioSha256": "6d5854558bfde03314dd45842ae96903612d7135e208fb4f8eac40a830b56937",
+      "difficulty": "medium",
+      "conceptTag": "plant_food_indirectly"
+    },
+    {
+      "id": "e4ebcf4f-f707-49ee-9640-0e9eddaca4bb",
+      "format": "fill_blank",
+      "prompt": "At the zoo, Aarav sees a camel eating green leaves. The camel takes its plant food ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "directly"
+        },
+        {
+          "id": "option-1",
+          "text": "indirectly"
+        }
+      ],
+      "audioUrl": "/media/b6d8d0ce699a4a41804c4c38eea87075598ef3882b5ce9a943b7c8187f8818fb.mp3",
+      "audioSha256": "b6d8d0ce699a4a41804c4c38eea87075598ef3882b5ce9a943b7c8187f8818fb",
+      "difficulty": "easy",
+      "conceptTag": "plant_food_directly"
+    },
+    {
+      "id": "efdffc2e-b03c-4fe5-8e17-325eec7c515c",
+      "format": "multi_select",
+      "prompt": "Aarav visits a wildlife sanctuary. Which of these animals get their plant food indirectly?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The wolf"
+        },
+        {
+          "id": "option-1",
+          "text": "The rabbit"
+        },
+        {
+          "id": "option-2",
+          "text": "The snake"
+        },
+        {
+          "id": "option-3",
+          "text": "The deer"
+        },
+        {
+          "id": "option-4",
+          "text": "The eagle"
+        }
+      ],
+      "audioUrl": "/media/50cad15cf210154ab4ee6b8b18726c3c206401b14acfb0e3c19cd7b7b79062c0.mp3",
+      "audioSha256": "50cad15cf210154ab4ee6b8b18726c3c206401b14acfb0e3c19cd7b7b79062c0",
+      "difficulty": "medium",
+      "conceptTag": "flesh_eaters_depend_indirectly"
+    },
+    {
+      "id": "fe6e6490-bf47-44df-9612-b67a24e1056a",
+      "format": "pick_one",
+      "prompt": "Meera looks out of the train window. She sees a cow with its young one. What will the young one grow into?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "a cow"
+        },
+        {
+          "id": "option-1",
+          "text": "a hen"
+        },
+        {
+          "id": "option-2",
+          "text": "a dog"
+        }
+      ],
+      "audioUrl": "/media/629420e0b24fac34fa5754206b969f7e2dadc95c6580826b1b3dabdd4872bf0c.mp3",
+      "audioSha256": "629420e0b24fac34fa5754206b969f7e2dadc95c6580826b1b3dabdd4872bf0c",
+      "difficulty": "easy",
+      "conceptTag": "parent_and_young_pair"
+    },
+    {
+      "id": "758c98f1-a853-4466-b27f-138b470d1225",
+      "format": "true_false",
+      "prompt": "Kabir sees many frogs near a monsoon puddle. Is this right?\n\nIf frogs stop making young ones, no new frogs will come.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/65c11039cf098531358ff3e737d943ee1ecb4ae9953ebc2c9b0a2d5e748a6c87.mp3",
+      "audioSha256": "65c11039cf098531358ff3e737d943ee1ecb4ae9953ebc2c9b0a2d5e748a6c87",
+      "difficulty": "medium",
+      "conceptTag": "why_reproduction_matters"
+    },
+    {
+      "id": "94599fdf-2cab-4481-82e2-7d4fdee35275",
+      "format": "multi_select",
+      "prompt": "Aarav walks with his family down the tree-lined road. Which of these are the two ways animals make young ones?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "They grow from seeds."
+        },
+        {
+          "id": "option-1",
+          "text": "They lay eggs."
+        },
+        {
+          "id": "option-2",
+          "text": "They give birth to young ones."
+        },
+        {
+          "id": "option-3",
+          "text": "They make a nest."
+        }
+      ],
+      "audioUrl": "/media/0befb897cc5afc10e569f9758e790f4f856c917741e85f03c0467aa8304967fa.mp3",
+      "audioSha256": "0befb897cc5afc10e569f9758e790f4f856c917741e85f03c0467aa8304967fa",
+      "difficulty": "medium",
+      "conceptTag": "two_ways_animals_reproduce"
+    },
+    {
+      "id": "9cab4251-a6d6-4c72-bfa4-7ec109a7fe51",
+      "format": "fill_blank",
+      "prompt": "At harvest time, a rabbit eats the farmer's wheat. A wolf eats the rabbit. Every food chain begins with a ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "flesh eater"
+        },
+        {
+          "id": "option-1",
+          "text": "plant"
+        },
+        {
+          "id": "option-2",
+          "text": "plant eater"
+        }
+      ],
+      "audioUrl": "/media/63967d28f73561f0d79ccb44b57ee7e4b3248e2e2ee335d0c74a787d4d205bfd.mp3",
+      "audioSha256": "63967d28f73561f0d79ccb44b57ee7e4b3248e2e2ee335d0c74a787d4d205bfd",
+      "difficulty": "easy",
+      "conceptTag": "first_link_is_a_plant"
+    },
+    {
+      "id": "f30da142-e2fc-4457-b70e-04e7d6e119a9",
+      "format": "multi_select",
+      "prompt": "Aarav visits the cattle shed with the milkman. Which of these living things can start a food chain?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "the cow"
+        },
+        {
+          "id": "option-1",
+          "text": "the grass"
+        },
+        {
+          "id": "option-2",
+          "text": "the hen"
+        },
+        {
+          "id": "option-3",
+          "text": "the neem tree"
+        },
+        {
+          "id": "option-4",
+          "text": "the dog"
+        }
+      ],
+      "audioUrl": "/media/f0ade0829ead0b39d335b934979fdbac66bb931f6b52df2e5b5ecb2203ba6d97.mp3",
+      "audioSha256": "f0ade0829ead0b39d335b934979fdbac66bb931f6b52df2e5b5ecb2203ba6d97",
+      "difficulty": "medium",
+      "conceptTag": "only_plants_can_start_a_chain"
+    },
+    {
+      "id": "154e664e-bc70-4e48-8fdf-8f12dc259f06",
+      "format": "pick_one",
+      "prompt": "On a tree-lined road, an insect eats leaves. A small bird eats that insect. If the leaves are all gone, what happens to the bird?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The bird loses its food too."
+        },
+        {
+          "id": "option-1",
+          "text": "Nothing happens to the bird."
+        },
+        {
+          "id": "option-2",
+          "text": "The bird now gets more insects."
+        }
+      ],
+      "audioUrl": "/media/969026001f929199b4a30d731b9c9881d04055be09f1e7c259a0704fde1eca42.mp3",
+      "audioSha256": "969026001f929199b4a30d731b9c9881d04055be09f1e7c259a0704fde1eca42",
+      "difficulty": "medium",
+      "conceptTag": "plant_removed_animals_lose_food"
+    },
+    {
+      "id": "a3dfc88c-d1d0-4ffb-b47e-82a32f9857a7",
+      "format": "fill_blank",
+      "prompt": "A board at the wildlife sanctuary shows a forest web. Leaves are eaten by an insect and by a deer. The insect is eaten by a frog. So the frog eats the ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "deer"
+        },
+        {
+          "id": "option-1",
+          "text": "insect"
+        },
+        {
+          "id": "option-2",
+          "text": "leaves"
+        }
+      ],
+      "audioUrl": "/media/8740f50791ce1778dbc982bce93b9fc16f3109fcf3c34fa6e6cddc93c897c086.mp3",
+      "audioSha256": "8740f50791ce1778dbc982bce93b9fc16f3109fcf3c34fa6e6cddc93c897c086",
+      "difficulty": "easy",
+      "conceptTag": "trace_one_eater_in_web"
+    },
+    {
+      "id": "15911e97-4c13-45f9-bacc-535b06d6b0ee",
+      "format": "pick_one",
+      "prompt": "In a forest web, a bear eats fruit. The same bear also eats insects. Why is the bear in two chains?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "It is the biggest animal in the forest."
+        },
+        {
+          "id": "option-1",
+          "text": "It eats more than one kind of food."
+        },
+        {
+          "id": "option-2",
+          "text": "Every animal in a web is in two chains."
+        }
+      ],
+      "audioUrl": "/media/5e5821f77bf0056adff7ab19d58fae4df169e7e3720f710b5b0aade6eaf399ee.mp3",
+      "audioSha256": "5e5821f77bf0056adff7ab19d58fae4df169e7e3720f710b5b0aade6eaf399ee",
+      "difficulty": "medium",
+      "conceptTag": "why_chains_cross"
+    },
+    {
+      "id": "3f094fb1-637e-495e-b8fa-6a3b9f96f6fa",
+      "format": "true_false",
+      "prompt": "In a forest web, a tiger eats a deer. When the tiger dies, vultures eat its remains. Is this right?\n\nIn this web, the tiger is the last to get food.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/3464614b5625ddb7f2cac345ac7cc4796bd9320da24e153936481797d5d0b9af.mp3",
+      "audioSha256": "3464614b5625ddb7f2cac345ac7cc4796bd9320da24e153936481797d5d0b9af",
+      "difficulty": "medium",
+      "conceptTag": "vulture_in_web"
+    },
+    {
+      "id": "034d2c4c-9d4f-4ee2-bbd3-8bf76f4ac584",
+      "format": "pick_one",
+      "prompt": "Kabir watches the fields from the train window. He sees a bird's chicks and a cow's calf. Which sentence about caring for young ones is right?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Mammals look after their young ones, but birds do not."
+        },
+        {
+          "id": "option-1",
+          "text": "Snakes stay and look after their young ones."
+        },
+        {
+          "id": "option-2",
+          "text": "Birds and mammals both look after their young ones."
+        }
+      ],
+      "audioUrl": "/media/6cde2bc493a34afca23eebf5fbdf2ca0445d4a226e0ad2c4494983ffaad02b90.mp3",
+      "audioSha256": "6cde2bc493a34afca23eebf5fbdf2ca0445d4a226e0ad2c4494983ffaad02b90",
+      "difficulty": "medium",
+      "conceptTag": "birds_and_mammals_same_side"
+    },
+    {
+      "id": "3fa3b98f-9787-4442-8c59-91725a0ec8b2",
+      "format": "multi_select",
+      "prompt": "Meera fills the bird bowl on her summer balcony. A bird comes with its chicks. Which of these are things a parent bird does?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "It builds a nest before the eggs come."
+        },
+        {
+          "id": "option-1",
+          "text": "It keeps its chicks warm."
+        },
+        {
+          "id": "option-2",
+          "text": "It brings food to the nest."
+        },
+        {
+          "id": "option-3",
+          "text": "It gives its chicks milk."
+        },
+        {
+          "id": "option-4",
+          "text": "It leaves its eggs in a safe place and goes."
+        }
+      ],
+      "audioUrl": "/media/2e89cb8d6e2dda17800295e17a84ae92756c91ec390c6f784993723601f203f2.mp3",
+      "audioSha256": "2e89cb8d6e2dda17800295e17a84ae92756c91ec390c6f784993723601f203f2",
+      "difficulty": "medium",
+      "conceptTag": "parent_bird_care"
+    },
+    {
+      "id": "04c61ae0-cac2-47d1-b2f1-6c7ed3f52ea1",
+      "format": "multi_select",
+      "prompt": "Meera finds a creature in a plant pot on her terrace. Which of these would show that it is an insect?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "It has six legs."
+        },
+        {
+          "id": "option-1",
+          "text": "It is small."
+        },
+        {
+          "id": "option-2",
+          "text": "Its body is in three parts."
+        },
+        {
+          "id": "option-3",
+          "text": "It crawls on the ground."
+        },
+        {
+          "id": "option-4",
+          "text": "It has one pair of feelers."
+        }
+      ],
+      "audioUrl": "/media/df86f014911146ebb683a0b2ce497345ef5cbf57401edf901caa1f8d10a57f7f.mp3",
+      "audioSha256": "df86f014911146ebb683a0b2ce497345ef5cbf57401edf901caa1f8d10a57f7f",
+      "difficulty": "medium",
+      "conceptTag": "insect_check_features"
+    },
+    {
+      "id": "87ed0f43-b596-42da-bb4f-f3d68d44ee4b",
+      "format": "fill_blank",
+      "prompt": "Aarav watches a butterfly in the school garden. It has no teeth. It drinks liquid food through a long ___, like a straw.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "beak"
+        },
+        {
+          "id": "option-1",
+          "text": "tongue"
+        },
+        {
+          "id": "option-2",
+          "text": "tube"
+        }
+      ],
+      "audioUrl": "/media/ef46893ca59a4cae59837099bda41f0439b5fd979cdb770649e1f0e88fd0da85.mp3",
+      "audioSha256": "ef46893ca59a4cae59837099bda41f0439b5fd979cdb770649e1f0e88fd0da85",
+      "difficulty": "easy",
+      "conceptTag": "sucking_tube_liquid_feeder"
+    },
+    {
+      "id": "b4e4832a-6496-459b-a87e-7108bb35cafe",
+      "format": "true_false",
+      "prompt": "Meera sees a squirrel at the zoo. Is this right?\n\nA squirrel gnaws a hard nut with many small bites.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/6ea08eb29bbc8c764c03c18f1f80255d871776e06b1745429255c6f6e8ade788.mp3",
+      "audioSha256": "6ea08eb29bbc8c764c03c18f1f80255d871776e06b1745429255c6f6e8ade788",
+      "difficulty": "easy",
+      "conceptTag": "gnawing_many_small_bites"
+    },
+    {
+      "id": "330754ad-7941-4954-a91f-e99378520fb6",
+      "format": "multi_select",
+      "prompt": "Aarav sees a buffalo resting by the river. Its mouth keeps moving. Which of these are true about chewing the cud?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Chewing the cud means only chewing for a long time."
+        },
+        {
+          "id": "option-1",
+          "text": "The buffalo swallows the grass first."
+        },
+        {
+          "id": "option-2",
+          "text": "The buffalo swallows its food just once."
+        },
+        {
+          "id": "option-3",
+          "text": "It brings the food back up and chews it well."
+        },
+        {
+          "id": "option-4",
+          "text": "Its tongue moves the food around inside its mouth."
+        }
+      ],
+      "audioUrl": "/media/5d5b482da19498010bcd01d60d7f591063227a8ea093daa0b1c97e900bd6d695.mp3",
+      "audioSha256": "5d5b482da19498010bcd01d60d7f591063227a8ea093daa0b1c97e900bd6d695",
+      "difficulty": "medium",
+      "conceptTag": "cud_routine_steps"
+    },
+    {
+      "id": "40ae620b-f296-470a-87d7-2c82f9eb0f88",
+      "format": "multi_select",
+      "prompt": "Meera sees a snake at the village pond at dawn. It has caught a frog. Which of these help move the frog down the snake's throat?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The hook-shaped parts inside its mouth"
+        },
+        {
+          "id": "option-1",
+          "text": "The muscles of its body"
+        },
+        {
+          "id": "option-2",
+          "text": "Its teeth, which chew the frog into bits"
+        },
+        {
+          "id": "option-3",
+          "text": "Its claws, which push the frog down"
+        }
+      ],
+      "audioUrl": "/media/f0209bf59483c3763f8bd0bfaae4a1d42418c5fbdd63de59c1c78410e4d403e5.mp3",
+      "audioSha256": "f0209bf59483c3763f8bd0bfaae4a1d42418c5fbdd63de59c1c78410e4d403e5",
+      "difficulty": "medium",
+      "conceptTag": "hook_parts_and_muscles"
+    },
+    {
+      "id": "0de2e526-3c12-49af-999e-9c26f72f134c",
+      "format": "pick_one",
+      "prompt": "A tall neem tree grows in the school garden. Imagine a giraffe eats the leaves at its top. Which part helps the giraffe reach that high?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Its long tail"
+        },
+        {
+          "id": "option-1",
+          "text": "Its long neck"
+        },
+        {
+          "id": "option-2",
+          "text": "Its flat teeth"
+        }
+      ],
+      "audioUrl": "/media/1038c918d00f31904f5460bf60ca21dc6a51b0a6aadff77e1e34ac018c24de3f.mp3",
+      "audioSha256": "1038c918d00f31904f5460bf60ca21dc6a51b0a6aadff77e1e34ac018c24de3f",
+      "difficulty": "easy",
+      "conceptTag": "giraffe_neck_reaches_high_leaves"
+    },
+    {
+      "id": "a8cb5ae7-44f8-4f9c-9f18-61aa6db3be07",
+      "format": "pick_one",
+      "prompt": "After the rain, Aarav sees a snake near a puddle. The snake has pushed a rat down its throat. What happens next?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "It chews the rat with its back teeth."
+        },
+        {
+          "id": "option-1",
+          "text": "It holds the rat in its mouth."
+        },
+        {
+          "id": "option-2",
+          "text": "Its stomach breaks down the whole rat."
+        }
+      ],
+      "audioUrl": "/media/346594462b6a2596a1f3c909775a2789da000c02d89e5505dcd7ba624d62d14e.mp3",
+      "audioSha256": "346594462b6a2596a1f3c909775a2789da000c02d89e5505dcd7ba624d62d14e",
+      "difficulty": "medium",
+      "conceptTag": "stomach_breaks_prey_down"
+    },
+    {
+      "id": "d0e6002b-4ffe-4382-a096-02959f590255",
+      "format": "multi_select",
+      "prompt": "Meera's family sees an elephant on their evening walk. Which of these jobs does the elephant's trunk do?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "It pulls a plant out of the ground."
+        },
+        {
+          "id": "option-1",
+          "text": "It grinds the food."
+        },
+        {
+          "id": "option-2",
+          "text": "It carries food to the mouth."
+        },
+        {
+          "id": "option-3",
+          "text": "It cuts the food."
+        },
+        {
+          "id": "option-4",
+          "text": "It sprays water on its body."
+        }
+      ],
+      "audioUrl": "/media/c06d9d5b134424d3133a8af420ba1d075d1518e825698a89c4fbf9dee8adebea.mp3",
+      "audioSha256": "c06d9d5b134424d3133a8af420ba1d075d1518e825698a89c4fbf9dee8adebea",
+      "difficulty": "medium",
+      "conceptTag": "trunk_jobs_not_teeth_jobs"
+    },
+    {
+      "id": "eba45c4d-9d13-4948-9d36-e8a6bc4c2cc9",
+      "format": "fill_blank",
+      "prompt": "Birds eat fruit from the plants on Meera's balcony. They also carry the seeds to new places. So the birds and the plants depend on each other. This is called ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "interdependence"
+        },
+        {
+          "id": "option-1",
+          "text": "reproduction"
+        },
+        {
+          "id": "option-2",
+          "text": "pollen"
+        }
+      ],
+      "audioUrl": "/media/20786d23c420a7015a2eb42acacab17e97928322b92dfb1e3be9e5d49641e8a4.mp3",
+      "audioSha256": "20786d23c420a7015a2eb42acacab17e97928322b92dfb1e3be9e5d49641e8a4",
+      "difficulty": "easy",
+      "conceptTag": "interdependence_term"
+    },
+    {
+      "id": "02c9904e-00e7-4590-ace9-0b263d8cb038",
+      "format": "multi_select",
+      "prompt": "It is harvest time. Imagine every animal leaves the farmer's field. Which of these things would the plants lose?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The carbon dioxide that animals breathe out."
+        },
+        {
+          "id": "option-1",
+          "text": "The animals that carry pollen and seeds."
+        },
+        {
+          "id": "option-2",
+          "text": "The oxygen that the plants give out."
+        },
+        {
+          "id": "option-3",
+          "text": "The food that the plants make for themselves."
+        }
+      ],
+      "audioUrl": "/media/726044c394e104306ac5e48644a51f71e073e76326c8e89d9af61db00a2a0ab0.mp3",
+      "audioSha256": "726044c394e104306ac5e48644a51f71e073e76326c8e89d9af61db00a2a0ab0",
+      "difficulty": "medium",
+      "conceptTag": "take_animals_away"
+    },
+    {
+      "id": "0cc74f7a-f9e3-4b72-9abc-8a8c42274f4b",
+      "format": "true_false",
+      "prompt": "At dawn, Aarav sees a hibiscus flower near the pond. Is this right?\n\nA hibiscus flower makes a powder called pollen.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/199590d4e33be8de758d793d8eb671f014e1df02ce2403c7a5033cfccb2192ba.mp3",
+      "audioSha256": "199590d4e33be8de758d793d8eb671f014e1df02ce2403c7a5033cfccb2192ba",
+      "difficulty": "easy",
+      "conceptTag": "what_pollen_is"
+    },
+    {
+      "id": "64731712-d1d5-49ef-b1f3-1020ed41df99",
+      "format": "multi_select",
+      "prompt": "Meera sees green fields from her train window. A small bird carries a seed in its beak. Which of these are true about the bird and the seed?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The bird can drop the seed far from the plant."
+        },
+        {
+          "id": "option-1",
+          "text": "The seed is the powder that the flower makes."
+        },
+        {
+          "id": "option-2",
+          "text": "A new plant can grow where the seed lands."
+        },
+        {
+          "id": "option-3",
+          "text": "The plant gets no help from the bird."
+        }
+      ],
+      "audioUrl": "/media/688280ebc1be7799598e918acb5321f4683dd356db77867a7d3e54e85a2c9983.mp3",
+      "audioSha256": "688280ebc1be7799598e918acb5321f4683dd356db77867a7d3e54e85a2c9983",
+      "difficulty": "medium",
+      "conceptTag": "seed_carrying_spreads_plants"
+    },
+    {
+      "id": "f75dc1e3-320b-4cf7-87f9-229971b410c4",
+      "format": "pick_one",
+      "prompt": "Aarav watches animals in his school garden. Which of these catches its food with a long sticky tongue?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "A lizard"
+        },
+        {
+          "id": "option-1",
+          "text": "A frog"
+        },
+        {
+          "id": "option-2",
+          "text": "A crow"
+        }
+      ],
+      "audioUrl": "/media/a6d9cff81326b7ec70f9e7ed1a63289b5e2a3958ec602c49d3fdcd6b4c0d68e0.mp3",
+      "audioSha256": "a6d9cff81326b7ec70f9e7ed1a63289b5e2a3958ec602c49d3fdcd6b4c0d68e0",
+      "difficulty": "medium",
+      "conceptTag": "sticky_tongue_feeders"
+    }
+  ]
+}

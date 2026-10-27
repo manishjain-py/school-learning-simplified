@@ -1,0 +1,1409 @@
+{
+  "schemaVersion": 2,
+  "release": "m2",
+  "id": "7818d587-2954-43fc-95f0-5f0576b12f66",
+  "title": "Our Earth",
+  "language": "hi",
+  "questions": [
+    {
+      "id": "fb5d6b1c-e436-4e39-a7bf-6b66227219c2",
+      "format": "pick_one",
+      "prompt": "इनमें से कौन सी बात, Earth के **revolution** और **tilt** की वजह से होती है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "रात को beach पर अँधेरा होना"
+        },
+        {
+          "id": "option-1",
+          "text": "दिन में beach की छतरी की shadow का खिसकना"
+        },
+        {
+          "id": "option-2",
+          "text": "हर साल summer का वापस आना"
+        }
+      ],
+      "audioUrl": "/media/860319197415d19e9d01848d23460529b56a7ac1db98b9ae458d929cb29070f6.mp3",
+      "audioSha256": "860319197415d19e9d01848d23460529b56a7ac1db98b9ae458d929cb29070f6",
+      "difficulty": "medium",
+      "conceptTag": "how_often_once_a_year"
+    },
+    {
+      "id": "4c5a5bd6-b84e-47cb-85cb-f966e6012a99",
+      "format": "multi_select",
+      "prompt": "Earth के **revolution** के बारे में, इनमें से कौन-कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "इसमें 24 घंटे लगते हैं।"
+        },
+        {
+          "id": "option-1",
+          "text": "यह Sun के चारों ओर एक पूरा चक्कर है।"
+        },
+        {
+          "id": "option-2",
+          "text": "Tilt के साथ, यह seasons देता है।"
+        },
+        {
+          "id": "option-3",
+          "text": "यह Earth का अपनी axis पर घूमना है।"
+        },
+        {
+          "id": "option-4",
+          "text": "इसमें एक साल लगता है, लगभग 365 दिन।"
+        }
+      ],
+      "audioUrl": "/media/5789e3a0151662066221fbff2f88e6db956ef8ff2ac01187e770213030e88229.mp3",
+      "audioSha256": "5789e3a0151662066221fbff2f88e6db956ef8ff2ac01187e770213030e88229",
+      "difficulty": "medium",
+      "conceptTag": "revolution_trip_year_seasons"
+    },
+    {
+      "id": "31aa5e1f-90c6-4c4f-a1ec-9c7cdd8b8812",
+      "format": "true_false",
+      "prompt": "दिवाली की रात, रिया बताती है कि रात क्यों होती है: रात इसलिए होती है, क्योंकि Earth, Sun के चारों ओर चक्कर लगाती है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/c2288f42df021e16dd4d3e1899042a8c6107be7b2053e5b9e09f27f0a34ba26a.mp3",
+      "audioSha256": "c2288f42df021e16dd4d3e1899042a8c6107be7b2053e5b9e09f27f0a34ba26a",
+      "difficulty": "medium",
+      "conceptTag": "night_from_rotation_not_revolution"
+    },
+    {
+      "id": "654fd5d9-3ed7-4266-9096-7947a9b71c38",
+      "format": "fill_blank",
+      "prompt": "आरव आज सुबह की assembly में जाता है, और कल फिर से जाएगा। इन दो assemblies के बीच, Earth ___।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "अपनी axis पर एक बार घूमती है"
+        },
+        {
+          "id": "option-1",
+          "text": "Sun का एक चक्कर लगाती है"
+        },
+        {
+          "id": "option-2",
+          "text": "लगभग 365 बार घूमती है"
+        }
+      ],
+      "audioUrl": "/media/ded43c4ccc94ca108370a5025eef29a06e0b5a206f0b235644cf573218ad051d.mp3",
+      "audioSha256": "ded43c4ccc94ca108370a5025eef29a06e0b5a206f0b235644cf573218ad051d",
+      "difficulty": "medium",
+      "conceptTag": "one_day_one_rotation"
+    },
+    {
+      "id": "f4fe2bc7-f5b3-43b5-aa33-b7adb7bd7c3a",
+      "format": "true_false",
+      "prompt": "जनवरी में, कबीर का परिवार गाड़ी से एक highway पर पूरा India पार करता है। रास्ते में आने वाले हर शहर में winter है। इसलिए कबीर Earth के बारे में यह कहता है कि जनवरी में पूरी Earth पर winter होता है। क्या वह सही है? सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/e528abb5fcdc049e8593764990f4717466f98f72d837ff249f1e69c4fbb4337e.mp3",
+      "audioSha256": "e528abb5fcdc049e8593764990f4717466f98f72d837ff249f1e69c4fbb4337e",
+      "difficulty": "medium",
+      "conceptTag": "different_seasons_same_time"
+    },
+    {
+      "id": "9c570770-f7d0-486d-bc53-472f31d902f8",
+      "format": "multi_select",
+      "prompt": "Earth के **seasons** के बारे में, इनमें से कौन-कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Earth का Sun के चारों ओर चक्कर, seasons लाने में मदद करता है।"
+        },
+        {
+          "id": "option-1",
+          "text": "सिर्फ़ Earth की axis का tilt, seasons लाता है।"
+        },
+        {
+          "id": "option-2",
+          "text": "चार seasons ये हैं: spring, summer, autumn और winter।"
+        },
+        {
+          "id": "option-3",
+          "text": "Earth की axis का tilt, seasons लाने में मदद करता है।"
+        },
+        {
+          "id": "option-4",
+          "text": "सिर्फ़ Earth का Sun के चारों ओर चक्कर, seasons लाता है।"
+        }
+      ],
+      "audioUrl": "/media/0852f02c3be64353bcc910d64f07039fc58dbd8ea4aefed84f54127f2eea0a09.mp3",
+      "audioSha256": "0852f02c3be64353bcc910d64f07039fc58dbd8ea4aefed84f54127f2eea0a09",
+      "difficulty": "medium",
+      "conceptTag": "two_causes_together"
+    },
+    {
+      "id": "509e7c3f-0753-40c7-b560-7f83ead74ca5",
+      "format": "fill_blank",
+      "prompt": "जनवरी में, मीरा India के एक hill station पर बर्फ़ देखती है। Argentina, Earth के निचले आधे हिस्से में है। उसी समय, Argentina में ___ होता है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "winter"
+        },
+        {
+          "id": "option-1",
+          "text": "summer"
+        },
+        {
+          "id": "option-2",
+          "text": "autumn"
+        }
+      ],
+      "audioUrl": "/media/3c4295eb8eb16e17fa7dd6d0e68a4ac3202ea2013f58363b0d160e0107e802cf.mp3",
+      "audioSha256": "3c4295eb8eb16e17fa7dd6d0e68a4ac3202ea2013f58363b0d160e0107e802cf",
+      "difficulty": "medium",
+      "conceptTag": "bottom_half_opposite_season"
+    },
+    {
+      "id": "ec63aabc-bc75-4fd9-9600-c08e958d4ad7",
+      "format": "pick_one",
+      "prompt": "Earth के ऊपरी आधे हिस्से और निचले आधे हिस्से के **seasons** एक-दूसरे से उल्टे होते हैं। दोनों आधे हिस्से सूरज से लगभग बराबर दूरी पर हैं। इससे क्या पता चलता है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Summer वाला आधा हिस्सा सूरज के बहुत ज़्यादा पास है।"
+        },
+        {
+          "id": "option-1",
+          "text": "Earth का अपनी axis पर घूमना seasons लाता है।"
+        },
+        {
+          "id": "option-2",
+          "text": "Summer सूरज के ज़्यादा पास होने से नहीं आता।"
+        }
+      ],
+      "audioUrl": "/media/ab24a6394520c1deb36ad5593c9128327b3fd0b4d19f0eeed1b8cce8ef14af5f.mp3",
+      "audioSha256": "ab24a6394520c1deb36ad5593c9128327b3fd0b4d19f0eeed1b8cce8ef14af5f",
+      "difficulty": "medium",
+      "conceptTag": "same_distance_argument"
+    },
+    {
+      "id": "15f87a75-93df-46ab-81bc-e9311fd91d45",
+      "format": "multi_select",
+      "prompt": "एक science museum में, एक guide पूछते हैं कि रात क्यों होती है। इनमें से कौन-कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "रात इसलिए होती है, क्योंकि Earth अपनी axis पर घूमती है।"
+        },
+        {
+          "id": "option-1",
+          "text": "रात इसलिए होती है, क्योंकि Sun, Earth के चारों ओर चक्कर लगाता है।"
+        },
+        {
+          "id": "option-2",
+          "text": "रात में, Earth का हमारा हिस्सा Sun से दूसरी तरफ़ मुड़ा होता है।"
+        },
+        {
+          "id": "option-3",
+          "text": "रात में, Sun चमकना बंद कर देता है।"
+        },
+        {
+          "id": "option-4",
+          "text": "रात, Sun के चारों ओर Earth के एक साल वाले चक्कर से होती है।"
+        }
+      ],
+      "audioUrl": "/media/0e760f757f400afcd7865babf3a952c1df6a9ff1fc11eefabea0799cf2bf1d59.mp3",
+      "audioSha256": "0e760f757f400afcd7865babf3a952c1df6a9ff1fc11eefabea0799cf2bf1d59",
+      "difficulty": "medium",
+      "conceptTag": "cause_of_night_earth_spins"
+    },
+    {
+      "id": "50875638-2330-49a2-a313-3d623fe84277",
+      "format": "fill_blank",
+      "prompt": "India के एक गाँव के खेत में रात है। इस समय, ___ में रात है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "पूरी Earth"
+        },
+        {
+          "id": "option-1",
+          "text": "आधी Earth"
+        },
+        {
+          "id": "option-2",
+          "text": "सिर्फ़ India"
+        }
+      ],
+      "audioUrl": "/media/076b68a0ec0583cfbf69f8c3829fe8d9129f5c74a5054c804333e8d94c19540b.mp3",
+      "audioSha256": "076b68a0ec0583cfbf69f8c3829fe8d9129f5c74a5054c804333e8d94c19540b",
+      "difficulty": "medium",
+      "conceptTag": "half_of_earth_has_night"
+    },
+    {
+      "id": "0fe2b56c-fae2-4990-b408-1e1b1d263e3f",
+      "format": "pick_one",
+      "prompt": "बिजली गई हुई है। मीरा की torch की रोशनी एक घूमती हुई football पर पड़ रही है। Ball पर लगा एक sticker शुरू में रोशनी में है। Ball के पूरा एक चक्कर घूमने में, sticker के साथ क्या होता है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "यह पूरे चक्कर में रोशनी में ही रहता है।"
+        },
+        {
+          "id": "option-1",
+          "text": "यह अँधेरे में चला जाता है और वहीं रहता है।"
+        },
+        {
+          "id": "option-2",
+          "text": "यह अँधेरे में जाता है, फिर वापस रोशनी में आता है।"
+        }
+      ],
+      "audioUrl": "/media/a09214d855cb7cac4103fa415bebef075075c4ce52846d9c781d7b99eeb588de.mp3",
+      "audioSha256": "a09214d855cb7cac4103fa415bebef075075c4ce52846d9c781d7b99eeb588de",
+      "difficulty": "medium",
+      "conceptTag": "sticker_light_dark_light"
+    },
+    {
+      "id": "313a1b17-dfd1-4bb1-aa82-1cf6f3b5834d",
+      "format": "true_false",
+      "prompt": "कबीर India में, अपनी छत पर पतंग उड़ा रहा है। मकर संक्रांति के दिन, दोपहर का समय है। जब कबीर पतंग उड़ा रहा है, तब America में रात है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/e2e539b75d3071a4aec3d91014d68e3235b14c0d59c36b4eb373f9df921eba2f.mp3",
+      "audioSha256": "e2e539b75d3071a4aec3d91014d68e3235b14c0d59c36b4eb373f9df921eba2f",
+      "difficulty": "medium",
+      "conceptTag": "opposite_sides_india_america"
+    },
+    {
+      "id": "ab08af84-53d6-43cd-bc1c-d7d388a04d88",
+      "format": "true_false",
+      "prompt": "समुद्र के किनारे, आरव हर **planet** के लिए रेत की एक गेंद बनाता है। वह सबसे बड़ी गेंद Saturn के लिए बनाता है। क्या वह सही है? Saturn आठ planets में से सबसे बड़ा है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/b599f0adf6c84ced879d033ef29b49d0a5cd3394ccd8900a40adc1d6dcc7c73c.mp3",
+      "audioSha256": "b599f0adf6c84ced879d033ef29b49d0a5cd3394ccd8900a40adc1d6dcc7c73c",
+      "difficulty": "easy",
+      "conceptTag": "biggest_planet_jupiter"
+    },
+    {
+      "id": "44ffc023-de71-4cd5-a77d-21ed8c5f37f3",
+      "format": "pick_one",
+      "prompt": "सुबह की assembly में, मीरा **planets** के नाम बोलती है। वह उन्हें Sun से शुरू करके, order में बोलती है। चौथे नंबर पर वह किस planet का नाम बोलती है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Jupiter"
+        },
+        {
+          "id": "option-1",
+          "text": "Earth"
+        },
+        {
+          "id": "option-2",
+          "text": "Mars"
+        }
+      ],
+      "audioUrl": "/media/a89cb465e84e12207efb6840e5a2c4f3fc2d55f96f66bd551c7a99851f769860.mp3",
+      "audioSha256": "a89cb465e84e12207efb6840e5a2c4f3fc2d55f96f66bd551c7a99851f769860",
+      "difficulty": "medium",
+      "conceptTag": "planet_place_number"
+    },
+    {
+      "id": "c576b8ff-443e-44ec-a8be-c5d62d493203",
+      "format": "fill_blank",
+      "prompt": "कबीर science fair के लिए **solar system** का एक model बनाता है। वह planets को Sun से शुरू करके, order में रखता है। उसके model में, Saturn के ठीक बाद ___ आता है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Uranus"
+        },
+        {
+          "id": "option-1",
+          "text": "Jupiter"
+        },
+        {
+          "id": "option-2",
+          "text": "Neptune"
+        }
+      ],
+      "audioUrl": "/media/544b56fb65f94c8b3dde078afc6f1270457c896c86efcb4c3c537b7b771202ef.mp3",
+      "audioSha256": "544b56fb65f94c8b3dde078afc6f1270457c896c86efcb4c3c537b7b771202ef",
+      "difficulty": "medium",
+      "conceptTag": "planet_just_after"
+    },
+    {
+      "id": "43b0acaa-73e2-4126-97c6-80cd1e798832",
+      "format": "pick_one",
+      "prompt": "कबीर की बस highway पर घंटों तक सीधी चलती रहती है। यह बस कभी भी Earth के किनारे तक नहीं पहुँच सकती। ऐसा क्यों?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Earth सिक्के जैसी गोल है।"
+        },
+        {
+          "id": "option-1",
+          "text": "Earth flat है।"
+        },
+        {
+          "id": "option-2",
+          "text": "Earth गेंद जैसी गोल है।"
+        }
+      ],
+      "audioUrl": "/media/1d87c3dd0f00f40ae75a63c55b01867f85162056fddfa5dd6debd078adf2a060.mp3",
+      "audioSha256": "1d87c3dd0f00f40ae75a63c55b01867f85162056fddfa5dd6debd078adf2a060",
+      "difficulty": "medium",
+      "conceptTag": "no_edge_round_like_ball"
+    },
+    {
+      "id": "56fc119f-2aff-4160-8031-79af290c4cf7",
+      "format": "true_false",
+      "prompt": "एक पुराने किले में, एक guide यह बात कहता है: बहुत पहले, नाविक डरते थे कि वे Earth के किनारे से गिर जाएँगे। क्या यह बात सही है? सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/73f2a625bcb525c3bd430fbcdd5d3a9bdd86e0a324d298220c90f274776ab8be.mp3",
+      "audioSha256": "73f2a625bcb525c3bd430fbcdd5d3a9bdd86e0a324d298220c90f274776ab8be",
+      "difficulty": "easy",
+      "conceptTag": "sailors_feared_earths_edge"
+    },
+    {
+      "id": "5dff0c1d-1489-47f0-8c35-3e313d58eb4d",
+      "format": "fill_blank",
+      "prompt": "बहुत पहले, जहाज़ से Earth का चक्कर लगाने में बहुत लंबा समय लगता था। आज, एक हवाई जहाज़ लगभग ___ में Earth का चक्कर लगा सकता है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "दो घंटे"
+        },
+        {
+          "id": "option-1",
+          "text": "दो दिन"
+        },
+        {
+          "id": "option-2",
+          "text": "दो साल"
+        }
+      ],
+      "audioUrl": "/media/473a74743b463d25b28d14c8d81203f7308b705443e51a899629c12d4c0d8c18.mp3",
+      "audioSha256": "473a74743b463d25b28d14c8d81203f7308b705443e51a899629c12d4c0d8c18",
+      "difficulty": "easy",
+      "conceptTag": "plane_around_earth_two_days"
+    },
+    {
+      "id": "3c4b2be1-639f-47ca-8369-1fa7df13f03a",
+      "format": "true_false",
+      "prompt": "माँ आटे का एक गोला बनाती हैं। आटे का यह गोला **sphere** के आकार का है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/0f58dd56ee0b34e96f05b5e75c3a1ff0ff50530eea68f91638889abb141793de.mp3",
+      "audioSha256": "0f58dd56ee0b34e96f05b5e75c3a1ff0ff50530eea68f91638889abb141793de",
+      "difficulty": "easy",
+      "conceptTag": "sphere_is_a_ball_shape"
+    },
+    {
+      "id": "c52a84f1-16a1-4535-a310-45a8149e666c",
+      "format": "fill_blank",
+      "prompt": "मकर संक्रांति पर, कबीर पतंग उड़ाता है। वह steel की एक गोल थाली से तिल के लड्डू खाता है। Earth एक ___ की तरह गोल है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "steel की थाली"
+        },
+        {
+          "id": "option-1",
+          "text": "तिल का लड्डू"
+        },
+        {
+          "id": "option-2",
+          "text": "पतंग"
+        }
+      ],
+      "audioUrl": "/media/2e03fc7e836cb4fe9ab3f2a12dea63f566d9cec638d18be446cbf168f2314863.mp3",
+      "audioSha256": "2e03fc7e836cb4fe9ab3f2a12dea63f566d9cec638d18be446cbf168f2314863",
+      "difficulty": "medium",
+      "conceptTag": "ball_round_not_coin_round"
+    },
+    {
+      "id": "81dd086b-4eee-4ade-b780-2be1a39b5947",
+      "format": "multi_select",
+      "prompt": "एक museum में, मीरा **outer space** से ली गई Earth की फ़ोटो देखती है। Earth के आकार के बारे में इनमें से कौन-कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Earth एकदम गोल गेंद है।"
+        },
+        {
+          "id": "option-1",
+          "text": "Earth हर तरफ़ से गोल दिखती है।"
+        },
+        {
+          "id": "option-2",
+          "text": "एक तरफ़ से, Earth एक पतली line जैसी दिखती है।"
+        },
+        {
+          "id": "option-3",
+          "text": "Earth ऊपर और नीचे से थोड़ी दबी हुई है।"
+        },
+        {
+          "id": "option-4",
+          "text": "Earth का असली आकार एक oblate spheroid है।"
+        }
+      ],
+      "audioUrl": "/media/9043b8864a952f4d58b3304a9517e1eb2d135ab7d09753d70081a9259d51e09d.mp3",
+      "audioSha256": "9043b8864a952f4d58b3304a9517e1eb2d135ab7d09753d70081a9259d51e09d",
+      "difficulty": "medium",
+      "conceptTag": "squashed_not_perfect_ball"
+    },
+    {
+      "id": "fc42c726-1a55-4154-ab67-c853966cfac3",
+      "format": "true_false",
+      "prompt": "रिया को स्कूल के मैदान की धूप बहुत पसंद है। वह यह कहती है कि जो **planets**, Earth के मुक़ाबले सूरज के बहुत ज़्यादा पास हैं, वे जीवन के लिए ज़्यादा अच्छे हैं। क्या यह सही है? सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/aaef5bc6168ec0661ae34aacd1c064b467fae3c1b61f0ada9f1488deff75f730.mp3",
+      "audioSha256": "aaef5bc6168ec0661ae34aacd1c064b467fae3c1b61f0ada9f1488deff75f730",
+      "difficulty": "medium",
+      "conceptTag": "nearer_sun_too_hot"
+    },
+    {
+      "id": "61a0a7e5-c4fc-45a7-a487-774205b4d5b8",
+      "format": "fill_blank",
+      "prompt": "Earth, Sun से लगभग ___ km दूर है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "150"
+        },
+        {
+          "id": "option-1",
+          "text": "1,500"
+        },
+        {
+          "id": "option-2",
+          "text": "150 million"
+        }
+      ],
+      "audioUrl": "/media/52b298fbb74b7c264e445abdacb6c257ded573a704fc4cd5e921e499677f82d9.mp3",
+      "audioSha256": "52b298fbb74b7c264e445abdacb6c257ded573a704fc4cd5e921e499677f82d9",
+      "difficulty": "easy",
+      "conceptTag": "distance_from_sun"
+    },
+    {
+      "id": "dc9ad60b-855a-4d18-b2dd-33d89f40a2b2",
+      "format": "pick_one",
+      "prompt": "समुद्र के किनारे, मीरा केकड़े, चिड़ियाँ और नारियल के पेड़ देखती है। Earth उनके लिए एक अच्छा घर क्यों है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Earth सब planets में सबसे बड़ी है"
+        },
+        {
+          "id": "option-1",
+          "text": "Earth के चारों ओर एक layer of air है"
+        },
+        {
+          "id": "option-2",
+          "text": "Earth के चारों ओर छल्ले हैं"
+        }
+      ],
+      "audioUrl": "/media/4e78c6d0569c4a038ffe43caa4a55c7b5006a1d9a523db49d586517ebb3682dc.mp3",
+      "audioSha256": "4e78c6d0569c4a038ffe43caa4a55c7b5006a1d9a523db49d586517ebb3682dc",
+      "difficulty": "easy",
+      "conceptTag": "layer_of_air"
+    },
+    {
+      "id": "2f9e06b5-d146-48e9-b326-4c18c12db852",
+      "format": "multi_select",
+      "prompt": "मीरा, Earth की **surface** दिखाने के लिए 100 बराबर squares लेती है। वह पानी के लिए उनमें से 71 को नीला रंगती है। उसके squares के बारे में इनमें से कौन-कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "बाक़ी 29 squares ज़मीन दिखाते हैं।"
+        },
+        {
+          "id": "option-1",
+          "text": "71 नीले squares पूरी surface दिखाते हैं।"
+        },
+        {
+          "id": "option-2",
+          "text": "ज़्यादातर squares पानी दिखाते हैं।"
+        },
+        {
+          "id": "option-3",
+          "text": "ज़मीन वाले squares, पानी वाले squares से ज़्यादा हैं।"
+        }
+      ],
+      "audioUrl": "/media/0ce9c97cbbffddfa0fc5040fb6f81354860d29394d58e03c6b9cae9be33af518.mp3",
+      "audioSha256": "0ce9c97cbbffddfa0fc5040fb6f81354860d29394d58e03c6b9cae9be33af518",
+      "difficulty": "medium",
+      "conceptTag": "hundred_equal_parts_model"
+    },
+    {
+      "id": "ef98e3ea-d215-4492-9c1d-b3613d4c855e",
+      "format": "pick_one",
+      "prompt": "एक hill station पर, कबीर को हर पहाड़ी पर घर दिखते हैं। वह कहता है कि ज़मीन, Earth की ज़्यादातर **surface** को ढकती है। क्या वह सही है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "हाँ, क्योंकि लोग ज़मीन पर रहते हैं।"
+        },
+        {
+          "id": "option-1",
+          "text": "नहीं, क्योंकि Earth की surface का लगभग 71% हिस्सा पानी है।"
+        },
+        {
+          "id": "option-2",
+          "text": "हाँ, क्योंकि Earth की surface का लगभग 71% हिस्सा ज़मीन है।"
+        }
+      ],
+      "audioUrl": "/media/8db718286f08feacb70d78b599527304dfa4e33e7a18fcb355ff9ed8b1a8fa80.mp3",
+      "audioSha256": "8db718286f08feacb70d78b599527304dfa4e33e7a18fcb355ff9ed8b1a8fa80",
+      "difficulty": "medium",
+      "conceptTag": "reject_land_covers_most"
+    },
+    {
+      "id": "69f4da61-d142-4e5b-b3c8-5e1e2ebf5d92",
+      "format": "true_false",
+      "prompt": "रिया समुद्र के पास एक highway पर bus से जा रही है। उसे एक तरफ़ पानी दिखता है, और दूसरी तरफ़ ज़मीन। तो वह Earth के बारे में यह बात कहती है: Earth की **surface** का आधा हिस्सा पानी है, और आधा हिस्सा ज़मीन है। क्या वह सही है? सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/161afb27a522138bed201831b557968d44ed0de7af9d6e1bfad314f0c2727ce4.mp3",
+      "audioSha256": "161afb27a522138bed201831b557968d44ed0de7af9d6e1bfad314f0c2727ce4",
+      "difficulty": "easy",
+      "conceptTag": "reject_half_and_half"
+    },
+    {
+      "id": "dab74cad-cb5e-493d-82dc-35ef82442a82",
+      "format": "multi_select",
+      "prompt": "Science museum में, कबीर Earth का एक बड़ा model देखता है। उसमें ज़मीन और पानी दिखते हैं। इनमें से कौन-कौन से ज़मीन के प्रकार हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "lakes"
+        },
+        {
+          "id": "option-1",
+          "text": "plateaus"
+        },
+        {
+          "id": "option-2",
+          "text": "mountains"
+        },
+        {
+          "id": "option-3",
+          "text": "oceans"
+        },
+        {
+          "id": "option-4",
+          "text": "valleys"
+        }
+      ],
+      "audioUrl": "/media/2128c9cd54bf3113298c425ed8490d72f3937ebd6c63cce9a6dd264bf5b0933e.mp3",
+      "audioSha256": "2128c9cd54bf3113298c425ed8490d72f3937ebd6c63cce9a6dd264bf5b0933e",
+      "difficulty": "medium",
+      "conceptTag": "land_vs_water_places"
+    },
+    {
+      "id": "fa40c41d-73e9-4ada-b4a7-710adc62ba12",
+      "format": "fill_blank",
+      "prompt": "मीरा के पास मकर संक्रांति के लिए पाँच पतंगें हैं। हर पतंग पर एक तरह की ज़मीन का नाम लिखा है। नाम हैं: mountain, valley, plain, desert और ___।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "sea"
+        },
+        {
+          "id": "option-1",
+          "text": "plateau"
+        },
+        {
+          "id": "option-2",
+          "text": "river"
+        }
+      ],
+      "audioUrl": "/media/2ea8d5ed9f000423e4c1fe1425b502a7d34bbf59329e74dd584394665fb2eecc.mp3",
+      "audioSha256": "2ea8d5ed9f000423e4c1fe1425b502a7d34bbf59329e74dd584394665fb2eecc",
+      "difficulty": "easy",
+      "conceptTag": "kinds_of_land_list"
+    },
+    {
+      "id": "ffde2de1-dc87-4a79-ae2f-6c3f231dd76e",
+      "format": "pick_one",
+      "prompt": "आरव के चाचा का खेत, एक **arid** desert के पास है। **Arid** का मतलब क्या है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "बहुत गरम"
+        },
+        {
+          "id": "option-1",
+          "text": "बहुत गीला"
+        },
+        {
+          "id": "option-2",
+          "text": "बहुत सूखा"
+        }
+      ],
+      "audioUrl": "/media/883e644d8f425ceb366db2b8c7899906e55194289399b843aedc10a5937622ba.mp3",
+      "audioSha256": "883e644d8f425ceb366db2b8c7899906e55194289399b843aedc10a5937622ba",
+      "difficulty": "easy",
+      "conceptTag": "arid_means_very_dry"
+    },
+    {
+      "id": "6dd667da-eda7-4dda-8f40-a5ad6aeec934",
+      "format": "true_false",
+      "prompt": "समुद्र किनारे की सैर पर, कबीर लहरों को बहकर रेत पर आते देखता है। वह कहता है कि Earth की तरह, कुछ और **planets** के बाहरी हिस्से पर भी बहता पानी है। कबीर की बात सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/fdf24ef77eff632c88c83ad6b861ef97172a38713267f420d98c0eb58b03f847.mp3",
+      "audioSha256": "fdf24ef77eff632c88c83ad6b861ef97172a38713267f420d98c0eb58b03f847",
+      "difficulty": "medium",
+      "conceptTag": "only_earth_reworded_claim"
+    },
+    {
+      "id": "6e6a6718-7f42-4dc7-bf29-7f63bc216a83",
+      "format": "fill_blank",
+      "prompt": "रिया science fair के लिए **solar system** का एक model बनाती है। वह Earth के बारे में एक सच्ची बात लिखती है। Earth इकलौता **planet** है, ___।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "जो Sun का चक्कर लगाता है"
+        },
+        {
+          "id": "option-1",
+          "text": "जिसकी surface पर liquid पानी है"
+        },
+        {
+          "id": "option-2",
+          "text": "जिसके चारों ओर छल्ले हैं"
+        }
+      ],
+      "audioUrl": "/media/d78a8ee5a5889b88c45f468cd8c35c577e732fbd86a3433ea6b84f1cfc5501b8.mp3",
+      "audioSha256": "d78a8ee5a5889b88c45f468cd8c35c577e732fbd86a3433ea6b84f1cfc5501b8",
+      "difficulty": "easy",
+      "conceptTag": "earth_special_feature"
+    },
+    {
+      "id": "269f4408-c955-415e-ac72-f693ad1ecfa1",
+      "format": "multi_select",
+      "prompt": "इनमें से किन-किन में वह पानी दिखता है, जो Earth को ख़ास बनाता है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "गाँव से होकर बहती एक नदी"
+        },
+        {
+          "id": "option-1",
+          "text": "एक snow-capped mountain पर ice"
+        },
+        {
+          "id": "option-2",
+          "text": "हवा में water vapour"
+        },
+        {
+          "id": "option-3",
+          "text": "School के मैदान में बहता बारिश का पानी"
+        }
+      ],
+      "audioUrl": "/media/136f6079e229762c6c48b0d67de91be8705ea706ade7901eb0737f076baff15e.mp3",
+      "audioSha256": "136f6079e229762c6c48b0d67de91be8705ea706ade7901eb0737f076baff15e",
+      "difficulty": "medium",
+      "conceptTag": "liquid_not_ice_or_vapour"
+    },
+    {
+      "id": "4fecdb89-61bc-4c41-afb5-321ec327bf6a",
+      "format": "fill_blank",
+      "prompt": "मीरा पहाड़ों में एक highway पर बस से सफ़र करती है। उसे दूर एक **glacier** दिखता है। Glacier में Earth का पानी ___ के रूप में रहता है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "water vapour"
+        },
+        {
+          "id": "option-1",
+          "text": "ice"
+        },
+        {
+          "id": "option-2",
+          "text": "liquid water"
+        }
+      ],
+      "audioUrl": "/media/e4277f5ea61caebb7d6bc5a9c475f11b628347f0889d42439a79879980ef0647.mp3",
+      "audioSha256": "e4277f5ea61caebb7d6bc5a9c475f11b628347f0889d42439a79879980ef0647",
+      "difficulty": "easy",
+      "conceptTag": "glacier_holds_ice"
+    },
+    {
+      "id": "30e28b47-9e4f-41e3-9a0e-66f81bbadc64",
+      "format": "true_false",
+      "prompt": "मानसून की बारिश रुक गई है। अब आसमान साफ़ है। हवा में अब भी **water vapour** है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/b315aeb9e7b3ea27ccba6583ffd573dba76ddfeb10b855252116999b2d616800.mp3",
+      "audioSha256": "b315aeb9e7b3ea27ccba6583ffd573dba76ddfeb10b855252116999b2d616800",
+      "difficulty": "easy",
+      "conceptTag": "water_vapour_in_air"
+    },
+    {
+      "id": "76afdef8-d9ef-4675-8505-732ceb8e78da",
+      "format": "multi_select",
+      "prompt": "रोहन एक पुराने क़िले के पास एक नदी देखता है। वह कहता है कि Earth का सारा पानी समुद्रों और नदियों में है। इनमें से किन-किन जगहों में भी Earth का पानी है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Sun"
+        },
+        {
+          "id": "option-1",
+          "text": "हवा"
+        },
+        {
+          "id": "option-2",
+          "text": "Glaciers"
+        },
+        {
+          "id": "option-3",
+          "text": "Outer space"
+        },
+        {
+          "id": "option-4",
+          "text": "Snow-capped mountains"
+        }
+      ],
+      "audioUrl": "/media/28384e457b9a65fb94533588378b83ae142a71a0c85ae107793e53ef0484336e.mp3",
+      "audioSha256": "28384e457b9a65fb94533588378b83ae142a71a0c85ae107793e53ef0484336e",
+      "difficulty": "medium",
+      "conceptTag": "water_beyond_oceans_and_rivers"
+    },
+    {
+      "id": "8a543812-839d-482d-ab66-8c84b7b48156",
+      "format": "multi_select",
+      "prompt": "रिया science museum में एक model देखती है। वह model दिखाता है कि Earth, Sun का चक्कर लगाती है। असली Earth के बारे में इनमें से कौन-कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Orbit, Sun के चारों ओर Earth का रास्ता है।"
+        },
+        {
+          "id": "option-1",
+          "text": "Earth का orbit हर साल बदलता है।"
+        },
+        {
+          "id": "option-2",
+          "text": "Earth, Sun के चारों ओर revolve करती है।"
+        },
+        {
+          "id": "option-3",
+          "text": "Revolution, Sun के चारों ओर Earth का रास्ता है।"
+        }
+      ],
+      "audioUrl": "/media/9b10d47a3b0351adf4a8867272dfb0afdfa2b08166eba52022d45c449151f383.mp3",
+      "audioSha256": "9b10d47a3b0351adf4a8867272dfb0afdfa2b08166eba52022d45c449151f383",
+      "difficulty": "medium",
+      "conceptTag": "orbit_revolve_revolution_words"
+    },
+    {
+      "id": "dd643802-73af-4471-94a9-ea20912ed84e",
+      "format": "pick_one",
+      "prompt": "कबीर की माँ हर सुबह नाश्ता बनाती हैं। एक सुबह से अगली सुबह तक, Earth एक बार घूमती है। एक **revolution** में, माँ लगभग कितनी बार नाश्ता बनाती हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "सिर्फ़ 1"
+        },
+        {
+          "id": "option-1",
+          "text": "लगभग 24"
+        },
+        {
+          "id": "option-2",
+          "text": "लगभग 365"
+        }
+      ],
+      "audioUrl": "/media/6273e751ed7ccd0021ce12762c4c25cccfb7515a75759a5f05fd291e64e9d8ee.mp3",
+      "audioSha256": "6273e751ed7ccd0021ce12762c4c25cccfb7515a75759a5f05fd291e64e9d8ee",
+      "difficulty": "medium",
+      "conceptTag": "spins_in_one_revolution"
+    },
+    {
+      "id": "67ab4e60-475c-4cf2-a3ec-db1b89709b8c",
+      "format": "fill_blank",
+      "prompt": "आज मकर संक्रांति है, पतंगों का त्योहार। यह अगली जनवरी में फिर आएगा। तब तक, Earth ___ Sun का चक्कर लगाएगी।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "एक बार"
+        },
+        {
+          "id": "option-1",
+          "text": "12 बार"
+        },
+        {
+          "id": "option-2",
+          "text": "लगभग 365 बार"
+        }
+      ],
+      "audioUrl": "/media/85a8a63d7e9320f552aa00dcf11f714e669f0ef6e2101d8e57f575fb2ae5b597.mp3",
+      "audioSha256": "85a8a63d7e9320f552aa00dcf11f714e669f0ef6e2101d8e57f575fb2ae5b597",
+      "difficulty": "easy",
+      "conceptTag": "one_revolution_one_year"
+    },
+    {
+      "id": "74aa42ad-e0c7-4a09-a2d7-5550f2e0c93f",
+      "format": "pick_one",
+      "prompt": "दिवाली की रात, मीरा एक ही जगह पर गोल-गोल घूमती है। उसकी **axis** क्या है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "एक हाथ से दूसरे हाथ तक जाती एक imaginary line"
+        },
+        {
+          "id": "option-1",
+          "text": "उसकी कोई axis नहीं है, क्योंकि उसके आर-पार कोई छड़ नहीं जाती"
+        },
+        {
+          "id": "option-2",
+          "text": "उसके सिर से पैरों तक जाती एक imaginary line"
+        }
+      ],
+      "audioUrl": "/media/7e67bb00a228483d82c719524637efbbb69122f895609c184bdda09628c7d765.mp3",
+      "audioSha256": "7e67bb00a228483d82c719524637efbbb69122f895609c184bdda09628c7d765",
+      "difficulty": "medium",
+      "conceptTag": "find_axis_of_a_spinning_person"
+    },
+    {
+      "id": "4a372a52-a29c-4455-ab3b-f50b8204efa4",
+      "format": "true_false",
+      "prompt": "सुबह की assembly में, कबीर Earth के बारे में यह बात कहता है। क्या वह सही है? Earth की **axis** एक असली छड़ है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/c4e160f98f721be3c5d74bb395875207b894bb2bbf8676e85f37d239b587044f.mp3",
+      "audioSha256": "c4e160f98f721be3c5d74bb395875207b894bb2bbf8676e85f37d239b587044f",
+      "difficulty": "easy",
+      "conceptTag": "axis_is_imaginary_not_a_rod"
+    },
+    {
+      "id": "47e3f539-557c-4baa-b6ed-73bfa3e7eabc",
+      "format": "fill_blank",
+      "prompt": "समुद्र के किनारे एक नारियल का पेड़ थोड़ा-सा झुका हुआ है। तो यह पेड़ ___ है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "spinning"
+        },
+        {
+          "id": "option-1",
+          "text": "tilted"
+        },
+        {
+          "id": "option-2",
+          "text": "imaginary"
+        }
+      ],
+      "audioUrl": "/media/a3ef114a127e58db3d704940d7ce3941e482c194e23e26514c5e1c65af13d273.mp3",
+      "audioSha256": "a3ef114a127e58db3d704940d7ce3941e482c194e23e26514c5e1c65af13d273",
+      "difficulty": "easy",
+      "conceptTag": "tilted_means_leaning_a_little"
+    },
+    {
+      "id": "43430e82-fc0c-4408-b130-0e97d4bbc542",
+      "format": "fill_blank",
+      "prompt": "एक hill station पर, एक merry-go-round झूला एक ही जगह पर गोल-गोल घूमता है। Earth भी ऐसे ही घूमती है, अपनी **axis** पर। Earth के इस घूमने को हम ___ कहते हैं।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "revolution"
+        },
+        {
+          "id": "option-1",
+          "text": "rotation"
+        },
+        {
+          "id": "option-2",
+          "text": "orbit"
+        }
+      ],
+      "audioUrl": "/media/d379789a3d0d012140821cf1e6089a9267afae1e1b175ff49ebfc6d57df3f036.mp3",
+      "audioSha256": "d379789a3d0d012140821cf1e6089a9267afae1e1b175ff49ebfc6d57df3f036",
+      "difficulty": "medium",
+      "conceptTag": "name_the_spin_rotation"
+    },
+    {
+      "id": "47ef82b1-5f86-4a4d-add9-04fff9ed09ad",
+      "format": "true_false",
+      "prompt": "क्या यह सही है? Earth हमेशा west से east की तरफ़ घूमती है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/b99a8262237165bce5f4f276c333b3fb18a1a8e7283f51bc44a58824fafc6f1f.mp3",
+      "audioSha256": "b99a8262237165bce5f4f276c333b3fb18a1a8e7283f51bc44a58824fafc6f1f",
+      "difficulty": "easy",
+      "conceptTag": "spin_direction_west_to_east"
+    },
+    {
+      "id": "7fecc943-8085-46aa-95de-73881fcc89cb",
+      "format": "multi_select",
+      "prompt": "इनमें से कौन-कौन से, Earth के **rotation** जैसे हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "पहाड़ी का चक्कर लगाती एक बस"
+        },
+        {
+          "id": "option-1",
+          "text": "एक ही जगह पर घूमती एक कथक dancer"
+        },
+        {
+          "id": "option-2",
+          "text": "आसमान में आगे बढ़ता बारिश का एक बादल"
+        },
+        {
+          "id": "option-3",
+          "text": "एक ही जगह पर घूमता एक छाता"
+        }
+      ],
+      "audioUrl": "/media/a59db5f37433d701b05f5c306cd6473d445a12d4c05f162d515a5d8b7e3c0ae2.mp3",
+      "audioSha256": "a59db5f37433d701b05f5c306cd6473d445a12d4c05f162d515a5d8b7e3c0ae2",
+      "difficulty": "medium",
+      "conceptTag": "rotation_spin_in_one_place"
+    },
+    {
+      "id": "bbd3a93e-e8ed-4c15-9dcd-6c984bdf4efa",
+      "format": "multi_select",
+      "prompt": "रवि देखना चाहता है कि बाँस के एक डंडे की **shadow** कैसे बदलती है। डंडा, धूप वाले एक गेहूँ के खेत में, upright खड़ा है। इनमें से कौन-कौन से steps उसे करने चाहिए?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "डंडे की shadow के सिरे पर निशान लगाएँ।"
+        },
+        {
+          "id": "option-1",
+          "text": "डंडे के सबसे ऊपर निशान लगाएँ।"
+        },
+        {
+          "id": "option-2",
+          "text": "एक घंटे बाद shadow को फिर से देखें।"
+        },
+        {
+          "id": "option-3",
+          "text": "रात में shadow को फिर से देखें।"
+        },
+        {
+          "id": "option-4",
+          "text": "Shadow के size और direction को मिलाकर देखें।"
+        }
+      ],
+      "audioUrl": "/media/d9fdc5357faabe99964c3c7876eaadc4645676c235995457931cb4d2089609e1.mp3",
+      "audioSha256": "d9fdc5357faabe99964c3c7876eaadc4645676c235995457931cb4d2089609e1",
+      "difficulty": "medium",
+      "conceptTag": "shadow_observation_steps"
+    },
+    {
+      "id": "5deb0d66-f036-4b32-b45c-ea371d740bca",
+      "format": "fill_blank",
+      "prompt": "मकर संक्रांति पर, आरव दिन भर छत पर पतंग उड़ाता है। वह अपनी पानी की बोतल की **shadow** देखता है। यह shadow तब सबसे छोटी होती है, जब Sun ___ होता है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "आसमान में सबसे ऊपर"
+        },
+        {
+          "id": "option-1",
+          "text": "सुबह के समय नीचे"
+        },
+        {
+          "id": "option-2",
+          "text": "शाम के समय नीचे"
+        }
+      ],
+      "audioUrl": "/media/3c9135c634a4bd440438d1a27352459419776d3d3b554b4f21e7aac9e6df1bd1.mp3",
+      "audioSha256": "3c9135c634a4bd440438d1a27352459419776d3d3b554b4f21e7aac9e6df1bd1",
+      "difficulty": "easy",
+      "conceptTag": "shortest_when_sun_highest"
+    },
+    {
+      "id": "b4ad0752-03f7-4008-a03a-be9d272bbcdf",
+      "format": "pick_one",
+      "prompt": "धूप वाली सुबह है। कबीर एक science museum के बाहर, एक lamp post की **shadow** देखता है। एक घंटे बाद, वह shadow को फिर से देखता है। अब shadow जिस तरफ़ पड़ रही है, उसके बारे में क्या सही है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "यह पहले वाली तरफ़ ही पड़ रही है।"
+        },
+        {
+          "id": "option-1",
+          "text": "यह किसी दूसरी तरफ़ पड़ रही है।"
+        },
+        {
+          "id": "option-2",
+          "text": "यह Sun की तरफ़ पड़ रही है।"
+        }
+      ],
+      "audioUrl": "/media/15565c630b5cfcf33b88ad35fb9a7aa8f4269a0e64fb77a6a7c2f31625437cd4.mp3",
+      "audioSha256": "15565c630b5cfcf33b88ad35fb9a7aa8f4269a0e64fb77a6a7c2f31625437cd4",
+      "difficulty": "easy",
+      "conceptTag": "shadow_direction_changes"
+    },
+    {
+      "id": "fb29bd3b-3c12-466c-ba00-ca9c46817082",
+      "format": "multi_select",
+      "prompt": "Beach के पास वाले एक पुराने मंदिर में एक **sundial** है। इनमें से किस-किस समय पर sundial काम करता है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "चमकती धूप वाली एक सुबह को"
+        },
+        {
+          "id": "option-1",
+          "text": "रात को, सूरज डूबने के बाद"
+        },
+        {
+          "id": "option-2",
+          "text": "जब घने बादल सूरज को ढक लें"
+        },
+        {
+          "id": "option-3",
+          "text": "धूप वाली एक दोपहर को, power cut के समय"
+        }
+      ],
+      "audioUrl": "/media/b8b095eaac03fbb5e7bb72ff1df14ae96be7ba0b1a2420da2b0de1247caf5571.mp3",
+      "audioSha256": "b8b095eaac03fbb5e7bb72ff1df14ae96be7ba0b1a2420da2b0de1247caf5571",
+      "difficulty": "medium",
+      "conceptTag": "needs_sunshine_not_electricity"
+    },
+    {
+      "id": "f51ccdde-49ff-4bcd-87b2-704712b788aa",
+      "format": "pick_one",
+      "prompt": "स्कूल के science fair में, मीरा एक **sundial** का model दिखाती है। उसके बीचों-बीच एक डंडी सीधी खड़ी है। इस डंडी का नाम क्या है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "axis"
+        },
+        {
+          "id": "option-1",
+          "text": "gnomon"
+        },
+        {
+          "id": "option-2",
+          "text": "shadow"
+        }
+      ],
+      "audioUrl": "/media/e0582aa397a0ecd4ee6fa1e8f246ba68f78f6ea0560293ccdabc62c7671ce6ea.mp3",
+      "audioSha256": "e0582aa397a0ecd4ee6fa1e8f246ba68f78f6ea0560293ccdabc62c7671ce6ea",
+      "difficulty": "easy",
+      "conceptTag": "gnomon_upright_stick"
+    },
+    {
+      "id": "710c373d-cdd8-4409-869b-3fb5f3c6a8e4",
+      "format": "true_false",
+      "prompt": "आरव के school के मैदान में एक **sundial** है। आज धूप खिली हुई है। Sundial की **shadow**, assembly से lunch तक एक ही निशान पर टिकी रहती है। यह बात सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/9eed67ba8c2ef03e4a888ae94a694662238e8b14c4fe1543dc5a46279c1b728e.mp3",
+      "audioSha256": "9eed67ba8c2ef03e4a888ae94a694662238e8b14c4fe1543dc5a46279c1b728e",
+      "difficulty": "medium",
+      "conceptTag": "shadow_moves_to_new_mark"
+    },
+    {
+      "id": "6093cb47-b547-426f-a409-8bd813afb95a",
+      "format": "pick_one",
+      "prompt": "कबीर एक पुराने किले में एक **sundial** देखता है। दिन भर sundial की shadow क्यों खिसकती रहती है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Sun सच में हमारे आसमान में सफ़र करता है।"
+        },
+        {
+          "id": "option-1",
+          "text": "Sundial पर लगी डंडी हर घंटे थोड़ी-सी घूम जाती है।"
+        },
+        {
+          "id": "option-2",
+          "text": "Earth घूमती है, इसलिए हमारे आसमान में Sun की जगह बदलती है।"
+        }
+      ],
+      "audioUrl": "/media/1a190002c98d6cf62bb4ed7d0a36a39aea6f099f17b8eca266a799fcdd2eff9e.mp3",
+      "audioSha256": "1a190002c98d6cf62bb4ed7d0a36a39aea6f099f17b8eca266a799fcdd2eff9e",
+      "difficulty": "medium",
+      "conceptTag": "earth_turns_so_shadows_move"
+    },
+    {
+      "id": "4c353d43-9588-46ca-87a1-54eb2626aa8a",
+      "format": "true_false",
+      "prompt": "एक highway trip पर, आरव Sun को आसमान पार करते हुए देखता है। वह Sun के बारे में यह बात कहता है। क्या वह सही है? Sun सच में हर दिन हमारे आसमान में सफ़र करता है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/7d5d7c21bb990c3efed0498b5f8e374eed38021e507a19da600b088c3d622bc7.mp3",
+      "audioSha256": "7d5d7c21bb990c3efed0498b5f8e374eed38021e507a19da600b088c3d622bc7",
+      "difficulty": "easy",
+      "conceptTag": "sun_only_seems_to_travel"
+    },
+    {
+      "id": "86e129ff-1687-4f5c-a1d3-bf13a6bb89cb",
+      "format": "fill_blank",
+      "prompt": "मानसून की बारिश के बाद, दोपहर को मीरा देखती है कि Sun आसमान में ऊपर है। शाम होते-होते, वह आसमान में नीचे होता है। Sun चलता हुआ लगता है, क्योंकि Earth ___।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "रुकी रहती है"
+        },
+        {
+          "id": "option-1",
+          "text": "घूमती है"
+        }
+      ],
+      "audioUrl": "/media/d1e8a00bb8036938677a33e1306c95ada5f7def12e706df157f3d5e2ee7f2b92.mp3",
+      "audioSha256": "d1e8a00bb8036938677a33e1306c95ada5f7def12e706df157f3d5e2ee7f2b92",
+      "difficulty": "easy",
+      "conceptTag": "earth_turns_sun_seems_to_move"
+    },
+    {
+      "id": "f812fb21-e4a4-4adf-a7d4-ac44a526e0e3",
+      "format": "multi_select",
+      "prompt": "एक science museum में, आरव आराम से चलने वाली एक lift में जाता है। इनमें से कौन-कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "उसे lift का चल पड़ना महसूस होता है।"
+        },
+        {
+          "id": "option-1",
+          "text": "उसे पूरे समय lift का चलना महसूस होता है।"
+        },
+        {
+          "id": "option-2",
+          "text": "उसे lift का रुकना महसूस होता है।"
+        },
+        {
+          "id": "option-3",
+          "text": "उसे बिल्कुल कुछ महसूस नहीं होता, lift के चल पड़ने पर भी नहीं।"
+        }
+      ],
+      "audioUrl": "/media/cba3b60082486aba9bc943b46e01a15edfaeba0e97ea5e4d5d02151278d3aec0.mp3",
+      "audioSha256": "cba3b60082486aba9bc943b46e01a15edfaeba0e97ea5e4d5d02151278d3aec0",
+      "difficulty": "medium",
+      "conceptTag": "ride_felt_only_at_start_and_stop"
+    },
+    {
+      "id": "4265c8a9-0933-47b7-9935-dd892a6c5c61",
+      "format": "pick_one",
+      "prompt": "मकर संक्रांति के दिन, रिया अपनी छत पर पतंग उड़ा रही है। उसे Earth का घूमना महसूस क्यों नहीं होता?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "दिन में Earth घूमना बंद कर देती है।"
+        },
+        {
+          "id": "option-1",
+          "text": "Earth उसे और हवा को अपने साथ ले चलती है।"
+        },
+        {
+          "id": "option-2",
+          "text": "Earth एक जगह रुकी रहती है, और सिर्फ़ Sun चलता है।"
+        }
+      ],
+      "audioUrl": "/media/4c41747ba962b914a2799d41aab43dc6067679e5ecc3b8e2d97b83d50621d289.mp3",
+      "audioSha256": "4c41747ba962b914a2799d41aab43dc6067679e5ecc3b8e2d97b83d50621d289",
+      "difficulty": "easy",
+      "conceptTag": "earth_carries_us_and_the_air"
+    },
+    {
+      "id": "45273bb7-df7d-415b-b8c6-fafd24d7483a",
+      "format": "true_false",
+      "prompt": "मीरा रसोई की मेज़ पर दाल से भरी एक कटोरी रखती है। Earth घूमती है, पर दाल हिलती नहीं। क्या यह सही है? दाल इसलिए नहीं हिलती, क्योंकि Earth कभी झटका नहीं खाती, और कभी रुकती नहीं। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/76db79d1a4f1dc797ea4f5d69d45ac9680f3f2557638741a5bcaf893b4b4b37f.mp3",
+      "audioSha256": "76db79d1a4f1dc797ea4f5d69d45ac9680f3f2557638741a5bcaf893b4b4b37f",
+      "difficulty": "medium",
+      "conceptTag": "smooth_earth_keeps_things_still"
+    },
+    {
+      "id": "25f0fc56-ba98-4ceb-9386-b678b3f0a988",
+      "format": "fill_blank",
+      "prompt": "सुबह की assembly में, मीरा, Earth नाम के बारे में एक बात बताती है। यह नाम **Old English** के एक शब्द से आया है। उस शब्द का मतलब था ___।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "आसमान"
+        },
+        {
+          "id": "option-1",
+          "text": "मिट्टी"
+        },
+        {
+          "id": "option-2",
+          "text": "समुद्र"
+        }
+      ],
+      "audioUrl": "/media/d0d76d7135195a95ee072385a0f0bd5385810c6b6047cfecac24c6beaff8c970.mp3",
+      "audioSha256": "d0d76d7135195a95ee072385a0f0bd5385810c6b6047cfecac24c6beaff8c970",
+      "difficulty": "easy",
+      "conceptTag": "earth_name_meaning"
+    },
+    {
+      "id": "6ace368c-10a2-483c-97d8-074a841fead1",
+      "format": "multi_select",
+      "prompt": "कबीर को दिवाली के तोहफ़े में **planets** के बारे में एक किताब मिलती है। उसमें लिखा है कि Earth, Sun से तीसरा planet है। इनमें से कौन-कौन से वाक्य सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Earth तीसरा सबसे बड़ा planet है।"
+        },
+        {
+          "id": "option-1",
+          "text": "दो planets, Earth के मुक़ाबले Sun के ज़्यादा पास हैं।"
+        },
+        {
+          "id": "option-2",
+          "text": "तीन planets, Earth के मुक़ाबले Sun के ज़्यादा पास हैं।"
+        },
+        {
+          "id": "option-3",
+          "text": "हम planets को Sun के सबसे पास वाले से गिनते हैं।"
+        }
+      ],
+      "audioUrl": "/media/88d8db50e39f47fd87fbacf86446f151c41e8c49077759f6b13e66161809f90e.mp3",
+      "audioSha256": "88d8db50e39f47fd87fbacf86446f151c41e8c49077759f6b13e66161809f90e",
+      "difficulty": "medium",
+      "conceptTag": "third_from_sun_meaning"
+    },
+    {
+      "id": "b5117775-1fe5-47c0-879b-5fea9dadc0d7",
+      "format": "pick_one",
+      "prompt": "कबीर का परिवार, **Samrat Yantra** देखने के लिए highway पर गाड़ी से जाता है। यह किस शहर में है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "आगरा"
+        },
+        {
+          "id": "option-1",
+          "text": "जयपुर"
+        },
+        {
+          "id": "option-2",
+          "text": "चेन्नई"
+        }
+      ],
+      "audioUrl": "/media/294692bf734de1f7073479e0c33333b9e4308877b3ba53f4bfaa1decd4265586.mp3",
+      "audioSha256": "294692bf734de1f7073479e0c33333b9e4308877b3ba53f4bfaa1decd4265586",
+      "difficulty": "easy",
+      "conceptTag": "samrat_yantra_location"
+    }
+  ]
+}

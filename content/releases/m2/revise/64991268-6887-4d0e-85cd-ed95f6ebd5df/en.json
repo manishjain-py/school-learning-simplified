@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 2,
+  "release": "m2",
+  "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df",
+  "title": "Animal Life",
+  "language": "en",
+  "cards": [
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:1",
+      "index": 1,
+      "partId": "plants-and-animals-need-each-other",
+      "question": {
+        "display": "Which living things make their own food?",
+        "audioUrl": "/media/8b66f50739bffed50985ccbf4cf248c47bf4bd1d67cc6994071ba4160f63e19c.mp3",
+        "audioSha256": "8b66f50739bffed50985ccbf4cf248c47bf4bd1d67cc6994071ba4160f63e19c"
+      },
+      "answer": {
+        "display": "Only **plants**. Animals take plant food, directly or indirectly.",
+        "audioUrl": "/media/0fa105a1b8732862f42ff77f7b2711b45da2c0aba9cf401d2564ac40efb1746c.mp3",
+        "audioSha256": "0fa105a1b8732862f42ff77f7b2711b45da2c0aba9cf401d2564ac40efb1746c"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:2",
+      "index": 2,
+      "partId": "plants-and-animals-need-each-other",
+      "question": {
+        "display": "What gases do animals and plants give out?",
+        "audioUrl": "/media/ae90c132f4760ef20ce0774cd792398fa13ae3ad36c4b8733ee3f19106792361.mp3",
+        "audioSha256": "ae90c132f4760ef20ce0774cd792398fa13ae3ad36c4b8733ee3f19106792361"
+      },
+      "answer": {
+        "display": "Animals give out **carbon dioxide** and plants give out oxygen.",
+        "audioUrl": "/media/fc804f6dbf15d3a2fc25a823aa3ad47e078e711c6ffa60360625f8f2005a68ef.mp3",
+        "audioSha256": "fc804f6dbf15d3a2fc25a823aa3ad47e078e711c6ffa60360625f8f2005a68ef"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:3",
+      "index": 3,
+      "partId": "plants-and-animals-need-each-other",
+      "question": {
+        "display": "What do animals carry for plants?",
+        "audioUrl": "/media/ed8f83ca987ce849c54b4b6f9afc6b2381f856d23aa78948e0c9000ed541e2fd.mp3",
+        "audioSha256": "ed8f83ca987ce849c54b4b6f9afc6b2381f856d23aa78948e0c9000ed541e2fd"
+      },
+      "answer": {
+        "display": "**Pollen** to other flowers, and seeds to new ground.",
+        "audioUrl": "/media/3e10fed3ff95bbc39714c476c24d1c515184350c61c9812ebcd16d2f4ea809ad.mp3",
+        "audioSha256": "3e10fed3ff95bbc39714c476c24d1c515184350c61c9812ebcd16d2f4ea809ad"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:4",
+      "index": 4,
+      "partId": "plants-and-animals-need-each-other",
+      "question": {
+        "display": "What is interdependence?",
+        "audioUrl": "/media/822eb006763c8a343b519ef7b3c655f606264726d3447cb9b555daeaf9052a67.mp3",
+        "audioSha256": "822eb006763c8a343b519ef7b3c655f606264726d3447cb9b555daeaf9052a67"
+      },
+      "answer": {
+        "display": "Plants and animals **depend on each other** to live.",
+        "audioUrl": "/media/058a4e586d9c332734de622accfcb01fb64d7dd319ed2487ddb1d1e42463a881.mp3",
+        "audioSha256": "058a4e586d9c332734de622accfcb01fb64d7dd319ed2487ddb1d1e42463a881"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:5",
+      "index": 5,
+      "partId": "omnivores-and-liquid-feeders",
+      "question": {
+        "display": "What decides an animal's feeding group?",
+        "audioUrl": "/media/4a277e5f1eafd7dae19cace512d47390c7531f52aa18f684b271b376b07c3fda.mp3",
+        "audioSha256": "4a277e5f1eafd7dae19cace512d47390c7531f52aa18f684b271b376b07c3fda"
+      },
+      "answer": {
+        "display": "Only **what it eats**, never its size or fierce looks.",
+        "audioUrl": "/media/9f8c54c563713a521b26ac6607dc157e2c5f2b354f637e0126bccc4fe090f845.mp3",
+        "audioSha256": "9f8c54c563713a521b26ac6607dc157e2c5f2b354f637e0126bccc4fe090f845"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:6",
+      "index": 6,
+      "partId": "omnivores-and-liquid-feeders",
+      "question": {
+        "display": "What do herbivores, like the cow, eat?",
+        "audioUrl": "/media/86f14339f97931c1b8601c867bf2bec26cfe099b3e1130ebf7967549c7707402.mp3",
+        "audioSha256": "86f14339f97931c1b8601c867bf2bec26cfe099b3e1130ebf7967549c7707402"
+      },
+      "answer": {
+        "display": "Only **plant food**, nothing else.",
+        "audioUrl": "/media/0139cdc86b3cc9ecf289f4e41de17209ffbc13d49dfa1f706dee59620681890e.mp3",
+        "audioSha256": "0139cdc86b3cc9ecf289f4e41de17209ffbc13d49dfa1f706dee59620681890e"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:7",
+      "index": 7,
+      "partId": "omnivores-and-liquid-feeders",
+      "question": {
+        "display": "How do an animal's teeth match its food?",
+        "audioUrl": "/media/732e9d186be9809f50a9ab378bbd0381984a311ff4d466d97e0599c1cb6809fc.mp3",
+        "audioSha256": "732e9d186be9809f50a9ab378bbd0381984a311ff4d466d97e0599c1cb6809fc"
+      },
+      "answer": {
+        "display": "Flat teeth **grind** grass, pointed teeth rip meat.",
+        "audioUrl": "/media/3ca07249f709672f1607238adf84301b72ce5628859d730fc3da92ed6e1496f1.mp3",
+        "audioSha256": "3ca07249f709672f1607238adf84301b72ce5628859d730fc3da92ed6e1496f1"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:8",
+      "index": 8,
+      "partId": "omnivores-and-liquid-feeders",
+      "question": {
+        "display": "What is chewing the cud?",
+        "audioUrl": "/media/8d6e95e4b4f7bada880d84be29282708dfe5a763c97826e5c697001fd7ba9874.mp3",
+        "audioSha256": "8d6e95e4b4f7bada880d84be29282708dfe5a763c97826e5c697001fd7ba9874"
+      },
+      "answer": {
+        "display": "The cow swallows grass, brings it **back up**, chews well, swallows again.",
+        "audioUrl": "/media/467466abc40c2b2fa0b5ad0d0ef1cce3c98f1aee72a45377c51dbaee6ff3b029.mp3",
+        "audioSha256": "467466abc40c2b2fa0b5ad0d0ef1cce3c98f1aee72a45377c51dbaee6ff3b029"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:9",
+      "index": 9,
+      "partId": "omnivores-and-liquid-feeders",
+      "question": {
+        "display": "How do rabbits and squirrels eat hard nuts?",
+        "audioUrl": "/media/c88242e8b9128c115616868e9ea236f7810ca59eb4ef95822f590650f0e5a027.mp3",
+        "audioSha256": "c88242e8b9128c115616868e9ea236f7810ca59eb4ef95822f590650f0e5a027"
+      },
+      "answer": {
+        "display": "By **gnawing**, many small bites with their large front teeth.",
+        "audioUrl": "/media/f9b7494366bf1a1c80f03726e3658f87077590ac2b451f0dc82aaec71fbd4773.mp3",
+        "audioSha256": "f9b7494366bf1a1c80f03726e3658f87077590ac2b451f0dc82aaec71fbd4773"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:10",
+      "index": 10,
+      "partId": "omnivores-and-liquid-feeders",
+      "question": {
+        "display": "What do carnivores, like the tiger, eat?",
+        "audioUrl": "/media/58e08825afaf38ef341cdf4491c4bddb6597d2c07f4f13f4cf59e3b110f564e7.mp3",
+        "audioSha256": "58e08825afaf38ef341cdf4491c4bddb6597d2c07f4f13f4cf59e3b110f564e7"
+      },
+      "answer": {
+        "display": "**Flesh**, the meat of other animals.",
+        "audioUrl": "/media/d3232a9bc6926de9d7c62b66bed0fafba147a40dfb29538fd8af868f5590c0c8.mp3",
+        "audioSha256": "d3232a9bc6926de9d7c62b66bed0fafba147a40dfb29538fd8af868f5590c0c8"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:11",
+      "index": 11,
+      "partId": "omnivores-and-liquid-feeders",
+      "question": {
+        "display": "How does a snake eat its prey?",
+        "audioUrl": "/media/10666fe34b5cad2ed41b6ec02898844ae72bff04162eb50f7d59bdbf6b4ca9d4.mp3",
+        "audioSha256": "10666fe34b5cad2ed41b6ec02898844ae72bff04162eb50f7d59bdbf6b4ca9d4"
+      },
+      "answer": {
+        "display": "It swallows the prey **whole**, no chewing; the stomach breaks it down.",
+        "audioUrl": "/media/d6c890a2b2f28f480f915a22efabb5a996312a1a384d15a475d457e75f6c1fb4.mp3",
+        "audioSha256": "d6c890a2b2f28f480f915a22efabb5a996312a1a384d15a475d457e75f6c1fb4"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:12",
+      "index": 12,
+      "partId": "omnivores-and-liquid-feeders",
+      "question": {
+        "display": "What do omnivores, like people, eat?",
+        "audioUrl": "/media/f3a3ab81d751bdddb49db8d874b521b762ae5270062358cd48c5f97e290641a9.mp3",
+        "audioSha256": "f3a3ab81d751bdddb49db8d874b521b762ae5270062358cd48c5f97e290641a9"
+      },
+      "answer": {
+        "display": "**Both** plant food and animal food.",
+        "audioUrl": "/media/2fd32e76cd8d5b704874f8a6ba1916ab2d45be6142bf7e22149eb4e4547434a5.mp3",
+        "audioSha256": "2fd32e76cd8d5b704874f8a6ba1916ab2d45be6142bf7e22149eb4e4547434a5"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:13",
+      "index": 13,
+      "partId": "omnivores-and-liquid-feeders",
+      "question": {
+        "display": "How does a butterfly or mosquito feed?",
+        "audioUrl": "/media/d9dae8125faa4c0be6f389eb4b7293f1673c49482a279245bafd93e26b9b57a0.mp3",
+        "audioSha256": "d9dae8125faa4c0be6f389eb4b7293f1673c49482a279245bafd93e26b9b57a0"
+      },
+      "answer": {
+        "display": "It sucks liquid food through a long tube, like a **straw**.",
+        "audioUrl": "/media/dcda02740e70148836b9fa26223e06e99ed724bf8dbcfdfadb11db0978267c3c.mp3",
+        "audioSha256": "dcda02740e70148836b9fa26223e06e99ed724bf8dbcfdfadb11db0978267c3c"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:14",
+      "index": 14,
+      "partId": "omnivores-and-liquid-feeders",
+      "question": {
+        "display": "What makes an animal an insect?",
+        "audioUrl": "/media/ddb673052da566d4def43a41e0440a6b83b1f8687c12a0e0a48354a3962ab563.mp3",
+        "audioSha256": "ddb673052da566d4def43a41e0440a6b83b1f8687c12a0e0a48354a3962ab563"
+      },
+      "answer": {
+        "display": "**Six legs**, three body parts, and one pair of feelers.",
+        "audioUrl": "/media/2e97dc84c698ddf1c564458ba87ad3feb9bd63728558fb6e414173ccd6094811.mp3",
+        "audioSha256": "2e97dc84c698ddf1c564458ba87ad3feb9bd63728558fb6e414173ccd6094811"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:15",
+      "index": 15,
+      "partId": "food-chains-and-food-webs",
+      "question": {
+        "display": "What is a food chain?",
+        "audioUrl": "/media/18e3393904467166087152cbbadd0e63fbe634020119de1ab0364736a9617ea5.mp3",
+        "audioSha256": "18e3393904467166087152cbbadd0e63fbe634020119de1ab0364736a9617ea5"
+      },
+      "answer": {
+        "display": "Living things in order of who eats whom, starting with a **plant**.",
+        "audioUrl": "/media/e934ce4c87b3ef33c7298f611b4fcfaf6fb9578d23fd74893a0c6b5a5e6b4ddd.mp3",
+        "audioSha256": "e934ce4c87b3ef33c7298f611b4fcfaf6fb9578d23fd74893a0c6b5a5e6b4ddd"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:16",
+      "index": 16,
+      "partId": "food-chains-and-food-webs",
+      "question": {
+        "display": "What does a food chain arrow mean?",
+        "audioUrl": "/media/ca2d3bd5a5b61401168dc1cacdf462bee3b25bd38d5f7960c5ae1557e93e50b8.mp3",
+        "audioSha256": "ca2d3bd5a5b61401168dc1cacdf462bee3b25bd38d5f7960c5ae1557e93e50b8"
+      },
+      "answer": {
+        "display": "It points to the eater and means **is eaten by**.",
+        "audioUrl": "/media/9fb14a140d266e43abf44d02ca59de993552ba448a766338222c6eebcda4db70.mp3",
+        "audioSha256": "9fb14a140d266e43abf44d02ca59de993552ba448a766338222c6eebcda4db70"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:17",
+      "index": 17,
+      "partId": "food-chains-and-food-webs",
+      "question": {
+        "display": "What is a food web?",
+        "audioUrl": "/media/0baa39f8c8d73094449a9117ad5bf16596ac66ad0d1e100fffd886537dc4e562.mp3",
+        "audioSha256": "0baa39f8c8d73094449a9117ad5bf16596ac66ad0d1e100fffd886537dc4e562"
+      },
+      "answer": {
+        "display": "Many food chains that **cross**, because animals eat more than one food.",
+        "audioUrl": "/media/8c5317a70e02064a5d353ab73cbc940953fdd2e905d88d32b938e10ef51fbbb9.mp3",
+        "audioSha256": "8c5317a70e02064a5d353ab73cbc940953fdd2e905d88d32b938e10ef51fbbb9"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:18",
+      "index": 18,
+      "partId": "food-chains-and-food-webs",
+      "question": {
+        "display": "Why does every living thing matter?",
+        "audioUrl": "/media/7b04040bd8ec898ed89fab73eb52180d759b3165a376766b1b3ea53ce3996802.mp3",
+        "audioSha256": "7b04040bd8ec898ed89fab73eb52180d759b3165a376766b1b3ea53ce3996802"
+      },
+      "answer": {
+        "display": "For the **balance of nature**: take one out and chains break.",
+        "audioUrl": "/media/c332fc694a3a43bf35bb7dbdc61c964e07504753c4392a346e4c2c6f6cc5bdd6.mp3",
+        "audioSha256": "c332fc694a3a43bf35bb7dbdc61c964e07504753c4392a346e4c2c6f6cc5bdd6"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:19",
+      "index": 19,
+      "partId": "mammals-and-parental-care",
+      "question": {
+        "display": "What is reproduction?",
+        "audioUrl": "/media/0f35c6f8aa6f4a351128dcbe120768df8aa6a8a7524ff755e2e9d93a6e5e43be.mp3",
+        "audioSha256": "0f35c6f8aa6f4a351128dcbe120768df8aa6a8a7524ff755e2e9d93a6e5e43be"
+      },
+      "answer": {
+        "display": "A living thing making new young ones of its **own kind**.",
+        "audioUrl": "/media/90ec2f5217be1b8fb41467364eeeb495e792e179d7d44236acdb44a2cdf54d81.mp3",
+        "audioSha256": "90ec2f5217be1b8fb41467364eeeb495e792e179d7d44236acdb44a2cdf54d81"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:20",
+      "index": 20,
+      "partId": "mammals-and-parental-care",
+      "question": {
+        "display": "What are the two ways animals reproduce?",
+        "audioUrl": "/media/5e291587b85442c268d2836ad228268c528a0107c57f53993de547a626498142.mp3",
+        "audioSha256": "5e291587b85442c268d2836ad228268c528a0107c57f53993de547a626498142"
+      },
+      "answer": {
+        "display": "Lay **eggs**, like a hen, or give birth, like a dog.",
+        "audioUrl": "/media/44a488e222655ef37599df7a2424fbc37bd86ab4be35a539f22d20fcf5283050.mp3",
+        "audioSha256": "44a488e222655ef37599df7a2424fbc37bd86ab4be35a539f22d20fcf5283050"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:21",
+      "index": 21,
+      "partId": "mammals-and-parental-care",
+      "question": {
+        "display": "How does a chick hatch from its egg?",
+        "audioUrl": "/media/e084aff396518bb3fb9a7ae33813f66423fa771e962162a364310cb90f1b272c.mp3",
+        "audioSha256": "e084aff396518bb3fb9a7ae33813f66423fa771e962162a364310cb90f1b272c"
+      },
+      "answer": {
+        "display": "It **grows** inside for many days, then breaks out by itself.",
+        "audioUrl": "/media/2b5e726cf26a80d86d5ef83a5d3289c9beb6bfe4e629294abfb8b88c79642936.mp3",
+        "audioSha256": "2b5e726cf26a80d86d5ef83a5d3289c9beb6bfe4e629294abfb8b88c79642936"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:22",
+      "index": 22,
+      "partId": "mammals-and-parental-care",
+      "question": {
+        "display": "What is a mammal?",
+        "audioUrl": "/media/329e8641e7ca9755d538ec333cbe0367f32582a3d78e9b39f67678b43fb277e2.mp3",
+        "audioSha256": "329e8641e7ca9755d538ec333cbe0367f32582a3d78e9b39f67678b43fb277e2"
+      },
+      "answer": {
+        "display": "Its young ones are **born alive**, not hatched, and drink milk.",
+        "audioUrl": "/media/e65c1137ccc21e470ff0f26de145fe309fded3684be27107c03e688e9723d0d8.mp3",
+        "audioSha256": "e65c1137ccc21e470ff0f26de145fe309fded3684be27107c03e688e9723d0d8"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:23",
+      "index": 23,
+      "partId": "mammals-and-parental-care",
+      "question": {
+        "display": "Why are bats, whales and dolphins mammals?",
+        "audioUrl": "/media/6fa57929e89f43a39b4b3b45689911c5f8a88ecfa31a6bbd7f3e3c9e5c4a3dcc.mp3",
+        "audioSha256": "6fa57929e89f43a39b4b3b45689911c5f8a88ecfa31a6bbd7f3e3c9e5c4a3dcc"
+      },
+      "answer": {
+        "display": "Only the young one decides: it is **born alive** and drinks milk.",
+        "audioUrl": "/media/1a9836239cf6f080038c2db00c3889c25520b2b60918d83d01997123e0c1bab8.mp3",
+        "audioSha256": "1a9836239cf6f080038c2db00c3889c25520b2b60918d83d01997123e0c1bab8"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:24",
+      "index": 24,
+      "partId": "mammals-and-parental-care",
+      "question": {
+        "display": "Which animals look after their young ones?",
+        "audioUrl": "/media/5e5ca745c84685fd7ece7162172e0b7515bfd494818825f93485e69a5bc919c7.mp3",
+        "audioSha256": "5e5ca745c84685fd7ece7162172e0b7515bfd494818825f93485e69a5bc919c7"
+      },
+      "answer": {
+        "display": "Birds and mammals **both** do.",
+        "audioUrl": "/media/49f76f0336388f25b0126ab94768e1659258ec31d6003379da3bdc8ab2485a73.mp3",
+        "audioSha256": "49f76f0336388f25b0126ab94768e1659258ec31d6003379da3bdc8ab2485a73"
+      }
+    },
+    {
+      "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df:revise:25",
+      "index": 25,
+      "partId": "mammals-and-parental-care",
+      "question": {
+        "display": "What does a parent bird do?",
+        "audioUrl": "/media/81bf24c009559e79050b838634e2203621ea696da5cc588d1718cee764e93341.mp3",
+        "audioSha256": "81bf24c009559e79050b838634e2203621ea696da5cc588d1718cee764e93341"
+      },
+      "answer": {
+        "display": "Builds a **nest**, keeps its chicks warm, and brings them food.",
+        "audioUrl": "/media/a3ec2ebdcabcfab89aee4a17d88c2e5deaa78f4954c3faff91955db388e534af.mp3",
+        "audioSha256": "a3ec2ebdcabcfab89aee4a17d88c2e5deaa78f4954c3faff91955db388e534af"
+      }
+    }
+  ]
+}

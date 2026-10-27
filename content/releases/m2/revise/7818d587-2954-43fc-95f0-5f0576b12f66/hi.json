@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 2,
+  "release": "m2",
+  "id": "7818d587-2954-43fc-95f0-5f0576b12f66",
+  "title": "Our Earth",
+  "language": "hi",
+  "cards": [
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:1",
+      "index": 1,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "Planets में Earth किस नंबर पर है?",
+        "audioUrl": "/media/f3f36eda8882af1a43579c072dc710749ed73351da1507237959c9a31b80b86f.mp3",
+        "audioSha256": "f3f36eda8882af1a43579c072dc710749ed73351da1507237959c9a31b80b86f"
+      },
+      "answer": {
+        "display": "यह Sun से तीसरा planet है।",
+        "audioUrl": "/media/43c4c6128df5a4016f745e1d11dc1cd744be33688b361312f86f1dc9fa4f1154.mp3",
+        "audioSha256": "43c4c6128df5a4016f745e1d11dc1cd744be33688b361312f86f1dc9fa4f1154"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:2",
+      "index": 2,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "Solar system में Earth को क्या चीज़ ख़ास बनाती है?",
+        "audioUrl": "/media/19c2509086f739036b7285c6a0b43656b2737f18a1e0ac66bbaabb111640f3bb.mp3",
+        "audioSha256": "19c2509086f739036b7285c6a0b43656b2737f18a1e0ac66bbaabb111640f3bb"
+      },
+      "answer": {
+        "display": "सिर्फ़ Earth की surface पर **liquid water** है।",
+        "audioUrl": "/media/83991b9038fe06136e1d6e78101fbd73fece104adfe1026c6c9001aa41d46e96.mp3",
+        "audioSha256": "83991b9038fe06136e1d6e78101fbd73fece104adfe1026c6c9001aa41d46e96"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:3",
+      "index": 3,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "Earth की surface का कितना हिस्सा पानी है?",
+        "audioUrl": "/media/723db97f484bda3dabca0e1b5d4cab2f32cf49e9e99f64746a4b556412f7700f.mp3",
+        "audioSha256": "723db97f484bda3dabca0e1b5d4cab2f32cf49e9e99f64746a4b556412f7700f"
+      },
+      "answer": {
+        "display": "लगभग **71%** पानी है, और बाक़ी 29% ज़मीन है।",
+        "audioUrl": "/media/afd13619baf6cda259a7a518239d0b5c4e7b49e666a9bff8140a97bf565dd8ac.mp3",
+        "audioSha256": "afd13619baf6cda259a7a518239d0b5c4e7b49e666a9bff8140a97bf565dd8ac"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:4",
+      "index": 4,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "Earth का पानी कहाँ-कहाँ है?",
+        "audioUrl": "/media/d223e60c1ea72b08e0bf552bbb774e8da183fc299c55575ddfa44e9e9bd0608d.mp3",
+        "audioSha256": "d223e60c1ea72b08e0bf552bbb774e8da183fc299c55575ddfa44e9e9bd0608d"
+      },
+      "answer": {
+        "display": "महासागरों में liquid पानी, हवा में **vapour**, और snow-capped mountains पर ice।",
+        "audioUrl": "/media/8e8928c8c6a2ab070aadabe21d7d45e50dc7504ea0f8a413cc663d1d056c1c09.mp3",
+        "audioSha256": "8e8928c8c6a2ab070aadabe21d7d45e50dc7504ea0f8a413cc663d1d056c1c09"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:5",
+      "index": 5,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "Earth पर किस-किस तरह की ज़मीन है?",
+        "audioUrl": "/media/b3f0ce010f7c21823906f4936c3e70d6e12b8fc9c4766946a330e1dac810e2a2.mp3",
+        "audioSha256": "b3f0ce010f7c21823906f4936c3e70d6e12b8fc9c4766946a330e1dac810e2a2"
+      },
+      "answer": {
+        "display": "Mountains, valleys, plains, plateaus और arid deserts।",
+        "audioUrl": "/media/fd710df3e92a56cf2bfecf4555b1033a161663c4e22ab655f6bf1ea77a36aadb.mp3",
+        "audioSha256": "fd710df3e92a56cf2bfecf4555b1033a161663c4e22ab655f6bf1ea77a36aadb"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:6",
+      "index": 6,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "कौन-कौन से planets Sun का चक्कर लगाते हैं, order में?",
+        "audioUrl": "/media/bfd5602c13f0e4c479ad8a14d3ec598a6274c368ec05bb635bb07682f6ee1692.mp3",
+        "audioSha256": "bfd5602c13f0e4c479ad8a14d3ec598a6274c368ec05bb635bb07682f6ee1692"
+      },
+      "answer": {
+        "display": "Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus और Neptune।",
+        "audioUrl": "/media/ad281f1159905d317ef71ef78dd4ae58bc8bf1274a8b6af3025d026696d446a3.mp3",
+        "audioSha256": "ad281f1159905d317ef71ef78dd4ae58bc8bf1274a8b6af3025d026696d446a3"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:7",
+      "index": 7,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "Earth, life के लिए एक अच्छा घर क्यों है?",
+        "audioUrl": "/media/4ea25223a0b314d8e0b87725a932a7d7da2e2a39719740f2a05c0fe3bf1a9849.mp3",
+        "audioSha256": "4ea25223a0b314d8e0b87725a932a7d7da2e2a39719740f2a05c0fe3bf1a9849"
+      },
+      "answer": {
+        "display": "Sun से **right distance**, और layer of air।",
+        "audioUrl": "/media/550571283cff1dc14063cd07f17f8328da2396132bbb158aa559dc1463eb6107.mp3",
+        "audioSha256": "550571283cff1dc14063cd07f17f8328da2396132bbb158aa559dc1463eb6107"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:8",
+      "index": 8,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "नाविकों ने कैसे दिखाया कि Earth गोल है?",
+        "audioUrl": "/media/e80ef4265118bba763c3bbf2a3c7e8474761dfd082f7d3af624b1bdb916f4747.mp3",
+        "audioSha256": "e80ef4265118bba763c3bbf2a3c7e8474761dfd082f7d3af624b1bdb916f4747"
+      },
+      "answer": {
+        "display": "वे जहाज़ चलाते रहे, और वहीं वापस आ गए जहाँ से चले थे।",
+        "audioUrl": "/media/821c37146bfb33646778c6ef957e979d3ea7e35354d75c66508a0cf7980abb11.mp3",
+        "audioSha256": "821c37146bfb33646778c6ef957e979d3ea7e35354d75c66508a0cf7980abb11"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:9",
+      "index": 9,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "Earth का असली आकार क्या है?",
+        "audioUrl": "/media/15d3ec8de9ebe1e57a48b36a56a3d0d6e750c6127e6d0aa5b0566983b8d74fed.mp3",
+        "audioSha256": "15d3ec8de9ebe1e57a48b36a56a3d0d6e750c6127e6d0aa5b0566983b8d74fed"
+      },
+      "answer": {
+        "display": "एक **oblate spheroid**, गेंद की तरह गोल, पर थोड़ा दबा हुआ।",
+        "audioUrl": "/media/fc40448c438e3749882ad8ccd54cbe831a87d2a9eaa2e93a03591c1c45d7c528.mp3",
+        "audioSha256": "fc40448c438e3749882ad8ccd54cbe831a87d2a9eaa2e93a03591c1c45d7c528"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:10",
+      "index": 10,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "Earth की axis क्या है?",
+        "audioUrl": "/media/a854516f04a9ccdc8d80fe82a0dc3afc623983b4456fd7ecf14732c5eded0ba9.mp3",
+        "audioSha256": "a854516f04a9ccdc8d80fe82a0dc3afc623983b4456fd7ecf14732c5eded0ba9"
+      },
+      "answer": {
+        "display": "Earth के बीच से गुज़रती एक **imaginary** line, जो थोड़ी tilted है।",
+        "audioUrl": "/media/b6dbdaebc2213f6fe0e826dc4ca38acf862458027cc9bda42bf42080a6b8d4fa.mp3",
+        "audioSha256": "b6dbdaebc2213f6fe0e826dc4ca38acf862458027cc9bda42bf42080a6b8d4fa"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:11",
+      "index": 11,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "Earth का rotation क्या है?",
+        "audioUrl": "/media/0e6676420aff717a00d90cbfbb808dd88f6c146d26425f16993d8dc90aea7a23.mp3",
+        "audioSha256": "0e6676420aff717a00d90cbfbb808dd88f6c146d26425f16993d8dc90aea7a23"
+      },
+      "answer": {
+        "display": "Earth का अपनी axis पर घूमना, west से east की तरफ़।",
+        "audioUrl": "/media/845a3067a26fbf8a348b29ae41059a3e150aa37bb284440a5f48bccf73c49a8a.mp3",
+        "audioSha256": "845a3067a26fbf8a348b29ae41059a3e150aa37bb284440a5f48bccf73c49a8a"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:12",
+      "index": 12,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "Rotation से दिन और रात कैसे होते हैं?",
+        "audioUrl": "/media/78bb802d2bd79a95f8ba531528aa5f6c3f2a3cefd8999711f32d2153bd78f859.mp3",
+        "audioSha256": "78bb802d2bd79a95f8ba531528aa5f6c3f2a3cefd8999711f32d2153bd78f859"
+      },
+      "answer": {
+        "display": "Sun की तरफ़ वाले आधे हिस्से में दिन होता है, और दूसरे आधे में रात।",
+        "audioUrl": "/media/3aa0e9e4ccae42d8e25e1c23d32245dee76c3847bba6853c086660e86564a01c.mp3",
+        "audioSha256": "3aa0e9e4ccae42d8e25e1c23d32245dee76c3847bba6853c086660e86564a01c"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:13",
+      "index": 13,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "एक rotation में कितना समय लगता है?",
+        "audioUrl": "/media/8ac0ce23f2e70c50991a7872b3720c8efa6c81a82dfd5c9d5fedfa641c8e7c6f.mp3",
+        "audioSha256": "8ac0ce23f2e70c50991a7872b3720c8efa6c81a82dfd5c9d5fedfa641c8e7c6f"
+      },
+      "answer": {
+        "display": "24 घंटे, एक दिन और एक रात मिलकर।",
+        "audioUrl": "/media/fb6da6c50ce2fbf32d152e18425f727f5e40c20301f7b78ab6b3f62619dffcb4.mp3",
+        "audioSha256": "fb6da6c50ce2fbf32d152e18425f727f5e40c20301f7b78ab6b3f62619dffcb4"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:14",
+      "index": 14,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "Sundial समय कैसे बताता है?",
+        "audioUrl": "/media/2bca8925ed20b85391c6be9d5813322992a5dd9852c65820cc1f2847e8d8bed2.mp3",
+        "audioSha256": "2bca8925ed20b85391c6be9d5813322992a5dd9852c65820cc1f2847e8d8bed2"
+      },
+      "answer": {
+        "display": "इसकी डंडी, यानी **gnomon**, एक shadow बनाती है। यह shadow समय बताती है।",
+        "audioUrl": "/media/2182ef7b94aa4c4b3334e8272358f17a436cc082644799b68a61326c4003f69d.mp3",
+        "audioSha256": "2182ef7b94aa4c4b3334e8272358f17a436cc082644799b68a61326c4003f69d"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:15",
+      "index": 15,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "Sundial कब काम नहीं करता?",
+        "audioUrl": "/media/3c39f187568725b98f0d22bac98a9e34800969b2e60458d12f534473f9baed13.mp3",
+        "audioSha256": "3c39f187568725b98f0d22bac98a9e34800969b2e60458d12f534473f9baed13"
+      },
+      "answer": {
+        "display": "रात में या बादल वाले दिनों में, क्योंकि इसे धूप चाहिए।",
+        "audioUrl": "/media/79728d8f555fe01e09beff90193bea1cb1bac83b8042669cf39c509b545dfc3a.mp3",
+        "audioSha256": "79728d8f555fe01e09beff90193bea1cb1bac83b8042669cf39c509b545dfc3a"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:16",
+      "index": 16,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "दुनिया का सबसे बड़ा पत्थर का sundial कौन-सा है?",
+        "audioUrl": "/media/a6f4685a907cb36ab21a8bacc93f8b0ffc43bf0e7fc76a4901df2e950151ad5a.mp3",
+        "audioSha256": "a6f4685a907cb36ab21a8bacc93f8b0ffc43bf0e7fc76a4901df2e950151ad5a"
+      },
+      "answer": {
+        "display": "**Samrat Yantra**, जो जयपुर के Jantar Mantar में है।",
+        "audioUrl": "/media/ad901be024d28b51d3564ecbd5f79b213b37e1475450f90a9c05a58267c295a9.mp3",
+        "audioSha256": "ad901be024d28b51d3564ecbd5f79b213b37e1475450f90a9c05a58267c295a9"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:17",
+      "index": 17,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "Shadow दिन भर में कैसे बदलती है?",
+        "audioUrl": "/media/1affa71a6a9fb6284ac41e355d89845643d9f4ad50b2492b751dc67cff071fd7.mp3",
+        "audioSha256": "1affa71a6a9fb6284ac41e355d89845643d9f4ad50b2492b751dc67cff071fd7"
+      },
+      "answer": {
+        "display": "उसका size और उसकी **direction**, दोनों बदलते हैं।",
+        "audioUrl": "/media/819b6531790b2140bc1d0b8a9853224423528addd98a129b48333eeac0c84786.mp3",
+        "audioSha256": "819b6531790b2140bc1d0b8a9853224423528addd98a129b48333eeac0c84786"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:18",
+      "index": 18,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "Shadows दिन भर में क्यों खिसकती हैं?",
+        "audioUrl": "/media/f96d3200a79d158d877b44d2f2cd186bb31fedacc43390aca5c910e29c08946b.mp3",
+        "audioSha256": "f96d3200a79d158d877b44d2f2cd186bb31fedacc43390aca5c910e29c08946b"
+      },
+      "answer": {
+        "display": "Earth घूमती है, इसलिए Sun सिर्फ़ चलता हुआ लगता है।",
+        "audioUrl": "/media/b573e8fbbc91fc97818d57ea26689dad2f7749e75d420bb5d0b7a11377f07272.mp3",
+        "audioSha256": "b573e8fbbc91fc97818d57ea26689dad2f7749e75d420bb5d0b7a11377f07272"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:19",
+      "index": 19,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "हमें Earth का घूमना महसूस क्यों नहीं होता?",
+        "audioUrl": "/media/6aaf291ac3ceb50e537fe4a61dbdf7e9fa2e7404c4f15fec125ae4337b3dcc74.mp3",
+        "audioSha256": "6aaf291ac3ceb50e537fe4a61dbdf7e9fa2e7404c4f15fec125ae4337b3dcc74"
+      },
+      "answer": {
+        "display": "Earth हमें अपने साथ ले चलती है, जैसे आराम से चलती ट्रेन का सफ़र।",
+        "audioUrl": "/media/4a03879b43a0d6f7e1fc52adb9802cdde4f689aa857a79ccb22458e96298c284.mp3",
+        "audioSha256": "4a03879b43a0d6f7e1fc52adb9802cdde4f689aa857a79ccb22458e96298c284"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:20",
+      "index": 20,
+      "partId": "revolution-orbit-and-seasons",
+      "question": {
+        "display": "Earth का orbit क्या है?",
+        "audioUrl": "/media/bc319a9c37f076e5a2c71b8f6282b4b953558cfbdb2a47acdb50d0bec9de2788.mp3",
+        "audioSha256": "bc319a9c37f076e5a2c71b8f6282b4b953558cfbdb2a47acdb50d0bec9de2788"
+      },
+      "answer": {
+        "display": "Sun के चारों तरफ़ Earth का रास्ता, जो हर साल वही रहता है।",
+        "audioUrl": "/media/14c859b44a88306a869fe7b2c25a7c66b7e2ffa009db4f321d30b7243274a64e.mp3",
+        "audioSha256": "14c859b44a88306a869fe7b2c25a7c66b7e2ffa009db4f321d30b7243274a64e"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:21",
+      "index": 21,
+      "partId": "revolution-orbit-and-seasons",
+      "question": {
+        "display": "एक revolution में कितना समय लगता है?",
+        "audioUrl": "/media/bccbfa25db0b9acecbf3a3a48e9142ef9c1d54236a014b9cfefe8cce872484b8.mp3",
+        "audioSha256": "bccbfa25db0b9acecbf3a3a48e9142ef9c1d54236a014b9cfefe8cce872484b8"
+      },
+      "answer": {
+        "display": "Sun के एक चक्कर में एक साल लगता है, लगभग 365 दिन।",
+        "audioUrl": "/media/b02c9118792cf82322754447b2281cbf012eb030415302a29593b0c1129d06a7.mp3",
+        "audioSha256": "b02c9118792cf82322754447b2281cbf012eb030415302a29593b0c1129d06a7"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:22",
+      "index": 22,
+      "partId": "revolution-orbit-and-seasons",
+      "question": {
+        "display": "Seasons किस वजह से आते हैं?",
+        "audioUrl": "/media/9a6e5700961df3ce644a52cf0909fd5d2eab69d16499c2720b72ee8af967e331.mp3",
+        "audioSha256": "9a6e5700961df3ce644a52cf0909fd5d2eab69d16499c2720b72ee8af967e331"
+      },
+      "answer": {
+        "display": "Earth का Sun के चारों ओर चक्कर, और उसकी tilted axis, दोनों।",
+        "audioUrl": "/media/5ca014f4ea58b4ad13ec0e90646cdc5a55639f80070e1febbdcc2d36a72badfd.mp3",
+        "audioSha256": "5ca014f4ea58b4ad13ec0e90646cdc5a55639f80070e1febbdcc2d36a72badfd"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:23",
+      "index": 23,
+      "partId": "revolution-orbit-and-seasons",
+      "question": {
+        "display": "क्या summer, Sun के ज़्यादा पास होने से आती है?",
+        "audioUrl": "/media/4cd5ea695ea988f618ef2afaa1aaecfc6188ef985514eea425f4c966d9bea769.mp3",
+        "audioSha256": "4cd5ea695ea988f618ef2afaa1aaecfc6188ef985514eea425f4c966d9bea769"
+      },
+      "answer": {
+        "display": "नहीं। India और Australia, Sun से बराबर दूरी पर हैं, लेकिन उनके seasons अलग-अलग होते हैं।",
+        "audioUrl": "/media/fbebb6a5ac2f0bbd1ad3da15cddb7b5002ecec982a6c95d988e95ddac7ad03e0.mp3",
+        "audioSha256": "fbebb6a5ac2f0bbd1ad3da15cddb7b5002ecec982a6c95d988e95ddac7ad03e0"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:24",
+      "index": 24,
+      "partId": "revolution-orbit-and-seasons",
+      "question": {
+        "display": "India और Australia में seasons उल्टे क्यों होते हैं?",
+        "audioUrl": "/media/9c724850778515698d30723e0f7ada52ff2fd57be4eca1b0aab58cb894435fa9.mp3",
+        "audioSha256": "9c724850778515698d30723e0f7ada52ff2fd57be4eca1b0aab58cb894435fa9"
+      },
+      "answer": {
+        "display": "Earth की axis के **tilt** की वजह से।",
+        "audioUrl": "/media/5ce3be48ac23936ee382d6a1a5da53499650902d51fdc0624ff76e8e40db6cbd.mp3",
+        "audioSha256": "5ce3be48ac23936ee382d6a1a5da53499650902d51fdc0624ff76e8e40db6cbd"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:25",
+      "index": 25,
+      "partId": "revolution-orbit-and-seasons",
+      "question": {
+        "display": "Rotation हमें क्या देता है, और revolution क्या देता है?",
+        "audioUrl": "/media/625dbde7154def4c4421fa96a65b1a2b3d66fd971cb8881418656d149ea70e01.mp3",
+        "audioSha256": "625dbde7154def4c4421fa96a65b1a2b3d66fd971cb8881418656d149ea70e01"
+      },
+      "answer": {
+        "display": "Rotation दिन और रात देता है, पर revolution और tilt, seasons देते हैं।",
+        "audioUrl": "/media/f3673f49804f8477e4aa3ab71b440872eaa78ddf8bc9af786f9878451fbfeaf0.mp3",
+        "audioSha256": "f3673f49804f8477e4aa3ab71b440872eaa78ddf8bc9af786f9878451fbfeaf0"
+      }
+    }
+  ]
+}

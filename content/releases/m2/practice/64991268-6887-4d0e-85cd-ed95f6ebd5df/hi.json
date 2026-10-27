@@ -1,0 +1,1453 @@
+{
+  "schemaVersion": 2,
+  "release": "m2",
+  "id": "64991268-6887-4d0e-85cd-ed95f6ebd5df",
+  "title": "Animal Life",
+  "language": "hi",
+  "questions": [
+    {
+      "id": "1ebfd271-d1c6-405e-8823-0e36c21983a7",
+      "format": "pick_one",
+      "prompt": "सुबह-सुबह कबीर गाँव के तालाब के पास बत्तख़ का nest देखता है। एक अंडा चटक रहा है। यह दरार किस वजह से पड़ रही है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "बत्तख़ का बच्चा अंदर से धक्का दे रहा है"
+        },
+        {
+          "id": "option-1",
+          "text": "माँ बत्तख़ की चोंच बाहर से मार रही है"
+        },
+        {
+          "id": "option-2",
+          "text": "अंडे पर पानी के छींटे पड़ रहे हैं"
+        }
+      ],
+      "audioUrl": "/media/b2cb4f89442dcc4234550bdadba947625201cfcc9f7ba03cf9c147e1479b9e02.mp3",
+      "audioSha256": "b2cb4f89442dcc4234550bdadba947625201cfcc9f7ba03cf9c147e1479b9e02",
+      "difficulty": "medium",
+      "conceptTag": "who_breaks_the_shell"
+    },
+    {
+      "id": "073f14c6-f3fc-4da0-9232-f2c98022ff02",
+      "format": "true_false",
+      "prompt": "मीरा को सब्ज़ी मंडी के ऊपर एक गौरैया का घोंसला दिखता है। पक्षी जो अंडा देती है, उस अंडे के अंदर बच्चा पहले से तैयार होता है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/e5b1f96f66acfcd1e0f75dc876c53b50aa39b240926f63c52ba80f5d30d8b799.mp3",
+      "audioSha256": "e5b1f96f66acfcd1e0f75dc876c53b50aa39b240926f63c52ba80f5d30d8b799",
+      "difficulty": "medium",
+      "conceptTag": "not_ready_when_laid"
+    },
+    {
+      "id": "ae6a61ba-9140-4810-9fef-8536682409e9",
+      "format": "fill_blank",
+      "prompt": "आरव train से खेत देख रहा है। उसे एक तितली, एक भैंस और एक बकरी दिखती है। इनमें से अंडे देने वाली ___ है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "भैंस"
+        },
+        {
+          "id": "option-1",
+          "text": "तितली"
+        },
+        {
+          "id": "option-2",
+          "text": "बकरी"
+        }
+      ],
+      "audioUrl": "/media/aa6fcc0e51cccc2d5d412b439e16cc8a0a8776f3d33d37271ad0a88ba2bcd511.mp3",
+      "audioSha256": "aa6fcc0e51cccc2d5d412b439e16cc8a0a8776f3d33d37271ad0a88ba2bcd511",
+      "difficulty": "easy",
+      "conceptTag": "insect_lays_eggs"
+    },
+    {
+      "id": "bde6e39a-fe09-47c6-bd3f-1d3cb7e0bb8b",
+      "format": "multi_select",
+      "prompt": "अंडे देने वाले जानवरों के बारे में इनमें से कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "हर जानवर अंडे देता है।"
+        },
+        {
+          "id": "option-1",
+          "text": "बच्चा अंडे के अंदर बड़ा होता है।"
+        },
+        {
+          "id": "option-2",
+          "text": "सिर्फ़ पक्षी ही अंडे देते हैं।"
+        },
+        {
+          "id": "option-3",
+          "text": "बच्चा खुद ही shell तोड़कर बाहर आता है।"
+        },
+        {
+          "id": "option-4",
+          "text": "इस तरह बाहर आने को hatching कहते हैं।"
+        }
+      ],
+      "audioUrl": "/media/d51fe490aae5ef2b61b99bdc27c7ebae2aa59bfb7922bca551c339c2114452c2.mp3",
+      "audioSha256": "d51fe490aae5ef2b61b99bdc27c7ebae2aa59bfb7922bca551c339c2114452c2",
+      "difficulty": "medium",
+      "conceptTag": "how_the_young_arrives"
+    },
+    {
+      "id": "228c76e5-2877-48bf-85d0-865fbbab648d",
+      "format": "true_false",
+      "prompt": "School के बगीचे में एक कीड़ा पत्ते खाता है। **Food chain** का arrow पत्तों से कीड़े की तरफ़ जाता है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/dd9acbf59a4a143557861303ca40d43a387ff539e58f3a3b2a5a2a254fa5231e.mp3",
+      "audioSha256": "dd9acbf59a4a143557861303ca40d43a387ff539e58f3a3b2a5a2a254fa5231e",
+      "difficulty": "medium",
+      "conceptTag": "arrow_direction"
+    },
+    {
+      "id": "047cc9a5-e9dd-449c-826f-9777f887b00f",
+      "format": "fill_blank",
+      "prompt": "मीरा की छत पर रखे गमले के पौधे को एक चूहा खाता है। एक चील उस चूहे को खाती है। चूहे के बाद कौन आता है? वह है ___।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "पौधा"
+        },
+        {
+          "id": "option-1",
+          "text": "चूहा"
+        },
+        {
+          "id": "option-2",
+          "text": "चील"
+        }
+      ],
+      "audioUrl": "/media/9a6ecf0a611da2aaaf5624fe97a2a69de90a37ee6a91ad4e60c5af1ff156fd4c.mp3",
+      "audioSha256": "9a6ecf0a611da2aaaf5624fe97a2a69de90a37ee6a91ad4e60c5af1ff156fd4c",
+      "difficulty": "easy",
+      "conceptTag": "next_link_in_chain"
+    },
+    {
+      "id": "b4675591-7606-42d1-94e9-8f048a4bf37d",
+      "format": "multi_select",
+      "prompt": "गौशाला के पास एक फल गिरता है। एक चूहा वह फल खाता है, और एक साँप उस चूहे को खाता है। इस **food chain** के बारे में इनमें से कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "इस chain में साँप सबसे पहले आता है।"
+        },
+        {
+          "id": "option-1",
+          "text": "फल को चूहा खाता है।"
+        },
+        {
+          "id": "option-2",
+          "text": "साँप को चूहा खाता है।"
+        },
+        {
+          "id": "option-3",
+          "text": "Arrow चूहे से फल की तरफ़ इशारा करता है।"
+        },
+        {
+          "id": "option-4",
+          "text": "चूहे को साँप खाता है।"
+        }
+      ],
+      "audioUrl": "/media/d92b14371ccc4fc095fb39ae1ea07e4a8023afa54cc6fdfba466cd0e6b1ba8d2.mp3",
+      "audioSha256": "d92b14371ccc4fc095fb39ae1ea07e4a8023afa54cc6fdfba466cd0e6b1ba8d2",
+      "difficulty": "medium",
+      "conceptTag": "read_chain_who_eats_whom"
+    },
+    {
+      "id": "dc7cd9a7-b0c6-4a70-80ce-55d52d3785eb",
+      "format": "pick_one",
+      "prompt": "स्कूल के मैदान में घास के पास एक मेंढक रहता है। **food chain** ऐसी है: घास, फिर एक जानवर, फिर मेंढक। बीच में कौन सा जानवर आएगा?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "हिरण"
+        },
+        {
+          "id": "option-1",
+          "text": "चील"
+        },
+        {
+          "id": "option-2",
+          "text": "कीड़ा"
+        }
+      ],
+      "audioUrl": "/media/c70b98a78bff1bff9093ca3f8454ede154d12a70fa6e63ca721c70cf0a7f5351.mp3",
+      "audioSha256": "c70b98a78bff1bff9093ca3f8454ede154d12a70fa6e63ca721c70cf0a7f5351",
+      "difficulty": "medium",
+      "conceptTag": "missing_middle_link"
+    },
+    {
+      "id": "17179e35-3c7c-4086-a840-cb0539d55151",
+      "format": "true_false",
+      "prompt": "आरव zoo में एक बंदर और उसके बच्चे को देखता है। बंदर का बच्चा अपनी माँ के अंदर एक अंडे से निकलता है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/4b9d5c60ae596761a9c178a08b4eccc17552918afde010d2715d73723c5531a5.mp3",
+      "audioSha256": "4b9d5c60ae596761a9c178a08b4eccc17552918afde010d2715d73723c5531a5",
+      "difficulty": "medium",
+      "conceptTag": "born_alive_not_hatched"
+    },
+    {
+      "id": "7c57e66d-23d2-4c8f-b08e-70a32b712f6f",
+      "format": "multi_select",
+      "prompt": "एक बकरी और उसका बच्चा नदी के किनारे खड़े हैं। बकरी के इस बच्चे के बारे में इनमें से कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "वह अंडे में से निकला था।"
+        },
+        {
+          "id": "option-1",
+          "text": "वह ज़िंदा पैदा हुआ था।"
+        },
+        {
+          "id": "option-2",
+          "text": "वह ज़िंदगी भर दूध पीता रहेगा।"
+        },
+        {
+          "id": "option-3",
+          "text": "वह अपनी माँ का दूध पीता है।"
+        },
+        {
+          "id": "option-4",
+          "text": "पैदा होने के बाद उसकी माँ उसकी देखभाल करती है।"
+        }
+      ],
+      "audioUrl": "/media/79433f6399d3a910c016af4d89bb39de9497edc3ccf23e64ce791ff15c8bc7ea.mp3",
+      "audioSha256": "79433f6399d3a910c016af4d89bb39de9497edc3ccf23e64ce791ff15c8bc7ea",
+      "difficulty": "medium",
+      "conceptTag": "born_alive_and_milk"
+    },
+    {
+      "id": "6f49d73f-e49e-4fad-82fa-d12056a69088",
+      "format": "fill_blank",
+      "prompt": "मीरा अपनी बालकनी पर अपने छोटे भाई के साथ बैठी है। हर **mammal** की तरह, वह भी पैदा होने से पहले अपनी माँ के ___ के अंदर बढ़ा था।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "nest"
+        },
+        {
+          "id": "option-1",
+          "text": "shell"
+        },
+        {
+          "id": "option-2",
+          "text": "womb"
+        }
+      ],
+      "audioUrl": "/media/0d59d65565c9d51a99bff1c7e8635e9b44e0f1a9503e999ede35c6bebe5c12d6.mp3",
+      "audioSha256": "0d59d65565c9d51a99bff1c7e8635e9b44e0f1a9503e999ede35c6bebe5c12d6",
+      "difficulty": "easy",
+      "conceptTag": "grows_in_womb"
+    },
+    {
+      "id": "266d3a36-cc72-4330-88b6-3b913a9f8743",
+      "format": "multi_select",
+      "prompt": "कबीर नदी के किनारे बैठा है और इन जानवरों को देखता है। इनमें से किन-किन के बच्चे ज़िंदा पैदा होते हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "गौरैया"
+        },
+        {
+          "id": "option-1",
+          "text": "चमगादड़"
+        },
+        {
+          "id": "option-2",
+          "text": "साँप"
+        },
+        {
+          "id": "option-3",
+          "text": "बकरी"
+        },
+        {
+          "id": "option-4",
+          "text": "तितली"
+        }
+      ],
+      "audioUrl": "/media/2ade4829b92110e1016672d510d10d88942c824f58fb312d3e6fb3079101cd38.mp3",
+      "audioSha256": "2ade4829b92110e1016672d510d10d88942c824f58fb312d3e6fb3079101cd38",
+      "difficulty": "medium",
+      "conceptTag": "flying_mammal_bat"
+    },
+    {
+      "id": "66c96ecb-f17d-4e58-b57e-783e1b566865",
+      "format": "pick_one",
+      "prompt": "फ़ार्म पर एक घोड़े का बच्चा ज़िंदा पैदा होता है। इसके बाद इनमें से क्या होता है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "वह अपनी माँ के womb में बढ़ता है।"
+        },
+        {
+          "id": "option-1",
+          "text": "वह अपनी माँ का दूध पीता है।"
+        },
+        {
+          "id": "option-2",
+          "text": "वह अंडे से निकलता है।"
+        }
+      ],
+      "audioUrl": "/media/04f1de3f80f282d5f07c0288d87fcb6a73bd0523e2c1bbf1ac9daa307d9022c7.mp3",
+      "audioSha256": "04f1de3f80f282d5f07c0288d87fcb6a73bd0523e2c1bbf1ac9daa307d9022c7",
+      "difficulty": "medium",
+      "conceptTag": "stage_after_birth"
+    },
+    {
+      "id": "aec085ef-dc79-47fb-862d-60ef29d8272a",
+      "format": "pick_one",
+      "prompt": "मीरा कहती है कि whale एक मछली है, क्योंकि वह तैरती है। कौन सा वाक्य बताता है कि whale एक **mammal** है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "वह समुद्र में तैरती है।"
+        },
+        {
+          "id": "option-1",
+          "text": "वह बहुत बड़ा जानवर है।"
+        },
+        {
+          "id": "option-2",
+          "text": "उसका बच्चा ज़िंदा पैदा होता है और माँ का दूध पीता है।"
+        }
+      ],
+      "audioUrl": "/media/f3046335d3391abc0603426df5216af07856853588c5877a51a434b58e42db07.mp3",
+      "audioSha256": "f3046335d3391abc0603426df5216af07856853588c5877a51a434b58e42db07",
+      "difficulty": "medium",
+      "conceptTag": "swimming_mammal_whale"
+    },
+    {
+      "id": "c9bc2bbb-add3-4d7d-bc76-33151cabd700",
+      "format": "fill_blank",
+      "prompt": "कबीर अपनी माँ के साथ सब्ज़ी मंडी में घूम रहा है। इनमें से सिर्फ़ ___ के बच्चे ज़िंदा पैदा होते हैं।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "कौआ"
+        },
+        {
+          "id": "option-1",
+          "text": "कुत्ता"
+        },
+        {
+          "id": "option-2",
+          "text": "मुर्गी"
+        }
+      ],
+      "audioUrl": "/media/fc9830217bc039f8b06f74d082ec193d9e8740046eb2b18ed63388f8e19a841f.mp3",
+      "audioSha256": "fc9830217bc039f8b06f74d082ec193d9e8740046eb2b18ed63388f8e19a841f",
+      "difficulty": "easy",
+      "conceptTag": "born_alive_sorting"
+    },
+    {
+      "id": "d3f3a709-a8bd-425d-833e-19960e613c9a",
+      "format": "true_false",
+      "prompt": "मेंढक बरसात के पानी के गड्ढों के पास बैठते हैं। मेंढक **mammals** हैं, क्योंकि उनके बच्चे ज़िंदा पैदा होते हैं। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/508e7a0a694e3d42232663d73ef0aa3acbec450ed7f5d73b3356bbad187966cc.mp3",
+      "audioSha256": "508e7a0a694e3d42232663d73ef0aa3acbec450ed7f5d73b3356bbad187966cc",
+      "difficulty": "easy",
+      "conceptTag": "egg_layer_not_mammal"
+    },
+    {
+      "id": "2ec6eb32-e52c-45d5-99fe-aa7865d094cc",
+      "format": "pick_one",
+      "prompt": "शाम की सैर पर मीरा का परिवार भुट्टा और उबले अंडे खाता है। मीरा का परिवार किस group में आता है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "पौधे खाने वाले (herbivores)"
+        },
+        {
+          "id": "option-1",
+          "text": "Omnivores (दोनों खाने वाले)"
+        },
+        {
+          "id": "option-2",
+          "text": "Flesh खाने वाले (carnivores)"
+        }
+      ],
+      "audioUrl": "/media/e05b10b9395155c417625cc96808d9c956b7eddcb77d89e69f8d1a648a17200a.mp3",
+      "audioSha256": "e05b10b9395155c417625cc96808d9c956b7eddcb77d89e69f8d1a648a17200a",
+      "difficulty": "easy",
+      "conceptTag": "omnivore_group_people"
+    },
+    {
+      "id": "14d93b29-70de-43e7-8284-c56aa7bbc72b",
+      "format": "fill_blank",
+      "prompt": "दूधवाले को अपनी भैंस की टाँग पर एक जोंक मिलती है। जोंक चिपक जाती है और खून ___ है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "चूसती"
+        },
+        {
+          "id": "option-1",
+          "text": "चबाती"
+        },
+        {
+          "id": "option-2",
+          "text": "पीसती"
+        }
+      ],
+      "audioUrl": "/media/a754f35561893b44195b3d22f9b24d6c4c0240070ca35ce6041f6d6bd949dd18.mp3",
+      "audioSha256": "a754f35561893b44195b3d22f9b24d6c4c0240070ca35ce6041f6d6bd949dd18",
+      "difficulty": "easy",
+      "conceptTag": "leech_fastens_and_sucks"
+    },
+    {
+      "id": "c617c12a-7677-4cf0-8c38-8337522775f9",
+      "format": "multi_select",
+      "prompt": "एक गौरैया रोज़ सुबह school के बगीचे में आती है। इनमें से कौन सी चीज़ें गौरैया खाती है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "बगीचे के पौधों के बीज"
+        },
+        {
+          "id": "option-1",
+          "text": "पत्तों पर बैठे छोटे insects"
+        },
+        {
+          "id": "option-2",
+          "text": "फूलों की क्यारी की मिट्टी"
+        },
+        {
+          "id": "option-3",
+          "text": "गीली मिट्टी में केंचुए"
+        },
+        {
+          "id": "option-4",
+          "text": "भैंस की टाँग से खून"
+        }
+      ],
+      "audioUrl": "/media/228e168a1f40182d5713eed861a55b7b97d422116a1595705bd421fc83cead7a.mp3",
+      "audioSha256": "228e168a1f40182d5713eed861a55b7b97d422116a1595705bd421fc83cead7a",
+      "difficulty": "medium",
+      "conceptTag": "bird_both_halves"
+    },
+    {
+      "id": "90304688-6ded-4860-80cb-c41924c13230",
+      "format": "true_false",
+      "prompt": "मिला-जुला खाने वाले जानवर के पास जीने के लिए ज़्यादा तरह का खाना होता है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/e33053860f4a8d5cf7377e8759c5e875c1263a53268b1e05be4865871facd1a1.mp3",
+      "audioSha256": "e33053860f4a8d5cf7377e8759c5e875c1263a53268b1e05be4865871facd1a1",
+      "difficulty": "medium",
+      "conceptTag": "why_both_foods_help"
+    },
+    {
+      "id": "4493d500-9ffe-4d12-9783-93b2faaec8a3",
+      "format": "true_false",
+      "prompt": "कबीर चिड़ियाघर में मछलियों का बड़ा tank देखता है। Sharks और piranhas सिर्फ़ पानी के पौधे खाते हैं। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/71718a4a4ce6bee6109e42ddba775985158d6ba53361c8cc85a70ad0ad1ce86a.mp3",
+      "audioSha256": "71718a4a4ce6bee6109e42ddba775985158d6ba53361c8cc85a70ad0ad1ce86a",
+      "difficulty": "medium",
+      "conceptTag": "flesh_eating_fish"
+    },
+    {
+      "id": "71bb9ef4-1653-4ab9-b4b5-4984f5403ef1",
+      "format": "multi_select",
+      "prompt": "रिया एक wildlife sanctuary में घूम रही है। इनमें से कौन से जानवर flesh खाने वाले हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "हाथी"
+        },
+        {
+          "id": "option-1",
+          "text": "बाघ"
+        },
+        {
+          "id": "option-2",
+          "text": "जिराफ़"
+        },
+        {
+          "id": "option-3",
+          "text": "Python"
+        }
+      ],
+      "audioUrl": "/media/580bd3b2db36ab7c48981d7d6c3eec32df9ebb6fc6607efa37161d7152277d6b.mp3",
+      "audioSha256": "580bd3b2db36ab7c48981d7d6c3eec32df9ebb6fc6607efa37161d7152277d6b",
+      "difficulty": "medium",
+      "conceptTag": "flesh_eaters_not_by_size"
+    },
+    {
+      "id": "5b90b70d-8d37-4ffe-82d8-aef59c493d44",
+      "format": "fill_blank",
+      "prompt": "फ़सल कटने का समय है। रीना खेत में पौधे खाने वाले तीन जानवर देखती है। वे हैं एक गाय, एक बकरी और एक ___।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "साँप"
+        },
+        {
+          "id": "option-1",
+          "text": "बिल्ली"
+        },
+        {
+          "id": "option-2",
+          "text": "खरगोश"
+        }
+      ],
+      "audioUrl": "/media/a92084c431140296f753dbe39c410113bdc79cb73bc33004d2043e04ae759790.mp3",
+      "audioSha256": "a92084c431140296f753dbe39c410113bdc79cb73bc33004d2043e04ae759790",
+      "difficulty": "easy",
+      "conceptTag": "plant_eater_group"
+    },
+    {
+      "id": "2f8925e3-db98-48a6-b7f3-566d27eec536",
+      "format": "pick_one",
+      "prompt": "आरव की बालकनी में रखे कटोरे से एक बिल्ली पानी पीती है। हम बिल्ली को flesh खाने वाला क्यों कहते हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "यह दूसरे जानवरों का flesh खाती है।"
+        },
+        {
+          "id": "option-1",
+          "text": "यह तेज़ और खूँखार होती है।"
+        },
+        {
+          "id": "option-2",
+          "text": "यह लोगों के पास रहती है।"
+        }
+      ],
+      "audioUrl": "/media/3f9afb07ccd27de4c1a38d0fdd2d5db8b58192b87b89f06cb6293f8df78f99e7.mp3",
+      "audioSha256": "3f9afb07ccd27de4c1a38d0fdd2d5db8b58192b87b89f06cb6293f8df78f99e7",
+      "difficulty": "easy",
+      "conceptTag": "food_decides_the_group"
+    },
+    {
+      "id": "88e852a1-077a-4340-8390-2a34cdb4d2df",
+      "format": "fill_blank",
+      "prompt": "ट्रेन से मीरा खेत में बकरियों को घास खाते हुए देखती है। बकरी के आगे के चौड़े दाँत घास को ___।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "काटते हैं"
+        },
+        {
+          "id": "option-1",
+          "text": "पीसते हैं"
+        },
+        {
+          "id": "option-2",
+          "text": "पकड़ते हैं"
+        }
+      ],
+      "audioUrl": "/media/3f81874c2684b576ba74ca21833c6e5a54e9ee205c4457cc8b991d972428988b.mp3",
+      "audioSha256": "3f81874c2684b576ba74ca21833c6e5a54e9ee205c4457cc8b991d972428988b",
+      "difficulty": "easy",
+      "conceptTag": "plant_eater_front_teeth"
+    },
+    {
+      "id": "53141314-d87c-4040-b310-11658b2f2262",
+      "format": "pick_one",
+      "prompt": "सब्ज़ी मंडी के पास एक बिल्ली माँस का टुकड़ा खा रही है। बिल्ली के पीछे के मज़बूत दाँत क्या करते हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "वे घास को पीसकर नरम कौर बना देते हैं।"
+        },
+        {
+          "id": "option-1",
+          "text": "वे माँस और हड्डी दोनों काट देते हैं।"
+        },
+        {
+          "id": "option-2",
+          "text": "वे सख़्त मेवों से छोटे-छोटे टुकड़े कुतरते हैं।"
+        }
+      ],
+      "audioUrl": "/media/e1eaa2687c930b97bf87d1e07159fe1739e161559891e2bbc716b6fcecb2d0cf.mp3",
+      "audioSha256": "e1eaa2687c930b97bf87d1e07159fe1739e161559891e2bbc716b6fcecb2d0cf",
+      "difficulty": "easy",
+      "conceptTag": "flesh_eater_back_teeth"
+    },
+    {
+      "id": "f72c9080-7fb4-45a6-8e80-1ed85ce8565b",
+      "format": "multi_select",
+      "prompt": "सुबह-सुबह एक हिरण गाँव के तालाब पर पानी पीता है। घास में से एक भेड़िया उसे देख रहा है। उनके दाँतों और पंजों के बारे में इनमें से कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "भेड़िये के पंजे उसका खाना चबाते हैं।"
+        },
+        {
+          "id": "option-1",
+          "text": "भेड़िये के पंजे हिरण को ऐसे पकड़ते हैं कि वह छूट न सके।"
+        },
+        {
+          "id": "option-2",
+          "text": "भेड़िये के नुकीले अगले दाँत मांस को नोच लेते हैं।"
+        },
+        {
+          "id": "option-3",
+          "text": "हिरण के चपटे पिछले दाँत उसका खाना पीसते हैं।"
+        },
+        {
+          "id": "option-4",
+          "text": "हिरण के अगले दाँत हड्डी को काट देते हैं।"
+        }
+      ],
+      "audioUrl": "/media/28fd3fa7725e76ccb4025fc91461d19e83513df0a6ef8819654d67f9b2b67faa.mp3",
+      "audioSha256": "28fd3fa7725e76ccb4025fc91461d19e83513df0a6ef8819654d67f9b2b67faa",
+      "difficulty": "medium",
+      "conceptTag": "teeth_and_claws_jobs"
+    },
+    {
+      "id": "67b9113e-8f5f-448d-9eae-f2201caafa05",
+      "format": "true_false",
+      "prompt": "गाय अपने खाने को अपनी जीभ से पीसती है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/79a1e92c4b91bbb8a489788078f514d3dc9be554e53f8026693c4adb41456a8c.mp3",
+      "audioSha256": "79a1e92c4b91bbb8a489788078f514d3dc9be554e53f8026693c4adb41456a8c",
+      "difficulty": "medium",
+      "conceptTag": "tongue_job_not_grinding"
+    },
+    {
+      "id": "82b858a7-2a7c-44d6-a751-94eee791354f",
+      "format": "pick_one",
+      "prompt": "एक गाय गौशाला में खड़ी साँस ले रही है। गाय साँस के साथ कौन सी गैस बाहर छोड़ती है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Carbon dioxide"
+        },
+        {
+          "id": "option-1",
+          "text": "Oxygen"
+        }
+      ],
+      "audioUrl": "/media/578a1231f05ebae661b080abf502e06f1e6829478f3155ffa82e49809cada784.mp3",
+      "audioSha256": "578a1231f05ebae661b080abf502e06f1e6829478f3155ffa82e49809cada784",
+      "difficulty": "easy",
+      "conceptTag": "carbon_dioxide_out_of_animal"
+    },
+    {
+      "id": "acbb2573-e055-4847-ace5-ebbf1a7ebac6",
+      "format": "multi_select",
+      "prompt": "School के मैदान में एक बड़ा नीम का पेड़ है। बच्चे रोज़ उसके नीचे बैठते हैं। इनमें से कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "पेड़ oxygen बाहर छोड़ता है।"
+        },
+        {
+          "id": "option-1",
+          "text": "बच्चे साँस के साथ carbon dioxide बाहर छोड़ते हैं।"
+        },
+        {
+          "id": "option-2",
+          "text": "बच्चे oxygen बाहर छोड़ते हैं।"
+        },
+        {
+          "id": "option-3",
+          "text": "पेड़ को बच्चों से कुछ नहीं मिलता।"
+        },
+        {
+          "id": "option-4",
+          "text": "पेड़ बैठने के लिए छाँव देता है।"
+        }
+      ],
+      "audioUrl": "/media/bbd2f1d79f165aa8abfd3e41ac688407d45fd5171f2ed58128535a685a628649.mp3",
+      "audioSha256": "bbd2f1d79f165aa8abfd3e41ac688407d45fd5171f2ed58128535a685a628649",
+      "difficulty": "medium",
+      "conceptTag": "both_sides_give_and_take"
+    },
+    {
+      "id": "3bc32428-0361-4e50-86f9-a678d3ee6996",
+      "format": "true_false",
+      "prompt": "मीरा अपनी छत पर गमलों में टमाटर के पौधे उगाती है। मीरा साँस के साथ **oxygen** बाहर छोड़ती है और उसके पौधे **carbon dioxide** देते हैं। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/090354c921de3cd763b94e2d2b9b4aca7352abf41a16dde72aff85849f8d23c5.mp3",
+      "audioSha256": "090354c921de3cd763b94e2d2b9b4aca7352abf41a16dde72aff85849f8d23c5",
+      "difficulty": "medium",
+      "conceptTag": "which_gas_each_way"
+    },
+    {
+      "id": "91fc5f03-0a57-4365-a239-657caea035cb",
+      "format": "fill_blank",
+      "prompt": "अमरूद का एक पेड़ school के बगीचे में उगा है। चिड़ियाँ ___ पर अपने घोंसले बनाती हैं।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "जड़"
+        },
+        {
+          "id": "option-1",
+          "text": "डाल"
+        },
+        {
+          "id": "option-2",
+          "text": "बीज"
+        }
+      ],
+      "audioUrl": "/media/9d1955c86d3092cff1e5432c93b732ac333c7e7f4c984f7cdc5986bda68d3381.mp3",
+      "audioSha256": "9d1955c86d3092cff1e5432c93b732ac333c7e7f4c984f7cdc5986bda68d3381",
+      "difficulty": "easy",
+      "conceptTag": "useful_things_from_plants"
+    },
+    {
+      "id": "3c9b8b07-d896-4050-b690-e04134921fcc",
+      "format": "pick_one",
+      "prompt": "मीरा के चिड़ियों वाले कटोरे से एक कबूतर और एक गौरैया पानी पीते हैं। उसके पास तुलसी का पौधा उगा है। इनमें से कौन अपना खाना खुद बनाता है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "कबूतर"
+        },
+        {
+          "id": "option-1",
+          "text": "गौरैया"
+        },
+        {
+          "id": "option-2",
+          "text": "तुलसी का पौधा"
+        }
+      ],
+      "audioUrl": "/media/38dfbc20e424f64fdbaaf678998ea9f45bf8339d2eadabcbf22de94240cfa9ca.mp3",
+      "audioSha256": "38dfbc20e424f64fdbaaf678998ea9f45bf8339d2eadabcbf22de94240cfa9ca",
+      "difficulty": "easy",
+      "conceptTag": "plants_make_own_food"
+    },
+    {
+      "id": "1b97e730-c3a7-4ca0-83a4-d449925f04f1",
+      "format": "true_false",
+      "prompt": "नदी के किनारे एक सारस एक मछली पकड़ता है। उस मछली ने पानी के पौधे खाए थे। सारस को पौधों वाला खाना **indirectly** मिलता है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/d0a8808e2fb9d890c79c82ad474a393b54e8e4882b434ca9a332015b82a330b8.mp3",
+      "audioSha256": "d0a8808e2fb9d890c79c82ad474a393b54e8e4882b434ca9a332015b82a330b8",
+      "difficulty": "medium",
+      "conceptTag": "plant_food_indirectly"
+    },
+    {
+      "id": "e4ebcf4f-f707-49ee-9640-0e9eddaca4bb",
+      "format": "fill_blank",
+      "prompt": "चिड़ियाघर में आरव एक ऊँट को हरी पत्तियाँ खाते हुए देखता है। ऊँट अपना पौधों वाला खाना ___ लेता है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "directly"
+        },
+        {
+          "id": "option-1",
+          "text": "indirectly"
+        }
+      ],
+      "audioUrl": "/media/c3a7dc69047da35a8a7388ad5bc0a258e7ec87b3b9964d7e09edd3e2309a557a.mp3",
+      "audioSha256": "c3a7dc69047da35a8a7388ad5bc0a258e7ec87b3b9964d7e09edd3e2309a557a",
+      "difficulty": "easy",
+      "conceptTag": "plant_food_directly"
+    },
+    {
+      "id": "efdffc2e-b03c-4fe5-8e17-325eec7c515c",
+      "format": "multi_select",
+      "prompt": "आरव एक wildlife sanctuary घूमने जाता है। इनमें से कौन से जानवर अपना पौधों वाला खाना **indirectly** लेते हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "भेड़िया"
+        },
+        {
+          "id": "option-1",
+          "text": "खरगोश"
+        },
+        {
+          "id": "option-2",
+          "text": "साँप"
+        },
+        {
+          "id": "option-3",
+          "text": "हिरण"
+        },
+        {
+          "id": "option-4",
+          "text": "चील"
+        }
+      ],
+      "audioUrl": "/media/0ade498c3e91ddc38e955d31719dd4a0dcb2003564481faa655b86e598c7a12a.mp3",
+      "audioSha256": "0ade498c3e91ddc38e955d31719dd4a0dcb2003564481faa655b86e598c7a12a",
+      "difficulty": "medium",
+      "conceptTag": "flesh_eaters_depend_indirectly"
+    },
+    {
+      "id": "fe6e6490-bf47-44df-9612-b67a24e1056a",
+      "format": "pick_one",
+      "prompt": "मीरा ट्रेन की खिड़की से बाहर देखती है। उसे एक गाय और उसका बच्चा दिखते हैं। यह बच्चा बड़ा होकर क्या बनेगा?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "गाय"
+        },
+        {
+          "id": "option-1",
+          "text": "मुर्गी"
+        },
+        {
+          "id": "option-2",
+          "text": "कुत्ता"
+        }
+      ],
+      "audioUrl": "/media/ebecb789085cc2832a939dcb46407e0ff0c0b6141220db8c3669063993ade007.mp3",
+      "audioSha256": "ebecb789085cc2832a939dcb46407e0ff0c0b6141220db8c3669063993ade007",
+      "difficulty": "easy",
+      "conceptTag": "parent_and_young_pair"
+    },
+    {
+      "id": "758c98f1-a853-4466-b27f-138b470d1225",
+      "format": "true_false",
+      "prompt": "कबीर को बारिश के एक गड्ढे के पास बहुत सारे मेंढक दिखते हैं। अगर मेंढक नए बच्चे पैदा करना बंद कर दें, तो नए मेंढक नहीं आएँगे। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/b16545d90832fd9060995fc4a5daf2897bc9ec6aa7dd81ada076f0337f898fe6.mp3",
+      "audioSha256": "b16545d90832fd9060995fc4a5daf2897bc9ec6aa7dd81ada076f0337f898fe6",
+      "difficulty": "medium",
+      "conceptTag": "why_reproduction_matters"
+    },
+    {
+      "id": "94599fdf-2cab-4481-82e2-7d4fdee35275",
+      "format": "multi_select",
+      "prompt": "आरव अपने परिवार के साथ पेड़ों वाली सड़क पर चल रहा है। जानवर नए बच्चे पैदा करने के दो तरीक़े इनमें से कौन से हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "वे बीज से उगते हैं।"
+        },
+        {
+          "id": "option-1",
+          "text": "वे अंडे देते हैं।"
+        },
+        {
+          "id": "option-2",
+          "text": "वे बच्चों को जन्म देते हैं।"
+        },
+        {
+          "id": "option-3",
+          "text": "वे घोंसला बनाते हैं।"
+        }
+      ],
+      "audioUrl": "/media/1fd9b88dbdc4644b670e2507e5f4ddc1471e99e94c049994b2b4c6f3754d8c73.mp3",
+      "audioSha256": "1fd9b88dbdc4644b670e2507e5f4ddc1471e99e94c049994b2b4c6f3754d8c73",
+      "difficulty": "medium",
+      "conceptTag": "two_ways_animals_reproduce"
+    },
+    {
+      "id": "9cab4251-a6d6-4c72-bfa4-7ec109a7fe51",
+      "format": "fill_blank",
+      "prompt": "फ़सल कटने के दिनों में एक खरगोश किसान का गेहूँ खाता है। एक भेड़िया उस खरगोश को खाता है। हर **food chain** की शुरुआत में एक ___ होता है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "flesh खाने वाला"
+        },
+        {
+          "id": "option-1",
+          "text": "पौधा"
+        },
+        {
+          "id": "option-2",
+          "text": "पौधे खाने वाला"
+        }
+      ],
+      "audioUrl": "/media/af2b3fbc7ccac0aedc3b98f837202967326ed501dcdc773409142c48e16c773c.mp3",
+      "audioSha256": "af2b3fbc7ccac0aedc3b98f837202967326ed501dcdc773409142c48e16c773c",
+      "difficulty": "easy",
+      "conceptTag": "first_link_is_a_plant"
+    },
+    {
+      "id": "f30da142-e2fc-4457-b70e-04e7d6e119a9",
+      "format": "multi_select",
+      "prompt": "आरव दूधवाले के साथ गौशाला जाता है। इनमें से कौन सी जीवित चीज़ें **food chain** शुरू कर सकती हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "गाय"
+        },
+        {
+          "id": "option-1",
+          "text": "घास"
+        },
+        {
+          "id": "option-2",
+          "text": "मुर्गी"
+        },
+        {
+          "id": "option-3",
+          "text": "नीम का पेड़"
+        },
+        {
+          "id": "option-4",
+          "text": "कुत्ता"
+        }
+      ],
+      "audioUrl": "/media/17350f1a2893f770bd1e23b335ffde9f89a4ac61c4613213e378e59d5aaad900.mp3",
+      "audioSha256": "17350f1a2893f770bd1e23b335ffde9f89a4ac61c4613213e378e59d5aaad900",
+      "difficulty": "medium",
+      "conceptTag": "only_plants_can_start_a_chain"
+    },
+    {
+      "id": "154e664e-bc70-4e48-8fdf-8f12dc259f06",
+      "format": "pick_one",
+      "prompt": "पेड़ों वाली सड़क पर एक insect पत्ते खाता है। एक छोटी चिड़िया उस insect को खाती है। अगर सारे पत्ते ख़त्म हो जाएँ, तो चिड़िया का क्या होगा?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "चिड़िया का खाना भी ख़त्म हो जाएगा।"
+        },
+        {
+          "id": "option-1",
+          "text": "चिड़िया को कुछ नहीं होगा।"
+        },
+        {
+          "id": "option-2",
+          "text": "अब चिड़िया को और ज़्यादा insects मिलेंगे।"
+        }
+      ],
+      "audioUrl": "/media/18d10b96ca6bd5432c98cfbfa383db7bebfc34ccd12e0ba41298d27ffa0ca042.mp3",
+      "audioSha256": "18d10b96ca6bd5432c98cfbfa383db7bebfc34ccd12e0ba41298d27ffa0ca042",
+      "difficulty": "medium",
+      "conceptTag": "plant_removed_animals_lose_food"
+    },
+    {
+      "id": "a3dfc88c-d1d0-4ffb-b47e-82a32f9857a7",
+      "format": "fill_blank",
+      "prompt": "Wildlife sanctuary के एक board पर जंगल का **food web** बना है। पत्तों को एक insect और एक हिरन खाते हैं। उस insect को एक मेंढक खाता है। तो मेंढक ___ को खाता है।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "हिरन"
+        },
+        {
+          "id": "option-1",
+          "text": "insect"
+        },
+        {
+          "id": "option-2",
+          "text": "पत्ते"
+        }
+      ],
+      "audioUrl": "/media/c54de95682f10053e771f91a54b40063c43dd426515621241f2ec8b06b2869f7.mp3",
+      "audioSha256": "c54de95682f10053e771f91a54b40063c43dd426515621241f2ec8b06b2869f7",
+      "difficulty": "easy",
+      "conceptTag": "trace_one_eater_in_web"
+    },
+    {
+      "id": "15911e97-4c13-45f9-bacc-535b06d6b0ee",
+      "format": "pick_one",
+      "prompt": "जंगल के एक web में एक भालू फल खाता है। वही भालू insects भी खाता है। यह भालू दो chains में क्यों है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "वह जंगल का सबसे बड़ा जानवर है।"
+        },
+        {
+          "id": "option-1",
+          "text": "वह एक से ज़्यादा तरह का खाना खाता है।"
+        },
+        {
+          "id": "option-2",
+          "text": "web में हर जानवर दो chains में होता है।"
+        }
+      ],
+      "audioUrl": "/media/aed9840f09705edb5bc89f90c5fef22234d75292081888c9a0b1d2340e1820f3.mp3",
+      "audioSha256": "aed9840f09705edb5bc89f90c5fef22234d75292081888c9a0b1d2340e1820f3",
+      "difficulty": "medium",
+      "conceptTag": "why_chains_cross"
+    },
+    {
+      "id": "3f094fb1-637e-495e-b8fa-6a3b9f96f6fa",
+      "format": "true_false",
+      "prompt": "जंगल के एक **web** में बाघ हिरण को खाता है। बाघ के मरने पर vultures उसका बचा हुआ हिस्सा खाते हैं। इस web में खाना सबसे आख़िर में बाघ को मिलता है। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/396a16446fb0ac8b8992642e4bc8bb54ff5a3667d4c5aa41f11fefc22f5a129b.mp3",
+      "audioSha256": "396a16446fb0ac8b8992642e4bc8bb54ff5a3667d4c5aa41f11fefc22f5a129b",
+      "difficulty": "medium",
+      "conceptTag": "vulture_in_web"
+    },
+    {
+      "id": "034d2c4c-9d4f-4ee2-bbd3-8bf76f4ac584",
+      "format": "pick_one",
+      "prompt": "कबीर ट्रेन की खिड़की से खेतों को देख रहा है। उसे एक चिड़िया के बच्चे और एक गाय का बछड़ा दिखते हैं। बच्चों की देखभाल के बारे में कौन सा वाक्य सही है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Mammals अपने बच्चों की देखभाल करते हैं, पर पक्षी नहीं करते।"
+        },
+        {
+          "id": "option-1",
+          "text": "साँप रुककर अपने बच्चों की देखभाल करते हैं।"
+        },
+        {
+          "id": "option-2",
+          "text": "पक्षी और mammals, दोनों अपने बच्चों की देखभाल करते हैं।"
+        }
+      ],
+      "audioUrl": "/media/adb9fa3bbf0029b2636273fffc64bcb021d2b1e35b46fedada0d702197dfa4fb.mp3",
+      "audioSha256": "adb9fa3bbf0029b2636273fffc64bcb021d2b1e35b46fedada0d702197dfa4fb",
+      "difficulty": "medium",
+      "conceptTag": "birds_and_mammals_same_side"
+    },
+    {
+      "id": "3fa3b98f-9787-4442-8c59-91725a0ec8b2",
+      "format": "multi_select",
+      "prompt": "गर्मी में मीरा अपनी बालकनी पर चिड़ियों का कटोरा भरती है। एक चिड़िया अपने बच्चों के साथ आती है। इनमें से कौन-कौन से काम चिड़िया के माँ-बाप करते हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "वे अंडे आने से पहले nest बनाते हैं।"
+        },
+        {
+          "id": "option-1",
+          "text": "वे अपने बच्चों को गरम रखते हैं।"
+        },
+        {
+          "id": "option-2",
+          "text": "वे nest में खाना लाते हैं।"
+        },
+        {
+          "id": "option-3",
+          "text": "वे अपने बच्चों को दूध पिलाते हैं।"
+        },
+        {
+          "id": "option-4",
+          "text": "वे अपने अंडे किसी सुरक्षित जगह पर देकर चले जाते हैं।"
+        }
+      ],
+      "audioUrl": "/media/ba149fe673b7b1840c4fd23d59db430cb100559d8abba845af58dff3c01de719.mp3",
+      "audioSha256": "ba149fe673b7b1840c4fd23d59db430cb100559d8abba845af58dff3c01de719",
+      "difficulty": "medium",
+      "conceptTag": "parent_bird_care"
+    },
+    {
+      "id": "04c61ae0-cac2-47d1-b2f1-6c7ed3f52ea1",
+      "format": "multi_select",
+      "prompt": "मीरा को अपनी छत पर एक गमले में एक जीव मिलता है। इनमें से क्या-क्या दिखाएगा कि यह एक **insect** है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "इसके छह पैर हैं।"
+        },
+        {
+          "id": "option-1",
+          "text": "यह छोटा है।"
+        },
+        {
+          "id": "option-2",
+          "text": "इसका शरीर तीन हिस्सों में है।"
+        },
+        {
+          "id": "option-3",
+          "text": "यह ज़मीन पर रेंगता है।"
+        },
+        {
+          "id": "option-4",
+          "text": "इसके एक जोड़ी feelers हैं।"
+        }
+      ],
+      "audioUrl": "/media/e179ea28babeefc5b13d06b73af682524b7073d2e875b01f159ae1cbb49964b3.mp3",
+      "audioSha256": "e179ea28babeefc5b13d06b73af682524b7073d2e875b01f159ae1cbb49964b3",
+      "difficulty": "medium",
+      "conceptTag": "insect_check_features"
+    },
+    {
+      "id": "87ed0f43-b596-42da-bb4f-f3d68d44ee4b",
+      "format": "fill_blank",
+      "prompt": "आरव school के बगीचे में एक तितली को देखता है। उसके दाँत नहीं होते। वह एक लंबी ___ से liquid खाना पीती है, straw की तरह।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "चोंच"
+        },
+        {
+          "id": "option-1",
+          "text": "जीभ"
+        },
+        {
+          "id": "option-2",
+          "text": "नली"
+        }
+      ],
+      "audioUrl": "/media/8a7ee113d8ada6066136c9207dcbfe4969c7926900974f4c74f5db49ec8f9705.mp3",
+      "audioSha256": "8a7ee113d8ada6066136c9207dcbfe4969c7926900974f4c74f5db49ec8f9705",
+      "difficulty": "easy",
+      "conceptTag": "sucking_tube_liquid_feeder"
+    },
+    {
+      "id": "b4e4832a-6496-459b-a87e-7108bb35cafe",
+      "format": "true_false",
+      "prompt": "मीरा zoo में एक गिलहरी देखती है। गिलहरी एक कड़े मेवे को छोटे-छोटे कई बार कुतरती है, इसी को **gnawing** कहते हैं। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/6978a0e6d5ae0819c601ab9c96052225ac61c7442cfb67db290d44f35faac2c8.mp3",
+      "audioSha256": "6978a0e6d5ae0819c601ab9c96052225ac61c7442cfb67db290d44f35faac2c8",
+      "difficulty": "easy",
+      "conceptTag": "gnawing_many_small_bites"
+    },
+    {
+      "id": "330754ad-7941-4954-a91f-e99378520fb6",
+      "format": "multi_select",
+      "prompt": "आरव नदी के किनारे एक भैंस को आराम करते देखता है। उसका मुँह चलता ही रहता है। **Chewing the cud** के बारे में इनमें से कौन-सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Chewing the cud का मतलब है बस लंबे समय तक चबाना।"
+        },
+        {
+          "id": "option-1",
+          "text": "भैंस पहले घास निगल लेती है।"
+        },
+        {
+          "id": "option-2",
+          "text": "भैंस अपना खाना सिर्फ़ एक बार निगलती है।"
+        },
+        {
+          "id": "option-3",
+          "text": "वह खाना वापस ऊपर लाकर अच्छे से चबाती है।"
+        },
+        {
+          "id": "option-4",
+          "text": "उसकी जीभ खाने को मुँह के अंदर इधर-उधर घुमाती है।"
+        }
+      ],
+      "audioUrl": "/media/1a64eba7a4ee5908d1758e7e4123fc053211f88476099bf521351dbb992ebcc4.mp3",
+      "audioSha256": "1a64eba7a4ee5908d1758e7e4123fc053211f88476099bf521351dbb992ebcc4",
+      "difficulty": "medium",
+      "conceptTag": "cud_routine_steps"
+    },
+    {
+      "id": "40ae620b-f296-470a-87d7-2c82f9eb0f88",
+      "format": "multi_select",
+      "prompt": "मीरा सुबह-सुबह गाँव के तालाब पर एक साँप देखती है। उसने एक मेंढक पकड़ा है। इनमें से कौन-कौन सी चीज़ें मेंढक को साँप के गले से नीचे उतारने में मदद करती हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "उसके मुँह के अंदर के hook जैसे हिस्से"
+        },
+        {
+          "id": "option-1",
+          "text": "उसके शरीर के muscles"
+        },
+        {
+          "id": "option-2",
+          "text": "उसके दाँत, जो मेंढक को चबाकर टुकड़े कर देते हैं"
+        },
+        {
+          "id": "option-3",
+          "text": "उसके पंजे, जो मेंढक को नीचे धकेलते हैं"
+        }
+      ],
+      "audioUrl": "/media/117db63183cfa8095505d2182e484ad2f259e79104fa329dfca12bf03449a689.mp3",
+      "audioSha256": "117db63183cfa8095505d2182e484ad2f259e79104fa329dfca12bf03449a689",
+      "difficulty": "medium",
+      "conceptTag": "hook_parts_and_muscles"
+    },
+    {
+      "id": "0de2e526-3c12-49af-999e-9c26f72f134c",
+      "format": "pick_one",
+      "prompt": "स्कूल के बगीचे में एक ऊँचा नीम का पेड़ है। सोचिए, एक जिराफ़ उसके ऊपर के पत्ते खाता है। इतनी ऊँचाई तक पहुँचने में जिराफ़ के शरीर का कौन सा हिस्सा मदद करता है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "उसकी लंबी पूँछ"
+        },
+        {
+          "id": "option-1",
+          "text": "उसकी लंबी गर्दन"
+        },
+        {
+          "id": "option-2",
+          "text": "उसके चपटे दाँत"
+        }
+      ],
+      "audioUrl": "/media/bf9a2218c870cb594af9f2cac093aba29399adc6cbd3c525c4877b933b1f9140.mp3",
+      "audioSha256": "bf9a2218c870cb594af9f2cac093aba29399adc6cbd3c525c4877b933b1f9140",
+      "difficulty": "easy",
+      "conceptTag": "giraffe_neck_reaches_high_leaves"
+    },
+    {
+      "id": "a8cb5ae7-44f8-4f9c-9f18-61aa6db3be07",
+      "format": "pick_one",
+      "prompt": "बारिश के बाद आरव को एक पोखर के पास एक साँप दिखता है। साँप ने एक चूहे को अपने गले से नीचे उतार लिया है। अब आगे क्या होता है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "वह चूहे को अपने पीछे के दाँतों से चबाता है।"
+        },
+        {
+          "id": "option-1",
+          "text": "वह चूहे को अपने मुँह में पकड़े रहता है।"
+        },
+        {
+          "id": "option-2",
+          "text": "उसका पेट पूरे चूहे को पचा देता है।"
+        }
+      ],
+      "audioUrl": "/media/019bacd5e853d3e1966c6b8c87afd07cd835f976e951604e51388ef910cb055e.mp3",
+      "audioSha256": "019bacd5e853d3e1966c6b8c87afd07cd835f976e951604e51388ef910cb055e",
+      "difficulty": "medium",
+      "conceptTag": "stomach_breaks_prey_down"
+    },
+    {
+      "id": "d0e6002b-4ffe-4382-a096-02959f590255",
+      "format": "multi_select",
+      "prompt": "मीरा का परिवार शाम की सैर पर एक हाथी को देखता है। इनमें से कौन से काम हाथी की सूँड़ करती है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "यह पौधे को ज़मीन से खींच लेती है।"
+        },
+        {
+          "id": "option-1",
+          "text": "यह खाने को पीसती है।"
+        },
+        {
+          "id": "option-2",
+          "text": "यह खाने को मुँह तक ले जाती है।"
+        },
+        {
+          "id": "option-3",
+          "text": "यह खाने को काटती है।"
+        },
+        {
+          "id": "option-4",
+          "text": "यह अपने शरीर पर पानी छिड़कती है।"
+        }
+      ],
+      "audioUrl": "/media/0cce0ce90519fb475d5c045626277bc82eaadf530bcdc7d5dce1c2e100311508.mp3",
+      "audioSha256": "0cce0ce90519fb475d5c045626277bc82eaadf530bcdc7d5dce1c2e100311508",
+      "difficulty": "medium",
+      "conceptTag": "trunk_jobs_not_teeth_jobs"
+    },
+    {
+      "id": "eba45c4d-9d13-4948-9d36-e8a6bc4c2cc9",
+      "format": "fill_blank",
+      "prompt": "मीरा की बालकनी के पौधों से चिड़ियाँ फल खाती हैं। वे बीजों को नई जगहों तक भी ले जाती हैं। तो चिड़ियाँ और पौधे एक-दूसरे पर निर्भर हैं। इसे ___ कहते हैं।",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "interdependence"
+        },
+        {
+          "id": "option-1",
+          "text": "reproduction"
+        },
+        {
+          "id": "option-2",
+          "text": "pollen"
+        }
+      ],
+      "audioUrl": "/media/eed404bf710bbfd2766818c95f655bd6ba60cba64ab079e9d380a6a509b8275e.mp3",
+      "audioSha256": "eed404bf710bbfd2766818c95f655bd6ba60cba64ab079e9d380a6a509b8275e",
+      "difficulty": "easy",
+      "conceptTag": "interdependence_term"
+    },
+    {
+      "id": "02c9904e-00e7-4590-ace9-0b263d8cb038",
+      "format": "multi_select",
+      "prompt": "फ़सल काटने का समय है। सोचिए, किसान के खेत से सारे जानवर चले जाते हैं। पौधे इनमें से क्या-क्या खो देंगे?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "carbon dioxide जो जानवर साँस के साथ बाहर छोड़ते हैं।"
+        },
+        {
+          "id": "option-1",
+          "text": "वे जानवर जो pollen और seeds ले जाते हैं।"
+        },
+        {
+          "id": "option-2",
+          "text": "oxygen जो पौधे बाहर छोड़ते हैं।"
+        },
+        {
+          "id": "option-3",
+          "text": "वह खाना जो पौधे अपने लिए बनाते हैं।"
+        }
+      ],
+      "audioUrl": "/media/4d9a170ac72039a556b439d25e18874610f945319606cc3ffb0a6dc2e11cdd25.mp3",
+      "audioSha256": "4d9a170ac72039a556b439d25e18874610f945319606cc3ffb0a6dc2e11cdd25",
+      "difficulty": "medium",
+      "conceptTag": "take_animals_away"
+    },
+    {
+      "id": "0cc74f7a-f9e3-4b72-9abc-8a8c42274f4b",
+      "format": "true_false",
+      "prompt": "सुबह-सुबह आरव को तालाब के पास एक गुड़हल का फूल दिखता है। गुड़हल का फूल एक पाउडर बनाता है जिसे **pollen** कहते हैं। सही या ग़लत?",
+      "options": [
+        {
+          "id": "true",
+          "text": "सही"
+        },
+        {
+          "id": "false",
+          "text": "ग़लत"
+        }
+      ],
+      "audioUrl": "/media/4b6577b5ac631b2698adb5bd7844240c6d0458acd58086db8c5fad630319f03a.mp3",
+      "audioSha256": "4b6577b5ac631b2698adb5bd7844240c6d0458acd58086db8c5fad630319f03a",
+      "difficulty": "easy",
+      "conceptTag": "what_pollen_is"
+    },
+    {
+      "id": "64731712-d1d5-49ef-b1f3-1020ed41df99",
+      "format": "multi_select",
+      "prompt": "मीरा ट्रेन की खिड़की से हरे खेत देखती है। एक छोटी चिड़िया अपनी चोंच में एक **seed** ले जा रही है। चिड़िया और seed के बारे में इनमें से कौन-कौन सी बातें सही हैं?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "चिड़िया उस seed को पौधे से दूर गिरा सकती है।"
+        },
+        {
+          "id": "option-1",
+          "text": "Seed वह पाउडर है जो फूल बनाता है।"
+        },
+        {
+          "id": "option-2",
+          "text": "Seed जहाँ गिरता है, वहाँ नया पौधा उग सकता है।"
+        },
+        {
+          "id": "option-3",
+          "text": "पौधे को चिड़िया से कोई मदद नहीं मिलती।"
+        }
+      ],
+      "audioUrl": "/media/2ac173331efae386aab6bea169e3499de29749d3db4072b3cbb9f68e907d6f06.mp3",
+      "audioSha256": "2ac173331efae386aab6bea169e3499de29749d3db4072b3cbb9f68e907d6f06",
+      "difficulty": "medium",
+      "conceptTag": "seed_carrying_spreads_plants"
+    },
+    {
+      "id": "f75dc1e3-320b-4cf7-87f9-229971b410c4",
+      "format": "pick_one",
+      "prompt": "आरव अपने स्कूल के बगीचे में जानवरों को देखता है। इनमें से कौन अपना खाना लंबी चिपचिपी जीभ से पकड़ता है?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "छिपकली"
+        },
+        {
+          "id": "option-1",
+          "text": "मेंढक"
+        },
+        {
+          "id": "option-2",
+          "text": "कौआ"
+        }
+      ],
+      "audioUrl": "/media/7fab290200ae9aca9a1cf2a02544664ed7e0f8b364933685fadc34ddd22e6e0a.mp3",
+      "audioSha256": "7fab290200ae9aca9a1cf2a02544664ed7e0f8b364933685fadc34ddd22e6e0a",
+      "difficulty": "medium",
+      "conceptTag": "sticky_tongue_feeders"
+    }
+  ]
+}

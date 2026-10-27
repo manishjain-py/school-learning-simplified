@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 2,
+  "release": "m2",
+  "id": "7818d587-2954-43fc-95f0-5f0576b12f66",
+  "title": "Our Earth",
+  "language": "en",
+  "cards": [
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:1",
+      "index": 1,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "What is Earth's place among the planets?",
+        "audioUrl": "/media/d5d76fd185f87a7ed9e0ef3390b5271f676043ca755a9cbe960780a27bed4925.mp3",
+        "audioSha256": "d5d76fd185f87a7ed9e0ef3390b5271f676043ca755a9cbe960780a27bed4925"
+      },
+      "answer": {
+        "display": "It is the **third** planet from the Sun.",
+        "audioUrl": "/media/20becdc8e1a90262a92e267c6fe34552908a41cee4afe991894d7c59da1f9d34.mp3",
+        "audioSha256": "20becdc8e1a90262a92e267c6fe34552908a41cee4afe991894d7c59da1f9d34"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:2",
+      "index": 2,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "What makes Earth special in the solar system?",
+        "audioUrl": "/media/9ba0747be298c2f1ab6ce96a83e38199929b6fa8477c907db10463ef5fd5fde5.mp3",
+        "audioSha256": "9ba0747be298c2f1ab6ce96a83e38199929b6fa8477c907db10463ef5fd5fde5"
+      },
+      "answer": {
+        "display": "Only Earth has **liquid water** on its surface.",
+        "audioUrl": "/media/a6977d2f1f37dff23a68fcc51b05279a9675224ae98339e8dd9874076fa82c37.mp3",
+        "audioSha256": "a6977d2f1f37dff23a68fcc51b05279a9675224ae98339e8dd9874076fa82c37"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:3",
+      "index": 3,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "How much of Earth's surface is water?",
+        "audioUrl": "/media/b10ffa1cd55d7b4741ce7b9cd0e136c3d3962aee478897f741e18ab3b890c352.mp3",
+        "audioSha256": "b10ffa1cd55d7b4741ce7b9cd0e136c3d3962aee478897f741e18ab3b890c352"
+      },
+      "answer": {
+        "display": "About **71%** is water, and the other 29% is land.",
+        "audioUrl": "/media/95846ebdc58b132d76951ecd5f27db5abe6c8d768280f2ebf1baee448a7b3c31.mp3",
+        "audioSha256": "95846ebdc58b132d76951ecd5f27db5abe6c8d768280f2ebf1baee448a7b3c31"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:4",
+      "index": 4,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "Where is Earth's water?",
+        "audioUrl": "/media/6d9dc8b5bbecd0c5cdd81807306a41819657ed93f340db2dfbfb0bbb08627e7b.mp3",
+        "audioSha256": "6d9dc8b5bbecd0c5cdd81807306a41819657ed93f340db2dfbfb0bbb08627e7b"
+      },
+      "answer": {
+        "display": "Liquid in oceans, **vapour** in the air, and ice on snow-capped mountains.",
+        "audioUrl": "/media/8ae7f33ba921860878cba9f1ee0c542fc31bb4ae3e4af614d91e2b2fffce84e9.mp3",
+        "audioSha256": "8ae7f33ba921860878cba9f1ee0c542fc31bb4ae3e4af614d91e2b2fffce84e9"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:5",
+      "index": 5,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "What kinds of land does Earth have?",
+        "audioUrl": "/media/a913a1e09d2c04aaaa5ceb6141a335b1668e837cd9d133fe87eb9153ef6131bf.mp3",
+        "audioSha256": "a913a1e09d2c04aaaa5ceb6141a335b1668e837cd9d133fe87eb9153ef6131bf"
+      },
+      "answer": {
+        "display": "Mountains, valleys, plains, plateaus and arid deserts.",
+        "audioUrl": "/media/d22bb0299258ca2cc574509d1fa18f42ced51bb68b9154964b09bebbeb2833ed.mp3",
+        "audioSha256": "d22bb0299258ca2cc574509d1fa18f42ced51bb68b9154964b09bebbeb2833ed"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:6",
+      "index": 6,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "Which planets go around the Sun, in order?",
+        "audioUrl": "/media/c0e71cb9d101295ec2f8d45f57819f273ef45f73cee6650a7edd86ba08a1855d.mp3",
+        "audioSha256": "c0e71cb9d101295ec2f8d45f57819f273ef45f73cee6650a7edd86ba08a1855d"
+      },
+      "answer": {
+        "display": "Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus and Neptune.",
+        "audioUrl": "/media/f712de33538ba7184e70087d590348c57b45e6980940a5d5e5a61a530916a4d1.mp3",
+        "audioSha256": "f712de33538ba7184e70087d590348c57b45e6980940a5d5e5a61a530916a4d1"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:7",
+      "index": 7,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "Why is Earth a good home for life?",
+        "audioUrl": "/media/81af50d7fb134b88a6e6a0ce62032f558c088a3660feb69c1e792a1f0d7f375f.mp3",
+        "audioSha256": "81af50d7fb134b88a6e6a0ce62032f558c088a3660feb69c1e792a1f0d7f375f"
+      },
+      "answer": {
+        "display": "The **right distance** from the Sun, and a layer of air.",
+        "audioUrl": "/media/2ada262e1c1c4e762fec9c4d51c988411e7b0e70cd4c2c15df1174118c603107.mp3",
+        "audioSha256": "2ada262e1c1c4e762fec9c4d51c988411e7b0e70cd4c2c15df1174118c603107"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:8",
+      "index": 8,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "How did sailors show that Earth is round?",
+        "audioUrl": "/media/0b036e35b33223828029485bb1d876d7fda31cdc1fc2c3c88d79badcccdead56.mp3",
+        "audioSha256": "0b036e35b33223828029485bb1d876d7fda31cdc1fc2c3c88d79badcccdead56"
+      },
+      "answer": {
+        "display": "They kept sailing and **came back** to where they started.",
+        "audioUrl": "/media/04cdaee62a6a8cf494f8ffb240a56ba31c98de12746dfa7ebbe2d79c7defa4eb.mp3",
+        "audioSha256": "04cdaee62a6a8cf494f8ffb240a56ba31c98de12746dfa7ebbe2d79c7defa4eb"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:9",
+      "index": 9,
+      "partId": "earth-among-the-planets-and-its-shape",
+      "question": {
+        "display": "What is Earth's true shape?",
+        "audioUrl": "/media/a85d93406196335daf62763fa256a995daa42da9db122dcd3f896429aa27b494.mp3",
+        "audioSha256": "a85d93406196335daf62763fa256a995daa42da9db122dcd3f896429aa27b494"
+      },
+      "answer": {
+        "display": "An **oblate spheroid**, round like a ball but a little squashed.",
+        "audioUrl": "/media/ceea9147226eaad5dd16e1592e7a980b28e7e415f89045fa429d82dae3c2f7c7.mp3",
+        "audioSha256": "ceea9147226eaad5dd16e1592e7a980b28e7e415f89045fa429d82dae3c2f7c7"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:10",
+      "index": 10,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "What is Earth's axis?",
+        "audioUrl": "/media/c02ee11042182aad22868e7ea48b68773e2d82c84ac1c40713ea56b219844067.mp3",
+        "audioSha256": "c02ee11042182aad22868e7ea48b68773e2d82c84ac1c40713ea56b219844067"
+      },
+      "answer": {
+        "display": "An **imaginary** line through Earth's middle, slightly tilted.",
+        "audioUrl": "/media/38f2b29867be9ff6d8bb0b7780894b39fa96c4a7575473546fd06bebea0e0550.mp3",
+        "audioSha256": "38f2b29867be9ff6d8bb0b7780894b39fa96c4a7575473546fd06bebea0e0550"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:11",
+      "index": 11,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "What is Earth's rotation?",
+        "audioUrl": "/media/76abe53153b96f9e81bb18f5fb9d82e9e7e71bc71ac7960e25e8f5b4f148e40b.mp3",
+        "audioSha256": "76abe53153b96f9e81bb18f5fb9d82e9e7e71bc71ac7960e25e8f5b4f148e40b"
+      },
+      "answer": {
+        "display": "Earth **spinning** on its own axis, from west to east.",
+        "audioUrl": "/media/8c68fcc4b9afe01ea414cccda7445125d871e4a3563b299ea3e35ea87f1c26ea.mp3",
+        "audioSha256": "8c68fcc4b9afe01ea414cccda7445125d871e4a3563b299ea3e35ea87f1c26ea"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:12",
+      "index": 12,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "How does rotation give us day and night?",
+        "audioUrl": "/media/ceae806832f37e6baab8d2a0e62ccca3614ba74d0925d277726afb8dc11d1f9f.mp3",
+        "audioSha256": "ceae806832f37e6baab8d2a0e62ccca3614ba74d0925d277726afb8dc11d1f9f"
+      },
+      "answer": {
+        "display": "The half **facing the Sun** has day, and the other has night.",
+        "audioUrl": "/media/47cf79b209f653fc1a715a774d641e6fab526f3ede855a67baeef2fbf877d987.mp3",
+        "audioSha256": "47cf79b209f653fc1a715a774d641e6fab526f3ede855a67baeef2fbf877d987"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:13",
+      "index": 13,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "How long does one rotation take?",
+        "audioUrl": "/media/9ef29b60f81db26760c5575b100f25875492fa776f0e58e24294624ca4c55149.mp3",
+        "audioSha256": "9ef29b60f81db26760c5575b100f25875492fa776f0e58e24294624ca4c55149"
+      },
+      "answer": {
+        "display": "**24 hours**, one day and one night together.",
+        "audioUrl": "/media/5860c3c6d73ee832de971e21026e72b0ab807d5fd7285251381d4eb26d88c3f7.mp3",
+        "audioSha256": "5860c3c6d73ee832de971e21026e72b0ab807d5fd7285251381d4eb26d88c3f7"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:14",
+      "index": 14,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "How does a sundial show the time?",
+        "audioUrl": "/media/c6bc6599ad6c03be676b5bdf8a9f7f170f2f61fcbb469859ba2112f5c39fbfb8.mp3",
+        "audioSha256": "c6bc6599ad6c03be676b5bdf8a9f7f170f2f61fcbb469859ba2112f5c39fbfb8"
+      },
+      "answer": {
+        "display": "Its stick, the **gnomon**, makes a shadow. The shadow shows the time.",
+        "audioUrl": "/media/f85a9a64afc8689ae86ef75fc79f3ba33a833cc025d760f6762e1c78b45a78ad.mp3",
+        "audioSha256": "f85a9a64afc8689ae86ef75fc79f3ba33a833cc025d760f6762e1c78b45a78ad"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:15",
+      "index": 15,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "When does a sundial not work?",
+        "audioUrl": "/media/f2d5796f7cb56bfbc5233fd0a008fba9a92054a62ffb85d9bbc00b41820053f7.mp3",
+        "audioSha256": "f2d5796f7cb56bfbc5233fd0a008fba9a92054a62ffb85d9bbc00b41820053f7"
+      },
+      "answer": {
+        "display": "At night or on cloudy days, because it needs **sunshine**.",
+        "audioUrl": "/media/927f78ec34e81be1ec9eb45930c64a7af4160e4b572a8770b1fe469c4c20ddb8.mp3",
+        "audioSha256": "927f78ec34e81be1ec9eb45930c64a7af4160e4b572a8770b1fe469c4c20ddb8"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:16",
+      "index": 16,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "What is the world's biggest stone sundial?",
+        "audioUrl": "/media/c621f9ff860b74067e97b321bbb01fd4601c38d04fad8f1ea2094b36a75bedc3.mp3",
+        "audioSha256": "c621f9ff860b74067e97b321bbb01fd4601c38d04fad8f1ea2094b36a75bedc3"
+      },
+      "answer": {
+        "display": "The **Samrat Yantra**, at Jantar Mantar in Jaipur.",
+        "audioUrl": "/media/0d9de6ce68dfb6d247d190493df4470abc34abf89d0d7c7194f765b18929f906.mp3",
+        "audioSha256": "0d9de6ce68dfb6d247d190493df4470abc34abf89d0d7c7194f765b18929f906"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:17",
+      "index": 17,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "How does a shadow change through the day?",
+        "audioUrl": "/media/8cc3e05c3d635fa874b7dd6704d746bc2cb5084c0a9e750183100eabcc706026.mp3",
+        "audioSha256": "8cc3e05c3d635fa874b7dd6704d746bc2cb5084c0a9e750183100eabcc706026"
+      },
+      "answer": {
+        "display": "Its size and its **direction** both change.",
+        "audioUrl": "/media/5226609ed2a67b15e4a6b48d0b4f8e97e9b201cd197f023c8d7603c68cf17d05.mp3",
+        "audioSha256": "5226609ed2a67b15e4a6b48d0b4f8e97e9b201cd197f023c8d7603c68cf17d05"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:18",
+      "index": 18,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "Why do shadows move through the day?",
+        "audioUrl": "/media/bfe45eccce8b2a42b4b24c1710bab6fb96a9018764884d5da66abf37c5d20d1b.mp3",
+        "audioSha256": "bfe45eccce8b2a42b4b24c1710bab6fb96a9018764884d5da66abf37c5d20d1b"
+      },
+      "answer": {
+        "display": "Earth turns, so the Sun only **seems** to move.",
+        "audioUrl": "/media/095295bd8113bf54eae5c1cf12fd3e77b238563938d013b85f563a795445417b.mp3",
+        "audioSha256": "095295bd8113bf54eae5c1cf12fd3e77b238563938d013b85f563a795445417b"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:19",
+      "index": 19,
+      "partId": "shadows-sundials-and-the-turning-earth",
+      "question": {
+        "display": "Why don't we feel Earth move?",
+        "audioUrl": "/media/59483a79f324a03d8de1005f856aedeebcfd9d811c42e670e6affe3748562159.mp3",
+        "audioSha256": "59483a79f324a03d8de1005f856aedeebcfd9d811c42e670e6affe3748562159"
+      },
+      "answer": {
+        "display": "Earth **carries** us with it, like a smooth train ride.",
+        "audioUrl": "/media/784c26c33407979807078e51978c1ddd0b2d34035ca401ce8b09e96c9804ad75.mp3",
+        "audioSha256": "784c26c33407979807078e51978c1ddd0b2d34035ca401ce8b09e96c9804ad75"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:20",
+      "index": 20,
+      "partId": "revolution-orbit-and-seasons",
+      "question": {
+        "display": "What is Earth's orbit?",
+        "audioUrl": "/media/4bb6cb09b6b40626085389f6ea5dc87104c576cac62490d79a85c672a44d9bd5.mp3",
+        "audioSha256": "4bb6cb09b6b40626085389f6ea5dc87104c576cac62490d79a85c672a44d9bd5"
+      },
+      "answer": {
+        "display": "Earth's **path** around the Sun, the same every year.",
+        "audioUrl": "/media/4ff6587f0f1af99433c131a58fce1d2a29dadb0c5f30b32d4bb5a7fcf1c6ec24.mp3",
+        "audioSha256": "4ff6587f0f1af99433c131a58fce1d2a29dadb0c5f30b32d4bb5a7fcf1c6ec24"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:21",
+      "index": 21,
+      "partId": "revolution-orbit-and-seasons",
+      "question": {
+        "display": "How long does one revolution take?",
+        "audioUrl": "/media/dad9cd3748126f8c086ca48b705787075494328242241506a4403b63ad55fb31.mp3",
+        "audioSha256": "dad9cd3748126f8c086ca48b705787075494328242241506a4403b63ad55fb31"
+      },
+      "answer": {
+        "display": "One trip around the Sun takes **one year**, about 365 days.",
+        "audioUrl": "/media/22047f669e476e5d7500b77bfadd65792ada1d6de3276b7bb139a693410c80b2.mp3",
+        "audioSha256": "22047f669e476e5d7500b77bfadd65792ada1d6de3276b7bb139a693410c80b2"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:22",
+      "index": 22,
+      "partId": "revolution-orbit-and-seasons",
+      "question": {
+        "display": "What brings the seasons?",
+        "audioUrl": "/media/b18578f5f436e19d4a4e8816c714a11b0e45e36c6ee0439cf4a28ba2c044c51a.mp3",
+        "audioSha256": "b18578f5f436e19d4a4e8816c714a11b0e45e36c6ee0439cf4a28ba2c044c51a"
+      },
+      "answer": {
+        "display": "**Both** Earth's trip around the Sun and its tilted axis.",
+        "audioUrl": "/media/e64ac4ad69fe0fa9e2f1c3582dc0256c8e5c8d9e7baee8949a814dee2015c2dc.mp3",
+        "audioSha256": "e64ac4ad69fe0fa9e2f1c3582dc0256c8e5c8d9e7baee8949a814dee2015c2dc"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:23",
+      "index": 23,
+      "partId": "revolution-orbit-and-seasons",
+      "question": {
+        "display": "Does summer come from being nearer the Sun?",
+        "audioUrl": "/media/da0f0e0bb401ab97f38fd67ff44366f8618c28f316cddf3421b8b248e32e9439.mp3",
+        "audioSha256": "da0f0e0bb401ab97f38fd67ff44366f8618c28f316cddf3421b8b248e32e9439"
+      },
+      "answer": {
+        "display": "**No**. India and Australia are the same distance but have different seasons.",
+        "audioUrl": "/media/4fd54faed93560f3208c67a3741323240f7cef9102cf5b41ec899a20d9399be2.mp3",
+        "audioSha256": "4fd54faed93560f3208c67a3741323240f7cef9102cf5b41ec899a20d9399be2"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:24",
+      "index": 24,
+      "partId": "revolution-orbit-and-seasons",
+      "question": {
+        "display": "Why do India and Australia have opposite seasons?",
+        "audioUrl": "/media/f6ce7a6104fada826ea1aabcc2d292e42a4d89b68d61778e7385503da0aee869.mp3",
+        "audioSha256": "f6ce7a6104fada826ea1aabcc2d292e42a4d89b68d61778e7385503da0aee869"
+      },
+      "answer": {
+        "display": "Because of the **tilt** of Earth's axis.",
+        "audioUrl": "/media/82578234adaf77293b9ff9ae0d164e49574529a7c85a512de7daafe2def37791.mp3",
+        "audioSha256": "82578234adaf77293b9ff9ae0d164e49574529a7c85a512de7daafe2def37791"
+      }
+    },
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66:revise:25",
+      "index": 25,
+      "partId": "revolution-orbit-and-seasons",
+      "question": {
+        "display": "What do rotation and revolution each give us?",
+        "audioUrl": "/media/6cb05abc264bbc88b0ee638866c8e4c18f53abb9f69e6b90b53efc21a4bc5a25.mp3",
+        "audioSha256": "6cb05abc264bbc88b0ee638866c8e4c18f53abb9f69e6b90b53efc21a4bc5a25"
+      },
+      "answer": {
+        "display": "Rotation gives day and night, but revolution and the tilt give seasons.",
+        "audioUrl": "/media/77ef84dff59c8591b31e576a5994ee345e713896de87ed2b79c6fb964164a07c.mp3",
+        "audioSha256": "77ef84dff59c8591b31e576a5994ee345e713896de87ed2b79c6fb964164a07c"
+      }
+    }
+  ]
+}

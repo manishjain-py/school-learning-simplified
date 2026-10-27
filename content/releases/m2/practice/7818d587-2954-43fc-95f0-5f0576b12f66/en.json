@@ -1,0 +1,1409 @@
+{
+  "schemaVersion": 2,
+  "release": "m2",
+  "id": "7818d587-2954-43fc-95f0-5f0576b12f66",
+  "title": "Our Earth",
+  "language": "en",
+  "questions": [
+    {
+      "id": "fb5d6b1c-e436-4e39-a7bf-6b66227219c2",
+      "format": "pick_one",
+      "prompt": "Which of these comes from Earth's revolution and the tilt?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The beach getting dark at night"
+        },
+        {
+          "id": "option-1",
+          "text": "A beach umbrella's shadow moving during the day"
+        },
+        {
+          "id": "option-2",
+          "text": "Summer coming back every year"
+        }
+      ],
+      "audioUrl": "/media/be1ca561305725cbd6f80ae3cd39d2501eb423e008117d3eac748866995f6c50.mp3",
+      "audioSha256": "be1ca561305725cbd6f80ae3cd39d2501eb423e008117d3eac748866995f6c50",
+      "difficulty": "medium",
+      "conceptTag": "how_often_once_a_year"
+    },
+    {
+      "id": "4c5a5bd6-b84e-47cb-85cb-f966e6012a99",
+      "format": "multi_select",
+      "prompt": "Which of these are true about Earth's revolution?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "It takes 24 hours."
+        },
+        {
+          "id": "option-1",
+          "text": "It is one full trip around the Sun."
+        },
+        {
+          "id": "option-2",
+          "text": "With the tilt, it gives the seasons."
+        },
+        {
+          "id": "option-3",
+          "text": "It is Earth spinning on its own axis."
+        },
+        {
+          "id": "option-4",
+          "text": "It takes one year, about 365 days."
+        }
+      ],
+      "audioUrl": "/media/f74f57cfaa4a7dbd847a916b0157f04bc6b1dd5016b458d73626d37fe35be9eb.mp3",
+      "audioSha256": "f74f57cfaa4a7dbd847a916b0157f04bc6b1dd5016b458d73626d37fe35be9eb",
+      "difficulty": "medium",
+      "conceptTag": "revolution_trip_year_seasons"
+    },
+    {
+      "id": "31aa5e1f-90c6-4c4f-a1ec-9c7cdd8b8812",
+      "format": "true_false",
+      "prompt": "On Diwali night, Riya says why night comes. Is this right?\n\nNight comes because Earth goes around the Sun.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/442623c3a9dd6e9297513dcd6453a8937327b13c8760692faebac063a7668284.mp3",
+      "audioSha256": "442623c3a9dd6e9297513dcd6453a8937327b13c8760692faebac063a7668284",
+      "difficulty": "medium",
+      "conceptTag": "night_from_rotation_not_revolution"
+    },
+    {
+      "id": "654fd5d9-3ed7-4266-9096-7947a9b71c38",
+      "format": "fill_blank",
+      "prompt": "Aarav goes to morning assembly today and again tomorrow. Between the two assemblies, Earth makes ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "one spin on its axis"
+        },
+        {
+          "id": "option-1",
+          "text": "one trip around the Sun"
+        },
+        {
+          "id": "option-2",
+          "text": "about 365 spins"
+        }
+      ],
+      "audioUrl": "/media/c1625b3d2d1ac0583ccc69d4bd830077e012c1ea4890c652d272c6187a7967f7.mp3",
+      "audioSha256": "c1625b3d2d1ac0583ccc69d4bd830077e012c1ea4890c652d272c6187a7967f7",
+      "difficulty": "medium",
+      "conceptTag": "one_day_one_rotation"
+    },
+    {
+      "id": "f4fe2bc7-f5b3-43b5-aa33-b7adb7bd7c3a",
+      "format": "true_false",
+      "prompt": "In January, Kabir's family drives on a highway across India. Every town on the way has winter. So Kabir says this about Earth. Is he right?\n\nThe whole Earth has winter in January.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/d179269e6d26c7cf512929562776eacf280e3b720ab89eddce97d64a95145219.mp3",
+      "audioSha256": "d179269e6d26c7cf512929562776eacf280e3b720ab89eddce97d64a95145219",
+      "difficulty": "medium",
+      "conceptTag": "different_seasons_same_time"
+    },
+    {
+      "id": "9c570770-f7d0-486d-bc53-472f31d902f8",
+      "format": "multi_select",
+      "prompt": "Which of these are right about Earth's seasons?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Earth's trip around the Sun helps bring the seasons."
+        },
+        {
+          "id": "option-1",
+          "text": "Only the tilt of Earth's axis brings the seasons."
+        },
+        {
+          "id": "option-2",
+          "text": "The four seasons are spring, summer, autumn and winter."
+        },
+        {
+          "id": "option-3",
+          "text": "The tilt of Earth's axis helps bring the seasons."
+        },
+        {
+          "id": "option-4",
+          "text": "Only Earth's trip around the Sun brings the seasons."
+        }
+      ],
+      "audioUrl": "/media/66f554dfc183e96befcb82b4474f6c552da71327c89f7ba255665fe3d58d18d8.mp3",
+      "audioSha256": "66f554dfc183e96befcb82b4474f6c552da71327c89f7ba255665fe3d58d18d8",
+      "difficulty": "medium",
+      "conceptTag": "two_causes_together"
+    },
+    {
+      "id": "509e7c3f-0753-40c7-b560-7f83ead74ca5",
+      "format": "fill_blank",
+      "prompt": "In January, Meera sees snow at a hill station in India. Argentina is in the bottom half of Earth. At the same time, Argentina has ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "winter"
+        },
+        {
+          "id": "option-1",
+          "text": "summer"
+        },
+        {
+          "id": "option-2",
+          "text": "autumn"
+        }
+      ],
+      "audioUrl": "/media/1362ba71af69fb4c5109f51f0f7fb91135449d0766f9c8c862496240aafa9889.mp3",
+      "audioSha256": "1362ba71af69fb4c5109f51f0f7fb91135449d0766f9c8c862496240aafa9889",
+      "difficulty": "medium",
+      "conceptTag": "bottom_half_opposite_season"
+    },
+    {
+      "id": "ec63aabc-bc75-4fd9-9600-c08e958d4ad7",
+      "format": "pick_one",
+      "prompt": "The top half and bottom half of Earth have opposite seasons. Both halves are about the same distance from the Sun. What does this show?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The half with summer is much nearer the Sun."
+        },
+        {
+          "id": "option-1",
+          "text": "Earth's spin on its axis brings the seasons."
+        },
+        {
+          "id": "option-2",
+          "text": "Summer does not come from being nearer the Sun."
+        }
+      ],
+      "audioUrl": "/media/f7788975f68b9c44780a77d51ff02d5f0140b2c6945214dcc9074a06df944b19.mp3",
+      "audioSha256": "f7788975f68b9c44780a77d51ff02d5f0140b2c6945214dcc9074a06df944b19",
+      "difficulty": "medium",
+      "conceptTag": "same_distance_argument"
+    },
+    {
+      "id": "15f87a75-93df-46ab-81bc-e9311fd91d45",
+      "format": "multi_select",
+      "prompt": "At a science museum, a guide asks why night comes. Which of these are true?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Night comes because Earth spins on its axis."
+        },
+        {
+          "id": "option-1",
+          "text": "Night comes because the Sun goes around Earth."
+        },
+        {
+          "id": "option-2",
+          "text": "At night, our side of Earth faces away from the Sun."
+        },
+        {
+          "id": "option-3",
+          "text": "At night, the Sun stops shining."
+        },
+        {
+          "id": "option-4",
+          "text": "Night comes from Earth's yearly trip around the Sun."
+        }
+      ],
+      "audioUrl": "/media/3e6892ca9dd8fc7ea8ebcef987ef875ef10465fbc56cc13ba1e6801950a69ea3.mp3",
+      "audioSha256": "3e6892ca9dd8fc7ea8ebcef987ef875ef10465fbc56cc13ba1e6801950a69ea3",
+      "difficulty": "medium",
+      "conceptTag": "cause_of_night_earth_spins"
+    },
+    {
+      "id": "50875638-2330-49a2-a313-3d623fe84277",
+      "format": "fill_blank",
+      "prompt": "It is night on a village farm in India. At this time, ___ has night.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "all of Earth"
+        },
+        {
+          "id": "option-1",
+          "text": "half of Earth"
+        },
+        {
+          "id": "option-2",
+          "text": "only India"
+        }
+      ],
+      "audioUrl": "/media/c164add2a72e2b8acdaa83f28fdfab6f11498b115490c4dfd819f4c0e97f6f0f.mp3",
+      "audioSha256": "c164add2a72e2b8acdaa83f28fdfab6f11498b115490c4dfd819f4c0e97f6f0f",
+      "difficulty": "medium",
+      "conceptTag": "half_of_earth_has_night"
+    },
+    {
+      "id": "0fe2b56c-fae2-4990-b408-1e1b1d263e3f",
+      "format": "pick_one",
+      "prompt": "In a power cut, Meera's torch shines on a spinning football. A sticker on the ball starts in the light. What happens to the sticker in one full spin?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "It stays in the light for the whole spin."
+        },
+        {
+          "id": "option-1",
+          "text": "It goes into the dark and stays there."
+        },
+        {
+          "id": "option-2",
+          "text": "It goes into the dark, then back into the light."
+        }
+      ],
+      "audioUrl": "/media/f8371e2510bbe4ecfe9646fa14394958347878679f58e4417f757ff2eb2edbbc.mp3",
+      "audioSha256": "f8371e2510bbe4ecfe9646fa14394958347878679f58e4417f757ff2eb2edbbc",
+      "difficulty": "medium",
+      "conceptTag": "sticker_light_dark_light"
+    },
+    {
+      "id": "313a1b17-dfd1-4bb1-aa82-1cf6f3b5834d",
+      "format": "true_false",
+      "prompt": "Kabir flies a kite on his roof in India. It is noon on Makar Sankranti. Is this right?\n\nWhile Kabir flies his kite, it is night in America.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/f8a5d6b4ff6cf72c6cb8d1f53696e2a916c0e29210b5ffad4035e7d53a67e5a9.mp3",
+      "audioSha256": "f8a5d6b4ff6cf72c6cb8d1f53696e2a916c0e29210b5ffad4035e7d53a67e5a9",
+      "difficulty": "medium",
+      "conceptTag": "opposite_sides_india_america"
+    },
+    {
+      "id": "ab08af84-53d6-43cd-bc1c-d7d388a04d88",
+      "format": "true_false",
+      "prompt": "At the beach, Aarav makes a sand ball for each planet. He makes the biggest ball for Saturn. Is he right?\n\nSaturn is the biggest of the eight planets.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/e069ab45b6f14f49e7f81d21700de2785ed3e02160eae12d8e7088c7051ca72c.mp3",
+      "audioSha256": "e069ab45b6f14f49e7f81d21700de2785ed3e02160eae12d8e7088c7051ca72c",
+      "difficulty": "easy",
+      "conceptTag": "biggest_planet_jupiter"
+    },
+    {
+      "id": "44ffc023-de71-4cd5-a77d-21ed8c5f37f3",
+      "format": "pick_one",
+      "prompt": "At morning assembly, Meera says the names of the planets. She says them in order from the Sun. Which planet does she say fourth?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Jupiter"
+        },
+        {
+          "id": "option-1",
+          "text": "Earth"
+        },
+        {
+          "id": "option-2",
+          "text": "Mars"
+        }
+      ],
+      "audioUrl": "/media/bac845e1a43b27c14fba669cb8cfd449f98afbd12cd04bd6f0425ef6ad2c28e0.mp3",
+      "audioSha256": "bac845e1a43b27c14fba669cb8cfd449f98afbd12cd04bd6f0425ef6ad2c28e0",
+      "difficulty": "medium",
+      "conceptTag": "planet_place_number"
+    },
+    {
+      "id": "c576b8ff-443e-44ec-a8be-c5d62d493203",
+      "format": "fill_blank",
+      "prompt": "Kabir makes a solar system model for the science fair. He puts the planets in order from the Sun. In his model, ___ comes just after Saturn.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Uranus"
+        },
+        {
+          "id": "option-1",
+          "text": "Jupiter"
+        },
+        {
+          "id": "option-2",
+          "text": "Neptune"
+        }
+      ],
+      "audioUrl": "/media/a6cec289bb7eb258d32692cf0ce82ef6e58f2309e6f7b31eb8189e9a83bdd868.mp3",
+      "audioSha256": "a6cec289bb7eb258d32692cf0ce82ef6e58f2309e6f7b31eb8189e9a83bdd868",
+      "difficulty": "medium",
+      "conceptTag": "planet_just_after"
+    },
+    {
+      "id": "43b0acaa-73e2-4126-97c6-80cd1e798832",
+      "format": "pick_one",
+      "prompt": "Kabir's bus goes straight on the highway for hours. The bus can never reach Earth's edge. Why?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Earth is round like a coin."
+        },
+        {
+          "id": "option-1",
+          "text": "Earth is flat."
+        },
+        {
+          "id": "option-2",
+          "text": "Earth is round like a ball."
+        }
+      ],
+      "audioUrl": "/media/84730fc9b4d4b4d046d9a99353a8617d3f3899a1d3ba5e433e26dab6f0354cd2.mp3",
+      "audioSha256": "84730fc9b4d4b4d046d9a99353a8617d3f3899a1d3ba5e433e26dab6f0354cd2",
+      "difficulty": "medium",
+      "conceptTag": "no_edge_round_like_ball"
+    },
+    {
+      "id": "56fc119f-2aff-4160-8031-79af290c4cf7",
+      "format": "true_false",
+      "prompt": "A guide at an old fort says this. Is it right?\n\nLong ago, sailors were afraid of falling off Earth's edge.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/bd3e895af62bd8892e550b08b92ac1f2c59d672dbd5e1d7244a4c24447ba2e97.mp3",
+      "audioSha256": "bd3e895af62bd8892e550b08b92ac1f2c59d672dbd5e1d7244a4c24447ba2e97",
+      "difficulty": "easy",
+      "conceptTag": "sailors_feared_earths_edge"
+    },
+    {
+      "id": "5dff0c1d-1489-47f0-8c35-3e313d58eb4d",
+      "format": "fill_blank",
+      "prompt": "Long ago, sailing around Earth took a very long time. Today, a plane can fly around Earth in about ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "two hours"
+        },
+        {
+          "id": "option-1",
+          "text": "two days"
+        },
+        {
+          "id": "option-2",
+          "text": "two years"
+        }
+      ],
+      "audioUrl": "/media/0f1c8f57d113254278087261f9e90dfa85127ebf4ea7d4f1b2e1c61bce8499b0.mp3",
+      "audioSha256": "0f1c8f57d113254278087261f9e90dfa85127ebf4ea7d4f1b2e1c61bce8499b0",
+      "difficulty": "easy",
+      "conceptTag": "plane_around_earth_two_days"
+    },
+    {
+      "id": "3c4b2be1-639f-47ca-8369-1fa7df13f03a",
+      "format": "true_false",
+      "prompt": "Mother makes a ball of dough. Is this right?\n\nThe ball of dough has the shape of a sphere.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/e5a44d2d4ba4ff26f84fcba769dac7c708827f57dc0610912743b92e7de1ee36.mp3",
+      "audioSha256": "e5a44d2d4ba4ff26f84fcba769dac7c708827f57dc0610912743b92e7de1ee36",
+      "difficulty": "easy",
+      "conceptTag": "sphere_is_a_ball_shape"
+    },
+    {
+      "id": "c52a84f1-16a1-4535-a310-45a8149e666c",
+      "format": "fill_blank",
+      "prompt": "On Makar Sankranti, Kabir flies a kite. He eats til laddoos from a round steel plate. Earth is round like a ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "steel plate"
+        },
+        {
+          "id": "option-1",
+          "text": "til laddoo"
+        },
+        {
+          "id": "option-2",
+          "text": "kite"
+        }
+      ],
+      "audioUrl": "/media/e99f470157f4757bc41371bdeb08a3271a577ce25d262775a9f7a465cd18f1dc.mp3",
+      "audioSha256": "e99f470157f4757bc41371bdeb08a3271a577ce25d262775a9f7a465cd18f1dc",
+      "difficulty": "medium",
+      "conceptTag": "ball_round_not_coin_round"
+    },
+    {
+      "id": "81dd086b-4eee-4ade-b780-2be1a39b5947",
+      "format": "multi_select",
+      "prompt": "At a museum, Meera sees photos of Earth from outer space. Which of these are true about Earth's shape?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Earth is a perfect ball."
+        },
+        {
+          "id": "option-1",
+          "text": "Earth looks round from every side."
+        },
+        {
+          "id": "option-2",
+          "text": "From one side, Earth looks like a thin line."
+        },
+        {
+          "id": "option-3",
+          "text": "Earth is a little squashed at the top and bottom."
+        },
+        {
+          "id": "option-4",
+          "text": "Earth's true shape is an oblate spheroid."
+        }
+      ],
+      "audioUrl": "/media/d84bbac3e717d4c36dc598ca000dcb50a08bb8ff9f040ceea13a2fa5aafea09d.mp3",
+      "audioSha256": "d84bbac3e717d4c36dc598ca000dcb50a08bb8ff9f040ceea13a2fa5aafea09d",
+      "difficulty": "medium",
+      "conceptTag": "squashed_not_perfect_ball"
+    },
+    {
+      "id": "fc42c726-1a55-4154-ab67-c853966cfac3",
+      "format": "true_false",
+      "prompt": "Riya loves the sunshine on the school playground. She says this. Is this right?\n\nPlanets much nearer the Sun than Earth are better for life.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/b9f1cc14f46a233aa312bc176a2ab6823994c55f9cb88f3b235f8a1602f69a5b.mp3",
+      "audioSha256": "b9f1cc14f46a233aa312bc176a2ab6823994c55f9cb88f3b235f8a1602f69a5b",
+      "difficulty": "medium",
+      "conceptTag": "nearer_sun_too_hot"
+    },
+    {
+      "id": "61a0a7e5-c4fc-45a7-a487-774205b4d5b8",
+      "format": "fill_blank",
+      "prompt": "Earth is about ___ km from the Sun.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "150"
+        },
+        {
+          "id": "option-1",
+          "text": "1,500"
+        },
+        {
+          "id": "option-2",
+          "text": "150 million"
+        }
+      ],
+      "audioUrl": "/media/941318fd2c42189b03a85a7737338e452e9b5efebc2c467b2b2cda8eecd00c0b.mp3",
+      "audioSha256": "941318fd2c42189b03a85a7737338e452e9b5efebc2c467b2b2cda8eecd00c0b",
+      "difficulty": "easy",
+      "conceptTag": "distance_from_sun"
+    },
+    {
+      "id": "dc9ad60b-855a-4d18-b2dd-33d89f40a2b2",
+      "format": "pick_one",
+      "prompt": "At the beach, Meera sees crabs, birds and coconut trees. Why is Earth a good home for them?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Earth is the biggest planet of all"
+        },
+        {
+          "id": "option-1",
+          "text": "Earth has a layer of air around it"
+        },
+        {
+          "id": "option-2",
+          "text": "Earth has rings all around it"
+        }
+      ],
+      "audioUrl": "/media/21a8cc3c5669690103ed943fc3d15e25196026249fdb75f90d1d3f991dcd31b6.mp3",
+      "audioSha256": "21a8cc3c5669690103ed943fc3d15e25196026249fdb75f90d1d3f991dcd31b6",
+      "difficulty": "easy",
+      "conceptTag": "layer_of_air"
+    },
+    {
+      "id": "2f9e06b5-d146-48e9-b326-4c18c12db852",
+      "format": "multi_select",
+      "prompt": "Meera uses 100 equal squares to show Earth's surface. She colours 71 of them blue for water. Which of these are true about her squares?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The other 29 squares show land."
+        },
+        {
+          "id": "option-1",
+          "text": "The 71 blue squares show the whole surface."
+        },
+        {
+          "id": "option-2",
+          "text": "Most of the squares show water."
+        },
+        {
+          "id": "option-3",
+          "text": "There are more land squares than water squares."
+        }
+      ],
+      "audioUrl": "/media/9ee4173a9f1a04e9f3b4cb65d1e7ce39d0d1f35aa41510df0592771d2bf4a5a0.mp3",
+      "audioSha256": "9ee4173a9f1a04e9f3b4cb65d1e7ce39d0d1f35aa41510df0592771d2bf4a5a0",
+      "difficulty": "medium",
+      "conceptTag": "hundred_equal_parts_model"
+    },
+    {
+      "id": "ef98e3ea-d215-4492-9c1d-b3613d4c855e",
+      "format": "pick_one",
+      "prompt": "At a hill station, Kabir sees houses on every hill. He says land covers most of Earth's surface. Is he right?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Yes, because people live on land."
+        },
+        {
+          "id": "option-1",
+          "text": "No, because about 71% of Earth's surface is water."
+        },
+        {
+          "id": "option-2",
+          "text": "Yes, because about 71% of Earth's surface is land."
+        }
+      ],
+      "audioUrl": "/media/630944504dc39198e2a0a61e88a8621a4033a1c9955c245105e1975624a665a6.mp3",
+      "audioSha256": "630944504dc39198e2a0a61e88a8621a4033a1c9955c245105e1975624a665a6",
+      "difficulty": "medium",
+      "conceptTag": "reject_land_covers_most"
+    },
+    {
+      "id": "69f4da61-d142-4e5b-b3c8-5e1e2ebf5d92",
+      "format": "true_false",
+      "prompt": "Riya takes a bus on a highway near the sea. She sees water on one side and land on the other. So she says this about Earth. Is she right?\n\nEarth's surface is half water and half land.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/34f27acb13df8fd800bdb9a9186adc52f89f8bec152788ae9bfbd459484037c6.mp3",
+      "audioSha256": "34f27acb13df8fd800bdb9a9186adc52f89f8bec152788ae9bfbd459484037c6",
+      "difficulty": "easy",
+      "conceptTag": "reject_half_and_half"
+    },
+    {
+      "id": "dab74cad-cb5e-493d-82dc-35ef82442a82",
+      "format": "multi_select",
+      "prompt": "At the science museum, Kabir sees a big model of Earth. It shows land and water. Which of these are kinds of land?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "lakes"
+        },
+        {
+          "id": "option-1",
+          "text": "plateaus"
+        },
+        {
+          "id": "option-2",
+          "text": "mountains"
+        },
+        {
+          "id": "option-3",
+          "text": "oceans"
+        },
+        {
+          "id": "option-4",
+          "text": "valleys"
+        }
+      ],
+      "audioUrl": "/media/ed0bfd680a5cb5f310927771e71b1308d8309691ef8d6ef7bb0454234d1e1a08.mp3",
+      "audioSha256": "ed0bfd680a5cb5f310927771e71b1308d8309691ef8d6ef7bb0454234d1e1a08",
+      "difficulty": "medium",
+      "conceptTag": "land_vs_water_places"
+    },
+    {
+      "id": "fa40c41d-73e9-4ada-b4a7-710adc62ba12",
+      "format": "fill_blank",
+      "prompt": "Meera has five kites for Makar Sankranti. Each kite shows the name of a kind of land. The names are mountain, valley, plain, desert and ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "sea"
+        },
+        {
+          "id": "option-1",
+          "text": "plateau"
+        },
+        {
+          "id": "option-2",
+          "text": "river"
+        }
+      ],
+      "audioUrl": "/media/86fd6b7a29bb15b46e8079234ab40d7811d5d3168d82486158520d45abfb4f71.mp3",
+      "audioSha256": "86fd6b7a29bb15b46e8079234ab40d7811d5d3168d82486158520d45abfb4f71",
+      "difficulty": "easy",
+      "conceptTag": "kinds_of_land_list"
+    },
+    {
+      "id": "ffde2de1-dc87-4a79-ae2f-6c3f231dd76e",
+      "format": "pick_one",
+      "prompt": "Aarav's uncle has a farm near an arid desert. What does arid mean?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "very hot"
+        },
+        {
+          "id": "option-1",
+          "text": "very wet"
+        },
+        {
+          "id": "option-2",
+          "text": "very dry"
+        }
+      ],
+      "audioUrl": "/media/b8b1c01557c5b21f87479ff2d8caf14418708963e572f96f11216c54aaeebb00.mp3",
+      "audioSha256": "b8b1c01557c5b21f87479ff2d8caf14418708963e572f96f11216c54aaeebb00",
+      "difficulty": "easy",
+      "conceptTag": "arid_means_very_dry"
+    },
+    {
+      "id": "6dd667da-eda7-4dda-8f40-a5ad6aeec934",
+      "format": "true_false",
+      "prompt": "On a beach trip, Kabir watches waves flow onto the sand. He says this. Is he right?\n\nLike Earth, some other planets have flowing water on their outside.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/f4908d51c4250cb95dda2b3d6d81d07b4cba34e6a17b6a25e7796d49ddd80bdc.mp3",
+      "audioSha256": "f4908d51c4250cb95dda2b3d6d81d07b4cba34e6a17b6a25e7796d49ddd80bdc",
+      "difficulty": "medium",
+      "conceptTag": "only_earth_reworded_claim"
+    },
+    {
+      "id": "6e6a6718-7f42-4dc7-bf29-7f63bc216a83",
+      "format": "fill_blank",
+      "prompt": "Riya makes a solar system model for the science fair. She writes one true fact about Earth. Earth is the only planet that ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "goes around the Sun"
+        },
+        {
+          "id": "option-1",
+          "text": "has liquid water on its surface"
+        },
+        {
+          "id": "option-2",
+          "text": "has rings"
+        }
+      ],
+      "audioUrl": "/media/0ddb5431d30e6a580f97d144da77950c24d8211934b14babd052abca116d1bc7.mp3",
+      "audioSha256": "0ddb5431d30e6a580f97d144da77950c24d8211934b14babd052abca116d1bc7",
+      "difficulty": "easy",
+      "conceptTag": "earth_special_feature"
+    },
+    {
+      "id": "269f4408-c955-415e-ac72-f693ad1ecfa1",
+      "format": "multi_select",
+      "prompt": "Which of these show the water that makes Earth special?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "A river flowing through a village"
+        },
+        {
+          "id": "option-1",
+          "text": "Ice on a snow-capped mountain"
+        },
+        {
+          "id": "option-2",
+          "text": "Water vapour in the air"
+        },
+        {
+          "id": "option-3",
+          "text": "Rain water flowing across the school playground"
+        }
+      ],
+      "audioUrl": "/media/484737c699a550ed10c89861e5e9b5d1cf2064c0d1586eeb18f4a02c3cb1721b.mp3",
+      "audioSha256": "484737c699a550ed10c89861e5e9b5d1cf2064c0d1586eeb18f4a02c3cb1721b",
+      "difficulty": "medium",
+      "conceptTag": "liquid_not_ice_or_vapour"
+    },
+    {
+      "id": "4fecdb89-61bc-4c41-afb5-321ec327bf6a",
+      "format": "fill_blank",
+      "prompt": "Meera travels by bus on a highway in the hills. She sees a glacier far away. The glacier holds Earth's water in the form of ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "water vapour"
+        },
+        {
+          "id": "option-1",
+          "text": "ice"
+        },
+        {
+          "id": "option-2",
+          "text": "liquid water"
+        }
+      ],
+      "audioUrl": "/media/ee0fca976b5afdc539744a1d745cb1b037942e727c89ede55d582e48e1aa8d9d.mp3",
+      "audioSha256": "ee0fca976b5afdc539744a1d745cb1b037942e727c89ede55d582e48e1aa8d9d",
+      "difficulty": "easy",
+      "conceptTag": "glacier_holds_ice"
+    },
+    {
+      "id": "30e28b47-9e4f-41e3-9a0e-66f81bbadc64",
+      "format": "true_false",
+      "prompt": "The monsoon rain has stopped. The sky is clear now. Is this right?\n\nWater vapour is still in the air.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/902b0f84ea779e41e69ba88bff95fcd6b748ef34be06c6ef099867fe815e1c26.mp3",
+      "audioSha256": "902b0f84ea779e41e69ba88bff95fcd6b748ef34be06c6ef099867fe815e1c26",
+      "difficulty": "easy",
+      "conceptTag": "water_vapour_in_air"
+    },
+    {
+      "id": "76afdef8-d9ef-4675-8505-732ceb8e78da",
+      "format": "multi_select",
+      "prompt": "Rohan sees a river beside an old fort. He says all of Earth's water is in oceans and rivers. Which of these places also hold Earth's water?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The Sun"
+        },
+        {
+          "id": "option-1",
+          "text": "The air"
+        },
+        {
+          "id": "option-2",
+          "text": "Glaciers"
+        },
+        {
+          "id": "option-3",
+          "text": "Outer space"
+        },
+        {
+          "id": "option-4",
+          "text": "Snow-capped mountains"
+        }
+      ],
+      "audioUrl": "/media/cb14ec19a7a1962aa5dfd62de803ad3eaaf18c704433df515590eb542af10a96.mp3",
+      "audioSha256": "cb14ec19a7a1962aa5dfd62de803ad3eaaf18c704433df515590eb542af10a96",
+      "difficulty": "medium",
+      "conceptTag": "water_beyond_oceans_and_rivers"
+    },
+    {
+      "id": "8a543812-839d-482d-ab66-8c84b7b48156",
+      "format": "multi_select",
+      "prompt": "Riya sees a model at the science museum. It shows Earth going around the Sun. Which of these are true about the real Earth?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The orbit is Earth's path around the Sun."
+        },
+        {
+          "id": "option-1",
+          "text": "Earth's orbit changes every year."
+        },
+        {
+          "id": "option-2",
+          "text": "Earth revolves around the Sun."
+        },
+        {
+          "id": "option-3",
+          "text": "A revolution is Earth's path around the Sun."
+        }
+      ],
+      "audioUrl": "/media/534a551521e1e547e98738656bb7c17e8b994cdbc86e1ba621557950eb8f4a36.mp3",
+      "audioSha256": "534a551521e1e547e98738656bb7c17e8b994cdbc86e1ba621557950eb8f4a36",
+      "difficulty": "medium",
+      "conceptTag": "orbit_revolve_revolution_words"
+    },
+    {
+      "id": "dd643802-73af-4471-94a9-ea20912ed84e",
+      "format": "pick_one",
+      "prompt": "Kabir's mother cooks breakfast every morning. Earth spins once from one morning to the next. About how many breakfasts does she cook in one revolution?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Only 1"
+        },
+        {
+          "id": "option-1",
+          "text": "About 24"
+        },
+        {
+          "id": "option-2",
+          "text": "About 365"
+        }
+      ],
+      "audioUrl": "/media/b20667107eacdb0f57a2c462a94409d2ded08526c2f65613a589cf7252d52a1d.mp3",
+      "audioSha256": "b20667107eacdb0f57a2c462a94409d2ded08526c2f65613a589cf7252d52a1d",
+      "difficulty": "medium",
+      "conceptTag": "spins_in_one_revolution"
+    },
+    {
+      "id": "67ab4e60-475c-4cf2-a3ec-db1b89709b8c",
+      "format": "fill_blank",
+      "prompt": "Today is Makar Sankranti, the kite festival. It comes again next January. Till then, Earth goes around the Sun ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "once"
+        },
+        {
+          "id": "option-1",
+          "text": "12 times"
+        },
+        {
+          "id": "option-2",
+          "text": "about 365 times"
+        }
+      ],
+      "audioUrl": "/media/7c38f44aa927f1b4e44b83cdcb6ed3db2ddf111954fcb4d637bbc937c2cc276a.mp3",
+      "audioSha256": "7c38f44aa927f1b4e44b83cdcb6ed3db2ddf111954fcb4d637bbc937c2cc276a",
+      "difficulty": "easy",
+      "conceptTag": "one_revolution_one_year"
+    },
+    {
+      "id": "74aa42ad-e0c7-4a09-a2d7-5550f2e0c93f",
+      "format": "pick_one",
+      "prompt": "On Diwali night, Meera spins round and round in one place. What is her axis?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "An imaginary line from one hand to the other"
+        },
+        {
+          "id": "option-1",
+          "text": "She has no axis, because no rod goes through her"
+        },
+        {
+          "id": "option-2",
+          "text": "An imaginary line from her head to her feet"
+        }
+      ],
+      "audioUrl": "/media/0663a36d31f4be0a2560eb3067eef9e92e0ce35ee528b6dd6fa4cfd2edea3993.mp3",
+      "audioSha256": "0663a36d31f4be0a2560eb3067eef9e92e0ce35ee528b6dd6fa4cfd2edea3993",
+      "difficulty": "medium",
+      "conceptTag": "find_axis_of_a_spinning_person"
+    },
+    {
+      "id": "4a372a52-a29c-4455-ab3b-f50b8204efa4",
+      "format": "true_false",
+      "prompt": "At morning assembly, Kabir says this about Earth. Is he right?\n\nEarth's axis is a real rod.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/227715519b216bbcde3c5a9af3f8fc49ff21e1ec6558e15eaca9216580dfb95a.mp3",
+      "audioSha256": "227715519b216bbcde3c5a9af3f8fc49ff21e1ec6558e15eaca9216580dfb95a",
+      "difficulty": "easy",
+      "conceptTag": "axis_is_imaginary_not_a_rod"
+    },
+    {
+      "id": "47e3f539-557c-4baa-b6ed-73bfa3e7eabc",
+      "format": "fill_blank",
+      "prompt": "A coconut tree at the beach leans a little. So the tree is ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "spinning"
+        },
+        {
+          "id": "option-1",
+          "text": "tilted"
+        },
+        {
+          "id": "option-2",
+          "text": "imaginary"
+        }
+      ],
+      "audioUrl": "/media/ce05281ae6f32fd9b7ba68c2435857aac90c7e275def57870fd4701a621f9337.mp3",
+      "audioSha256": "ce05281ae6f32fd9b7ba68c2435857aac90c7e275def57870fd4701a621f9337",
+      "difficulty": "easy",
+      "conceptTag": "tilted_means_leaning_a_little"
+    },
+    {
+      "id": "43430e82-fc0c-4408-b130-0e97d4bbc542",
+      "format": "fill_blank",
+      "prompt": "At a hill station, a merry-go-round spins in one place. Earth also spins like this, on its own axis. We call this spin of Earth ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "revolution"
+        },
+        {
+          "id": "option-1",
+          "text": "rotation"
+        },
+        {
+          "id": "option-2",
+          "text": "orbit"
+        }
+      ],
+      "audioUrl": "/media/a3c1f833b2a8e0cd1da29893ec93766b02a956de57d0ce68afd03c047ef3f48d.mp3",
+      "audioSha256": "a3c1f833b2a8e0cd1da29893ec93766b02a956de57d0ce68afd03c047ef3f48d",
+      "difficulty": "medium",
+      "conceptTag": "name_the_spin_rotation"
+    },
+    {
+      "id": "47ef82b1-5f86-4a4d-add9-04fff9ed09ad",
+      "format": "true_false",
+      "prompt": "Is this right?\n\nEarth always spins from west to east.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/8b955005d5ba0258e8f8f0f27518a4840d85cb736273a2460ed35cb9a2d40a6b.mp3",
+      "audioSha256": "8b955005d5ba0258e8f8f0f27518a4840d85cb736273a2460ed35cb9a2d40a6b",
+      "difficulty": "easy",
+      "conceptTag": "spin_direction_west_to_east"
+    },
+    {
+      "id": "7fecc943-8085-46aa-95de-73881fcc89cb",
+      "format": "multi_select",
+      "prompt": "Which of these are like Earth's rotation?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "A bus going around a hill"
+        },
+        {
+          "id": "option-1",
+          "text": "A Kathak dancer spinning in one place"
+        },
+        {
+          "id": "option-2",
+          "text": "A rain cloud moving across the sky"
+        },
+        {
+          "id": "option-3",
+          "text": "An umbrella spinning in one place"
+        }
+      ],
+      "audioUrl": "/media/5379b580806d46c37798fe98114a5b5aff91d1ad6ffa6e8931c6d818f4072c0f.mp3",
+      "audioSha256": "5379b580806d46c37798fe98114a5b5aff91d1ad6ffa6e8931c6d818f4072c0f",
+      "difficulty": "medium",
+      "conceptTag": "rotation_spin_in_one_place"
+    },
+    {
+      "id": "bbd3a93e-e8ed-4c15-9dcd-6c984bdf4efa",
+      "format": "multi_select",
+      "prompt": "Ravi wants to see how a bamboo pole's shadow changes. The pole stands upright in a sunny wheat field. Which of these are steps he should follow?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Mark the tip of the pole's shadow."
+        },
+        {
+          "id": "option-1",
+          "text": "Mark the top of the pole."
+        },
+        {
+          "id": "option-2",
+          "text": "Look at the shadow again after one hour."
+        },
+        {
+          "id": "option-3",
+          "text": "Look at the shadow again at night."
+        },
+        {
+          "id": "option-4",
+          "text": "Compare the shadow's size and direction."
+        }
+      ],
+      "audioUrl": "/media/08b3cd1ecbffaffffc9023b6bcbef93b95d25e081625e5f6e4ec1a5876138f5a.mp3",
+      "audioSha256": "08b3cd1ecbffaffffc9023b6bcbef93b95d25e081625e5f6e4ec1a5876138f5a",
+      "difficulty": "medium",
+      "conceptTag": "shadow_observation_steps"
+    },
+    {
+      "id": "5deb0d66-f036-4b32-b45c-ea371d740bca",
+      "format": "fill_blank",
+      "prompt": "On Makar Sankranti, Aarav flies kites on the roof all day. He watches his water bottle's shadow. It is shortest when the Sun is ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "highest in the sky"
+        },
+        {
+          "id": "option-1",
+          "text": "low in the morning"
+        },
+        {
+          "id": "option-2",
+          "text": "low in the evening"
+        }
+      ],
+      "audioUrl": "/media/b95f1960d26037b9195d03b49a4ef7b907e6f3e8fe275e166ae6b61f6a1849e8.mp3",
+      "audioSha256": "b95f1960d26037b9195d03b49a4ef7b907e6f3e8fe275e166ae6b61f6a1849e8",
+      "difficulty": "easy",
+      "conceptTag": "shortest_when_sun_highest"
+    },
+    {
+      "id": "b4ad0752-03f7-4008-a03a-be9d272bbcdf",
+      "format": "pick_one",
+      "prompt": "It is a sunny morning. Kabir sees a lamp post's shadow outside a science museum. He looks at the shadow again one hour later. What is true about the way it points now?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "It points the same way as before."
+        },
+        {
+          "id": "option-1",
+          "text": "It points a different way."
+        },
+        {
+          "id": "option-2",
+          "text": "It points towards the Sun."
+        }
+      ],
+      "audioUrl": "/media/663e17942d32205331a6f2c28a2118b90415531283e60fe5cb7bc02c7609b8cf.mp3",
+      "audioSha256": "663e17942d32205331a6f2c28a2118b90415531283e60fe5cb7bc02c7609b8cf",
+      "difficulty": "easy",
+      "conceptTag": "shadow_direction_changes"
+    },
+    {
+      "id": "fb29bd3b-3c12-466c-ba00-ca9c46817082",
+      "format": "multi_select",
+      "prompt": "An old temple near the beach has a sundial. Which of these are times when the sundial works?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "On a bright, sunny morning"
+        },
+        {
+          "id": "option-1",
+          "text": "At night, after sunset"
+        },
+        {
+          "id": "option-2",
+          "text": "When thick clouds cover the Sun"
+        },
+        {
+          "id": "option-3",
+          "text": "On a sunny afternoon, during a power cut"
+        }
+      ],
+      "audioUrl": "/media/0d93e855721536d4e8e43abf6ed3c3f404c372f7644bceb20cbaee729b41b250.mp3",
+      "audioSha256": "0d93e855721536d4e8e43abf6ed3c3f404c372f7644bceb20cbaee729b41b250",
+      "difficulty": "medium",
+      "conceptTag": "needs_sunshine_not_electricity"
+    },
+    {
+      "id": "f51ccdde-49ff-4bcd-87b2-704712b788aa",
+      "format": "pick_one",
+      "prompt": "At the school science fair, Meera shows a sundial model. A stick stands straight up at its centre. What is the name of this stick?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "the axis"
+        },
+        {
+          "id": "option-1",
+          "text": "the gnomon"
+        },
+        {
+          "id": "option-2",
+          "text": "the shadow"
+        }
+      ],
+      "audioUrl": "/media/4de876abf674e9902c96a47ff66e0d29f197227e86535f6e9205b0b669d1eab5.mp3",
+      "audioSha256": "4de876abf674e9902c96a47ff66e0d29f197227e86535f6e9205b0b669d1eab5",
+      "difficulty": "easy",
+      "conceptTag": "gnomon_upright_stick"
+    },
+    {
+      "id": "710c373d-cdd8-4409-869b-3fb5f3c6a8e4",
+      "format": "true_false",
+      "prompt": "Aarav's school has a sundial in the playground. It is a sunny day. Is this right?\n\nThe sundial's shadow stays on one mark from assembly to lunch.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/a1ba333262b94dd3d9dc399493b3c2aa9804409dbd1407ea8b23ce93b7626245.mp3",
+      "audioSha256": "a1ba333262b94dd3d9dc399493b3c2aa9804409dbd1407ea8b23ce93b7626245",
+      "difficulty": "medium",
+      "conceptTag": "shadow_moves_to_new_mark"
+    },
+    {
+      "id": "6093cb47-b547-426f-a409-8bd813afb95a",
+      "format": "pick_one",
+      "prompt": "Kabir sees a sundial at an old fort. Why does the sundial's shadow move through the day?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "The Sun really moves across our sky."
+        },
+        {
+          "id": "option-1",
+          "text": "The stick on the sundial turns a little each hour."
+        },
+        {
+          "id": "option-2",
+          "text": "Earth turns, so the Sun's place in our sky changes."
+        }
+      ],
+      "audioUrl": "/media/d952fdbabee87828e0c591dd94f41d04575f8d8010e43a9a1fb0d690a5e140ff.mp3",
+      "audioSha256": "d952fdbabee87828e0c591dd94f41d04575f8d8010e43a9a1fb0d690a5e140ff",
+      "difficulty": "medium",
+      "conceptTag": "earth_turns_so_shadows_move"
+    },
+    {
+      "id": "4c353d43-9588-46ca-87a1-54eb2626aa8a",
+      "format": "true_false",
+      "prompt": "On a highway trip, Aarav sees the Sun cross the sky. He says this about the Sun. Is he right?\n\nThe Sun really travels across our sky each day.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/b58f6cb0c20e0c614c254cf725691d5cb4a9e58141b15f85ca5d2cbe14271a45.mp3",
+      "audioSha256": "b58f6cb0c20e0c614c254cf725691d5cb4a9e58141b15f85ca5d2cbe14271a45",
+      "difficulty": "easy",
+      "conceptTag": "sun_only_seems_to_travel"
+    },
+    {
+      "id": "86e129ff-1687-4f5c-a1d3-bf13a6bb89cb",
+      "format": "fill_blank",
+      "prompt": "After the monsoon rain, Meera sees the Sun high at noon. By evening, it is low in the sky. The Sun seems to move because Earth ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "stays still"
+        },
+        {
+          "id": "option-1",
+          "text": "turns"
+        }
+      ],
+      "audioUrl": "/media/2761377da352bb3b4b090ec5e232d85837778d2f63105ab8fa439b596af2bc93.mp3",
+      "audioSha256": "2761377da352bb3b4b090ec5e232d85837778d2f63105ab8fa439b596af2bc93",
+      "difficulty": "easy",
+      "conceptTag": "earth_turns_sun_seems_to_move"
+    },
+    {
+      "id": "f812fb21-e4a4-4adf-a7d4-ac44a526e0e3",
+      "format": "multi_select",
+      "prompt": "Aarav rides a smooth lift at a science museum. Which of these are true?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "He feels the lift start."
+        },
+        {
+          "id": "option-1",
+          "text": "He feels the lift moving the whole time."
+        },
+        {
+          "id": "option-2",
+          "text": "He feels the lift stop."
+        },
+        {
+          "id": "option-3",
+          "text": "He feels nothing at all, even when it starts."
+        }
+      ],
+      "audioUrl": "/media/0bb89f052d77af1fc08ebf1be3ddd82d49bf9a554afb7b953ed301894591e4ac.mp3",
+      "audioSha256": "0bb89f052d77af1fc08ebf1be3ddd82d49bf9a554afb7b953ed301894591e4ac",
+      "difficulty": "medium",
+      "conceptTag": "ride_felt_only_at_start_and_stop"
+    },
+    {
+      "id": "4265c8a9-0933-47b7-9935-dd892a6c5c61",
+      "format": "pick_one",
+      "prompt": "Riya flies a kite on her roof at Makar Sankranti. Why does she not feel Earth spin?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Earth stops spinning in the daytime."
+        },
+        {
+          "id": "option-1",
+          "text": "Earth carries her and the air along with it."
+        },
+        {
+          "id": "option-2",
+          "text": "Earth stays still, and only the Sun moves."
+        }
+      ],
+      "audioUrl": "/media/1e58f299974c2c2ff8e27b018ece510283790a7bb7848bfa26e2506b21a231a4.mp3",
+      "audioSha256": "1e58f299974c2c2ff8e27b018ece510283790a7bb7848bfa26e2506b21a231a4",
+      "difficulty": "easy",
+      "conceptTag": "earth_carries_us_and_the_air"
+    },
+    {
+      "id": "45273bb7-df7d-415b-b8c6-fafd24d7483a",
+      "format": "true_false",
+      "prompt": "Meera keeps a full bowl of dal on the kitchen table. Earth spins, but the dal stays still. Is this right?\n\nThe dal stays still because Earth never bumps or stops.",
+      "options": [
+        {
+          "id": "true",
+          "text": "True"
+        },
+        {
+          "id": "false",
+          "text": "False"
+        }
+      ],
+      "audioUrl": "/media/a183b9b8953375ac08438fcf7dd7cd26a0499950246232400cf4a1eb01d725b7.mp3",
+      "audioSha256": "a183b9b8953375ac08438fcf7dd7cd26a0499950246232400cf4a1eb01d725b7",
+      "difficulty": "medium",
+      "conceptTag": "smooth_earth_keeps_things_still"
+    },
+    {
+      "id": "25f0fc56-ba98-4ceb-9386-b678b3f0a988",
+      "format": "fill_blank",
+      "prompt": "At morning assembly, Meera shares a fact about the name Earth. The name comes from an Old English word. That word meant ___.",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "sky"
+        },
+        {
+          "id": "option-1",
+          "text": "soil"
+        },
+        {
+          "id": "option-2",
+          "text": "sea"
+        }
+      ],
+      "audioUrl": "/media/aa52a3cd6833aa491af7fd9ab31d5eda73ce2cbf20e8152f3bee5bf6c544a986.mp3",
+      "audioSha256": "aa52a3cd6833aa491af7fd9ab31d5eda73ce2cbf20e8152f3bee5bf6c544a986",
+      "difficulty": "easy",
+      "conceptTag": "earth_name_meaning"
+    },
+    {
+      "id": "6ace368c-10a2-483c-97d8-074a841fead1",
+      "format": "multi_select",
+      "prompt": "Kabir gets a book about planets as a Diwali gift. It says Earth is the third planet from the Sun. Which of these sentences are true?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Earth is the third biggest planet."
+        },
+        {
+          "id": "option-1",
+          "text": "Two planets are nearer the Sun than Earth."
+        },
+        {
+          "id": "option-2",
+          "text": "Three planets are nearer the Sun than Earth."
+        },
+        {
+          "id": "option-3",
+          "text": "We count the planets from the one nearest the Sun."
+        }
+      ],
+      "audioUrl": "/media/b53b1fe65031784fa17cce8a8bb451b1af98180b9a4ed51ba90fe5ee33b0a36d.mp3",
+      "audioSha256": "b53b1fe65031784fa17cce8a8bb451b1af98180b9a4ed51ba90fe5ee33b0a36d",
+      "difficulty": "medium",
+      "conceptTag": "third_from_sun_meaning"
+    },
+    {
+      "id": "b5117775-1fe5-47c0-879b-5fea9dadc0d7",
+      "format": "pick_one",
+      "prompt": "Kabir's family drives on a highway to see the Samrat Yantra. In which city is it?",
+      "options": [
+        {
+          "id": "option-0",
+          "text": "Agra"
+        },
+        {
+          "id": "option-1",
+          "text": "Jaipur"
+        },
+        {
+          "id": "option-2",
+          "text": "Chennai"
+        }
+      ],
+      "audioUrl": "/media/fa3ca6332b4faa9d77cddf3528ca9c6638f7745fea1369cf32e4c43729a3e588.mp3",
+      "audioSha256": "fa3ca6332b4faa9d77cddf3528ca9c6638f7745fea1369cf32e4c43729a3e588",
+      "difficulty": "easy",
+      "conceptTag": "samrat_yantra_location"
+    }
+  ]
+}
