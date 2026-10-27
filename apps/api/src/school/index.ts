@@ -4,25 +4,25 @@ import { DynamoDBDocumentClient, GetCommand, QueryCommand, TransactWriteCommand,
 import type { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda';
 
 export type VerifiedAccount = { id: string; email: string; emailVerified: boolean };
-type RecordValue = Record<string, any>;
+export type RecordValue = Record<string, any>;
 type School = { id: string; name: string; timeZone: string; createdAt: string; adminId: string };
 type Teacher = { email: string; name: string; active: boolean; version: number };
 type SchoolClass = { id: string; name: string; subject: string; teacherEmails: string[]; version: number };
-type Student = { id: string; name: string; studentEmail: string; parentEmails: string[]; version: number; active: boolean };
+export type Student = { id: string; name: string; studentEmail: string; parentEmails: string[]; version: number; active: boolean };
 export type ChildLink = { id: string; schoolId: string; schoolName: string; classId: string; className: string; name: string };
 const db = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-2' }));
 const table = () => process.env.TABLE_NAME!;
 const hash = (value: string) => createHash('sha256').update(value).digest('hex');
-const schoolPK = (schoolId: string) => `SCHOOL#${schoolId}`;
-const classPK = (schoolId: string, classId: string) => `CLASS#${schoolId}#${classId}`;
+export const schoolPK = (schoolId: string) => `SCHOOL#${schoolId}`;
+export const classPK = (schoolId: string, classId: string) => `CLASS#${schoolId}#${classId}`;
 const emailPK = (email: string) => `SCHOOL_EMAIL#${hash(email)}`;
-const now = () => new Date().toISOString();
+export const now = () => new Date().toISOString();
 
 export class SchoolError extends Error {
   constructor(public status: number, public code: string, message: string) { super(message); }
 }
-const fail = (status: number, code: string, message: string): never => { throw new SchoolError(status, code, message); };
-const json = (statusCode: number, data: unknown): APIGatewayProxyResultV2 => ({ statusCode, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' }, body: JSON.stringify(data) });
+export const fail = (status: number, code: string, message: string): never => { throw new SchoolError(status, code, message); };
+export const json = (statusCode: number, data: unknown): APIGatewayProxyResultV2 => ({ statusCode, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' }, body: JSON.stringify(data) });
 function text(value: unknown, label: string, max: number): string {
   if (typeof value !== 'string' || !value.trim() || value.trim().length > max || /[\u0000-\u001f\u007f]/.test(value)) return fail(400, 'INVALID_FIELD', `Enter ${label} (up to ${max} characters).`);
   return value.trim();
@@ -32,25 +32,25 @@ export function normalizeEmail(value: unknown): string {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail(400, 'INVALID_EMAIL', 'Enter a complete email address.');
   return email;
 }
-function id(value: string) {
+export function id(value: string) {
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(value)) return fail(404, 'NOT_FOUND', 'This school record could not be found.');
   return value;
 }
-function bodyOf(event: APIGatewayProxyEventV2WithJWTAuthorizer): RecordValue {
+export function bodyOf(event: APIGatewayProxyEventV2WithJWTAuthorizer): RecordValue {
   const raw = event.isBase64Encoded ? Buffer.from(event.body || '', 'base64').toString('utf8') : event.body || '';
   if (raw.length > 16_000) return fail(413, 'TOO_LARGE', 'This school update is too large.');
   try { const value = JSON.parse(raw); if (value && typeof value === 'object' && !Array.isArray(value)) return value; } catch { /* Invalid request below. */ }
   return fail(400, 'INVALID_JSON', 'The school update could not be read.');
 }
-function version(value: unknown): number {
+export function version(value: unknown): number {
   if (!Number.isSafeInteger(value) || Number(value) < 1) return fail(400, 'VERSION_REQUIRED', 'Refresh this record before correcting it.');
   return Number(value);
 }
-async function get<T>(PK: string, SK: string): Promise<T | null> {
+export async function get<T>(PK: string, SK: string): Promise<T | null> {
   const result = await db.send(new GetCommand({ TableName: table(), Key: { PK, SK }, ConsistentRead: true }));
   return result.Item as T || null;
 }
-async function query(PK: string, prefix: string): Promise<RecordValue[]> {
+export async function query(PK: string, prefix: string): Promise<RecordValue[]> {
   const items: RecordValue[] = []; let cursor: RecordValue | undefined;
   do {
     const result = await db.send(new QueryCommand({ TableName: table(), KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)', ExpressionAttributeValues: { ':pk': PK, ':prefix': prefix }, ConsistentRead: true, ExclusiveStartKey: cursor }));
@@ -58,12 +58,12 @@ async function query(PK: string, prefix: string): Promise<RecordValue[]> {
   } while (cursor);
   return items;
 }
-const put = (PK: string, SK: string, value: RecordValue, expected?: number | 'new') => ({ Put: {
-  TableName: table(), Item: { PK, SK, ...value },
+export const put = (PK: string, SK: string, value: RecordValue, expected?: number | 'new') => ({ Put: {
+  TableName: table(), Item: { ...value, PK, SK },
   ...(expected === 'new' ? { ConditionExpression: 'attribute_not_exists(PK)' } : typeof expected === 'number' ? { ConditionExpression: '#version = :version', ExpressionAttributeNames: { '#version': 'version' }, ExpressionAttributeValues: { ':version': expected } } : {}),
 } });
 const remove = (PK: string, SK: string) => ({ Delete: { TableName: table(), Key: { PK, SK } } });
-async function write(items: NonNullable<TransactWriteCommandInput['TransactItems']>) {
+export async function write(items: NonNullable<TransactWriteCommandInput['TransactItems']>) {
   try { await db.send(new TransactWriteCommand({ TransactItems: items })); }
   catch (issue) {
     if ((issue as Error).name === 'TransactionCanceledException' && (issue as { CancellationReasons?: { Code?: string }[] }).CancellationReasons?.some((reason) => reason.Code === 'ConditionalCheckFailed' || reason.Code === 'TransactionConflict')) return fail(409, 'RECORD_CHANGED', 'This record changed in another session. Refresh it and try again.');
@@ -169,6 +169,9 @@ export async function handleSchool(event: APIGatewayProxyEventV2WithJWTAuthorize
     if (!user.id || !user.emailVerified) return fail(403, 'EMAIL_NOT_VERIFIED', 'Verify your account email before opening a school workspace.');
     normalizeEmail(user.email);
     if (!table()) return fail(503, 'STORAGE_UNAVAILABLE', 'The school workspace is temporarily unavailable.');
+    const communication = await import('./communication.js');
+    const handled = await communication.handleCommunication(event, user);
+    if (handled) return handled;
     const path = event.rawPath.replace(/\/$/, ''); const method = event.requestContext.http.method;
     if (path === '/api/school/workspaces' && method === 'GET') {
       const [staff, family] = await Promise.all([staffWorkspaces(user), linkedFamily(user)]);
@@ -245,4 +248,15 @@ export async function handleSchool(event: APIGatewayProxyEventV2WithJWTAuthorize
     if (issue instanceof SchoolError) return json(issue.status, { error: issue.code, message: issue.message });
     throw issue;
   }
+}
+
+/** Canonical bounded input for school guidance; never includes roster emails. */
+export async function listClassRosterForGuidance(schoolId: string, classId: string) {
+  return (await query(classPK(schoolId, classId), 'STUDENT#')).filter((item) => item.active).map((item) => ({ id: String(item.id), name: String(item.name) }));
+}
+export async function staffDisplayName(user: VerifiedAccount, schoolId: string) {
+  const context = await requireSchoolStaff(user, schoolId);
+  if (context.role === 'admin') return 'School administrator';
+  const teacher = await get<Teacher>(schoolPK(schoolId), `TEACHER#${hash(normalizeEmail(user.email))}`);
+  return teacher?.name || 'Teacher';
 }
