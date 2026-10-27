@@ -14,25 +14,35 @@ export function Narration({ lines, language, showText = true, children }: { line
   const [replayKey, setReplayKey] = useState(0);
   const [error, setError] = useState('');
   const shouldPlay = useRef(false);
+  const playGeneration = useRef(0);
   const source = lines[line];
   const clipSha256 = source?.audioSha256 || source?.audioUrl.match(/([a-f0-9]{64})\.mp3/)?.[1];
   async function start() {
     window.dispatchEvent(new CustomEvent('sls:narration-start', { detail: audio.current }));
+    const generation = ++playGeneration.current;
     shouldPlay.current = true; setStarted(true); setError('');
-    try { await audio.current?.play(); setPlaying(true); }
-    catch { shouldPlay.current = false; setPlaying(false); setError('Audio could not play. Please try again.'); }
+    setPlaying(true);
+    try {
+      await audio.current?.play();
+      if (generation !== playGeneration.current || !shouldPlay.current) return;
+      setPlaying(true);
+    } catch {
+      if (generation !== playGeneration.current || !shouldPlay.current) return;
+      shouldPlay.current = false; setPlaying(false); setError('Audio could not play. Please try again.');
+    }
   }
   useEffect(() => {
     const element = audio.current;
     if (!element || !source) return;
+    playGeneration.current++;
     element.src = source.audioUrl; setTime(0); setDuration(0);
     if (shouldPlay.current) void start();
   }, [line, source?.audioUrl]);
   useEffect(() => {
     const element = audio.current;
-    const pauseOther = (event: Event) => { if ((event as CustomEvent).detail !== element) { shouldPlay.current = false; element?.pause(); setPlaying(false); } };
+    const pauseOther = (event: Event) => { if ((event as CustomEvent).detail !== element) { playGeneration.current++; shouldPlay.current = false; element?.pause(); setPlaying(false); } };
     window.addEventListener('sls:narration-start', pauseOther);
-    return () => { window.removeEventListener('sls:narration-start', pauseOther); shouldPlay.current = false; element?.pause(); };
+    return () => { window.removeEventListener('sls:narration-start', pauseOther); playGeneration.current++; shouldPlay.current = false; element?.pause(); };
   }, []);
   useEffect(() => {
     if (!playing) return;
@@ -40,8 +50,9 @@ export function Narration({ lines, language, showText = true, children }: { line
     const tick = () => { setTime(audio.current?.currentTime || 0); frame = requestAnimationFrame(tick); };
     frame = requestAnimationFrame(tick); return () => cancelAnimationFrame(frame);
   }, [playing]);
-  function toggle() { if (playing) { shouldPlay.current = false; audio.current?.pause(); setPlaying(false); } else void start(); }
+  function toggle() { if (shouldPlay.current) { playGeneration.current++; shouldPlay.current = false; audio.current?.pause(); setPlaying(false); } else void start(); }
   function replay() {
+    playGeneration.current++; audio.current?.pause();
     setReplayKey((value) => value + 1); setStarted(true); setError(''); shouldPlay.current = true;
     setTime(0);
     if (line !== 0) setLine(0); else { if (audio.current) audio.current.currentTime = 0; void start(); }
@@ -51,7 +62,7 @@ export function Narration({ lines, language, showText = true, children }: { line
   return <>
     {children?.(clock)}
     {showText && <div className="lesson-copy" lang={language}>{lines.map((item, index) => <p key={index} className={line === index && playing ? 'spoken-line' : ''}><Text>{item.display}</Text></p>)}</div>}
-    <div className="audio-player"><button className="audio-play" onClick={toggle} aria-label={playing ? 'Pause narration' : 'Play narration'}>{playing ? <Pause size={21} fill="currentColor" /> : <Play size={21} fill="currentColor" />}</button><div className="audio-info"><strong>{playing ? (language === 'hi' ? 'सुनते रहिए…' : 'Listen and discover') : (language === 'hi' ? 'पाठ सुनिए' : 'Listen to this idea')}</strong><span><Volume2 size={13} />{language === 'hi' ? 'हिन्दी' : 'English'} · Line {line + 1} of {lines.length}</span><input aria-label="Narration position" type="range" min={0} max={duration || 1} step={0.05} value={Math.min(time, duration || 1)} disabled={!duration} onChange={(event) => { const value = Number(event.target.value); if (audio.current) audio.current.currentTime = value; setTime(value); setStarted(true); }} /></div><button className="icon-button" onClick={replay} aria-label="Replay narration from the beginning"><RotateCcw size={19} /></button><audio ref={audio} preload="metadata" onLoadedMetadata={() => setDuration(audio.current?.duration || 0)} onSeeked={() => setTime(audio.current?.currentTime || 0)} onEnded={() => { if (line < lines.length - 1) { setLine(line + 1); setTime(0); } else { shouldPlay.current = false; setPlaying(false); } }} onError={() => { setError('This audio is unavailable. You can keep reading and try playback again.'); setPlaying(false); shouldPlay.current = false; }} /></div>
+    <div className="audio-player"><button className="audio-play" onClick={toggle} aria-label={playing ? 'Pause narration' : 'Play narration'}>{playing ? <Pause size={21} fill="currentColor" /> : <Play size={21} fill="currentColor" />}</button><div className="audio-info"><strong>{playing ? (language === 'hi' ? 'सुनते रहिए…' : 'Listen and discover') : (language === 'hi' ? 'पाठ सुनिए' : 'Listen to this idea')}</strong><span><Volume2 size={13} />{language === 'hi' ? 'हिन्दी' : 'English'} · Line {line + 1} of {lines.length}</span><input aria-label="Narration position" type="range" min={0} max={duration || 1} step={0.05} value={Math.min(time, duration || 1)} disabled={!duration} onChange={(event) => { const value = Number(event.target.value); if (audio.current) audio.current.currentTime = value; setTime(value); setStarted(true); }} /></div><button className="icon-button" onClick={replay} aria-label="Replay narration from the beginning"><RotateCcw size={19} /></button><audio ref={audio} preload="metadata" onLoadedMetadata={() => setDuration(audio.current?.duration || 0)} onSeeked={() => setTime(audio.current?.currentTime || 0)} onEnded={() => { if (line < lines.length - 1) { setLine(line + 1); setTime(0); } else { playGeneration.current++; shouldPlay.current = false; setPlaying(false); } }} onError={() => { playGeneration.current++; setError('This audio is unavailable. You can keep reading and try playback again.'); setPlaying(false); shouldPlay.current = false; }} /></div>
     {error && <p className="form-error" role="alert">{error}</p>}
   </>;
 }

@@ -44,7 +44,11 @@ export async function request<T>(config: Config, path: string, options: { authen
   }
   if (options.body) headers['Content-Type'] = 'application/json';
   const response = await fetch(`${config.apiBaseUrl}${path}`, { method: options.method || (options.body ? 'PUT' : 'GET'), headers, body: options.body ? JSON.stringify(options.body) : undefined, signal: options.signal });
-  const data = await response.json().catch(() => ({ message: 'The server returned an unexpected response. Please try again.' }));
+  const data = await response.json().catch((issue: Error) => {
+    if (issue.name === 'AbortError' || options.signal?.aborted) throw new DOMException('The request was cancelled.', 'AbortError');
+    return { message: 'The server returned an unexpected response. Please try again.' };
+  });
+  if (options.signal?.aborted) throw new DOMException('The request was cancelled.', 'AbortError');
   if (!response.ok) throw new ApiError(data.message || 'Please try again shortly.', response.status);
   return data as T;
 }
