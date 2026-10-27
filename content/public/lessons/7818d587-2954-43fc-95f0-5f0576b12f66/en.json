@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "id": "7818d587-2954-43fc-95f0-5f0576b12f66",
+  "title": "Our Earth: Reading a Sundial",
+  "language": "en",
+  "scope": "foundation",
+  "cards": [
+    {
+      "id": "eb969d65-caea-4107-aed5-b46bbbf383c3",
+      "title": "The Gnomon",
+      "kind": "concept",
+      "lines": [
+        {
+          "display": "A sundial has a flat surface.",
+          "audioUrl": "/media/757d3111a78b547a653e741a5ecd711014b888b27164a66b9c842abb0877a08b.mp3"
+        },
+        {
+          "display": "An **upright** stick stands at its centre.",
+          "audioUrl": "/media/1924f974cbf5ff3eed88e27420680f009d4afb366c56a69fdabaf9ed159b697c.mp3"
+        },
+        {
+          "display": "**Upright** means standing straight up.",
+          "audioUrl": "/media/269f02d8d968673e6060ff1f6e00624c0baca348ef56a65615d8b2b6d7db3dde.mp3"
+        },
+        {
+          "display": "We call this stick the **gnomon**.",
+          "audioUrl": "/media/510791496ca1c36952886cba877c423eb3232523a9bef18583a0ed3727f7cb5a.mp3"
+        },
+        {
+          "display": "The g is silent, so we say it “no-mon”.",
+          "audioUrl": "/media/f45830f6f684fcefd2d4081f84560baadf6fc2116793322341a8abf5c7241bf1.mp3"
+        }
+      ]
+    },
+    {
+      "id": "ec5ecfa8-a27b-4750-8c14-c1c00a0f1a86",
+      "title": "The Moving Shadow",
+      "kind": "concept",
+      "lines": [
+        {
+          "display": "The Sun shines on the gnomon.",
+          "audioUrl": "/media/920c4859330fcabd3a1643adaa04e499088e3039984d6f643b8349612dc8abaf.mp3"
+        },
+        {
+          "display": "So the gnomon makes a shadow on the flat surface.",
+          "audioUrl": "/media/357d8f52f292b2a8dca8e89f7188c9bee60580638e636e3129ca1a790ac3db8a.mp3"
+        },
+        {
+          "display": "Through the day, this shadow moves to new **positions**.",
+          "audioUrl": "/media/44f76049d49056d15b079d3875379ad91d21bad69f7b67bf68d33e6eda96f336.mp3"
+        },
+        {
+          "display": "A **position** is the place where something is.",
+          "audioUrl": "/media/52dbf017f98f12f37f22500597d268c7b2f37062445685d9b440a8f6eec4a50b.mp3"
+        }
+      ]
+    },
+    {
+      "id": "4b1e17fd-7724-43df-8fa1-5e13ec484428",
+      "title": "Reading a Sundial",
+      "kind": "concept",
+      "lines": [
+        {
+          "display": "A sundial has a mark for each position of the shadow.",
+          "audioUrl": "/media/b449fda0b26171e3765583d8bbd6b35585937c5e150b55ef0b67075c58ae0fa2.mp3"
+        },
+        {
+          "display": "Each mark shows a time.",
+          "audioUrl": "/media/ab99681930f141f69dffb5b86a1ac1bdec00c9518194bd7d5b924ce0c9d1779c.mp3"
+        },
+        {
+          "display": "To read the time, see which mark the shadow falls on.",
+          "audioUrl": "/media/b3aef55c46b70cefcb8c9ef9fb1465097dd67e77b07f7a9228569eb8156aad67.mp3"
+        }
+      ]
+    }
+  ]
+}

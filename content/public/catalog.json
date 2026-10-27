@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "chapters": [
+    {
+      "id": "7818d587-2954-43fc-95f0-5f0576b12f66",
+      "title": "Our Earth",
+      "description": "Explore how a sundial uses sunlight and a moving shadow to tell the time. This three-card foundation preview is available in English and Hindi.",
+      "grade": 4,
+      "subject": "EVS",
+      "languages": [
+        "en",
+        "hi"
+      ],
+      "status": "foundation-preview",
+      "cardCount": 3
+    }
+  ]
+}

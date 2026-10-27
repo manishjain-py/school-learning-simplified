@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "id": "7818d587-2954-43fc-95f0-5f0576b12f66",
+  "title": "हमारी Earth: Sundial को पढ़ना",
+  "language": "hi",
+  "scope": "foundation",
+  "cards": [
+    {
+      "id": "eb969d65-caea-4107-aed5-b46bbbf383c3",
+      "title": "Sundial का gnomon",
+      "kind": "concept",
+      "lines": [
+        {
+          "display": "Sundial की एक सपाट surface होती है।",
+          "audioUrl": "/media/709d9c083e1645b4f32f3d378d076869650cf22dbb0eaf65ed5b6016536d6e6f.mp3"
+        },
+        {
+          "display": "एक **upright** डंडी इसके बीच में खड़ी होती है।",
+          "audioUrl": "/media/e7e0d8ab36dd05200b5a94604bc8e3c9d5f4e40103bd08872a36974cac0f7a2d.mp3"
+        },
+        {
+          "display": "**Upright** मतलब एकदम सीधा खड़ा।",
+          "audioUrl": "/media/f7e68baaea36aaf6066709d023ef602574f2205b50c11492b14ce953f480e1e1.mp3"
+        },
+        {
+          "display": "इस डंडी को **gnomon** कहते हैं।",
+          "audioUrl": "/media/43dd26dd27ae000e223b6a5452ae478ac78b146f3e40d5b204363a46c6af91df.mp3"
+        },
+        {
+          "display": "इसमें g चुप रहता है, इसलिए हम इसे “no-mon” कहते हैं।",
+          "audioUrl": "/media/d31f85dc169ebe0ae0b19af60c3328a47a547bb31bd41d13c5b77dbafbc1070d.mp3"
+        }
+      ]
+    },
+    {
+      "id": "ec5ecfa8-a27b-4750-8c14-c1c00a0f1a86",
+      "title": "खिसकती shadow",
+      "kind": "concept",
+      "lines": [
+        {
+          "display": "Sun की धूप gnomon पर पड़ती है।",
+          "audioUrl": "/media/773ade16197a8a10ea6c995458820bcf1231fafa23d6d96e0aec95c327c09eb0.mp3"
+        },
+        {
+          "display": "इसलिए gnomon एक shadow बनाता है, सपाट surface पर।",
+          "audioUrl": "/media/9c2ca11f23b3c05554b4322562238e9886669f82c014e422cabe962aa8c684df.mp3"
+        },
+        {
+          "display": "दिन भर यह shadow नई-नई **positions** पर खिसकती रहती है।",
+          "audioUrl": "/media/cad0316ab1ecf20cc57193f6e90ddfd46fc7df0d018e38f124e9d44860c39f7b.mp3"
+        },
+        {
+          "display": "**Position** मतलब वह जगह जहाँ कोई चीज़ होती है।",
+          "audioUrl": "/media/61e33b771b05268964c62bfb5df8b17876fe558116285e454bdd45405a0ed855.mp3"
+        }
+      ]
+    },
+    {
+      "id": "4b1e17fd-7724-43df-8fa1-5e13ec484428",
+      "title": "Sundial को पढ़ना",
+      "kind": "concept",
+      "lines": [
+        {
+          "display": "Sundial पर निशान बने होते हैं, shadow की हर position के लिए एक।",
+          "audioUrl": "/media/833fa4ff19a6df15c9b99d52509d129776089e1928079df2b9b1dd7544ef4d02.mp3"
+        },
+        {
+          "display": "हर निशान एक समय बताता है।",
+          "audioUrl": "/media/005c62ff4d0bd2c6e9a7e7f17fcb9554917483c56140e7ef8a372ab77999f83c.mp3"
+        },
+        {
+          "display": "समय पढ़ने के लिए देखिए, किस निशान पर shadow पड़ रही है।",
+          "audioUrl": "/media/41c761394a380fcfff8793dd4f08f31d28d2c9355cac1569a66a65d51aae991a.mp3"
+        }
+      ]
+    }
+  ]
+}
