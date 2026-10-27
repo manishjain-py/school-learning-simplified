@@ -27,11 +27,11 @@ async function accessToken(config: Config): Promise<string> {
   }
   return (await refreshing).accessToken;
 }
-export async function request<T>(config: Config, path: string, options: { authenticated?: boolean; body?: unknown; signal?: AbortSignal } = {}): Promise<T> {
+export async function request<T>(config: Config, path: string, options: { authenticated?: boolean; body?: unknown; method?: 'GET' | 'PUT' | 'POST'; signal?: AbortSignal } = {}): Promise<T> {
   const headers: Record<string, string> = { Accept: 'application/json' };
   if (options.authenticated) headers.Authorization = `Bearer ${await accessToken(config)}`;
   if (options.body) headers['Content-Type'] = 'application/json';
-  const response = await fetch(`${config.apiBaseUrl}${path}`, { method: options.body ? 'PUT' : 'GET', headers, body: options.body ? JSON.stringify(options.body) : undefined, signal: options.signal });
+  const response = await fetch(`${config.apiBaseUrl}${path}`, { method: options.method || (options.body ? 'PUT' : 'GET'), headers, body: options.body ? JSON.stringify(options.body) : undefined, signal: options.signal });
   const data = await response.json().catch(() => ({ message: 'The server returned an unexpected response. Please try again.' }));
   if (!response.ok) throw new ApiError(data.message || 'Please try again shortly.', response.status);
   return data as T;

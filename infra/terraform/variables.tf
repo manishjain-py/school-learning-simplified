@@ -23,6 +23,16 @@ variable "custom_domain_enabled" {
   default     = false
 }
 
+variable "content_release" {
+  description = "Selected content release; empty keeps the verified foundation."
+  type        = string
+  default     = ""
+  validation {
+    condition     = contains(["", "m2"], var.content_release)
+    error_message = "Use an empty release for the foundation or m2 after full-content verification."
+  }
+}
+
 variable "github_oidc_subject" {
   description = "Exact current main-branch subject from the repository OIDC configuration; set privately."
   type        = string
