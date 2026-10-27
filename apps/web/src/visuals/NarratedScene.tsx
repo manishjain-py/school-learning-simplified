@@ -5,7 +5,7 @@ import type { SceneDocument, VisualStageProps } from './types';
 const sceneCache = new Map<string, SceneDocument>();
 
 export function NarratedScene(props: VisualStageProps) {
-  const { visual, language, currentLine, currentTime, clipSha256, hasStarted } = props;
+  const { visual, language, currentLine, currentTime, clipSha256, hasStarted, onReady } = props;
   const [scene, setScene] = useState<SceneDocument | null>(null);
   const [error, setError] = useState('');
   const [imageError, setImageError] = useState(false);
@@ -26,6 +26,29 @@ export function NarratedScene(props: VisualStageProps) {
     });
     return () => controller.abort();
   }, [url, attempt]);
+
+  useEffect(() => {
+    if (!onReady) return;
+    if (error) { onReady(); return; }
+    if (!scene) return;
+    let active = true;
+    // A cold image request must not reveal its first marks after the voice has moved on.
+    const urls = [...new Set((scene.assets?.layers || []).map(layer => layer.url))];
+    let remaining = urls.length;
+    if (!remaining) { onReady(); return; }
+    const images = urls.map(url => {
+      const image = new Image();
+      const finish = (failed: boolean) => {
+        image.onload = null; image.onerror = null;
+        if (!active) return;
+        if (failed) setImageError(true);
+        if (--remaining === 0) onReady();
+      };
+      image.onload = () => finish(false); image.onerror = () => finish(true); image.src = url;
+      return image;
+    });
+    return () => { active = false; images.forEach(image => { image.onload = null; image.onerror = null; }); };
+  }, [scene, error, attempt, onReady]);
 
   const intros = useMemo(() => {
     const result = new Map<string, SceneDocument['beats']>();
@@ -48,7 +71,7 @@ export function NarratedScene(props: VisualStageProps) {
   const progress = (beat: SceneDocument['beats'][number]) => started ? cueProgress(cueFor(beat, language), currentLine, currentTime) : 0;
   const nodeProgress = (id: string) => {
     const beats = intros.get(id);
-    return !beats?.length ? 1 : Math.max(...beats.map(progress));
+    return !started ? 0 : !beats?.length ? 1 : Math.max(...beats.map(progress));
   };
   const activeGuides = scene.beats.filter(beat => {
     const cue = cueFor(beat, language);
@@ -56,15 +79,13 @@ export function NarratedScene(props: VisualStageProps) {
   });
   const label = visual.description || visual.title || (language === 'hi' ? 'पाठ के साथ बनता चित्र' : 'An illustration drawn with the narration');
   return <div className="sls-narrated-scene" data-scene-state={started ? 'narrating' : 'ready'}>
-    {!started && visual.type === 'scene' && visual.posterUrl && sameOriginAsset(visual.posterUrl) ?
-      <img className="sls-scene-poster" src={visual.posterUrl} alt={label} onError={() => setImageError(true)} /> :
-      <svg viewBox={`0 0 ${scene.canvas.w} ${scene.canvas.h}`} role="img" aria-label={label} className="sls-scene-canvas">
+    <svg viewBox={`0 0 ${scene.canvas.w} ${scene.canvas.h}`} role="img" aria-label={label} className="sls-scene-canvas">
         <title>{label}</title>
         <desc>{scene.nodes.map(node => node.text).filter(Boolean).join(', ')}</desc>
         <rect width={scene.canvas.w} height={scene.canvas.h} fill="#fbf8f1" />
         <defs>{(scene.assets?.layers || []).map((layer, i) => {
           const beat = scene.beats.find(item => item.id === layer.beat);
-          const p = beat ? progress(beat) : 1;
+          const p = !started ? 0 : beat ? progress(beat) : 1;
           return <mask id={`${prefix}-reveal-${i}`} key={i} maskUnits="userSpaceOnUse" x="0" y="0" width={scene.canvas.w} height={scene.canvas.h}>
             {p >= 1 ? <rect width={scene.canvas.w} height={scene.canvas.h} fill="white" /> : beat?.route ? <path d={beat.route} fill="none" stroke="white" strokeWidth={beat.brushWidth || 70} strokeLinecap="round" strokeLinejoin="round" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - p} opacity={p > 0 ? 1 : 0} /> : <rect x={layer.bbox[0]} y={layer.bbox[1]} width={layer.bbox[2] * p} height={layer.bbox[3]} fill="white" />}
           </mask>;
@@ -84,8 +105,8 @@ export function NarratedScene(props: VisualStageProps) {
           {beat.region && <path d={beat.region} fill="#e6b967" fillOpacity=".12" stroke="#ad762b" strokeWidth="6" />}
           {!beat.region && scene.nodes.filter(node => [...(beat.targets || []), ...(beat.nodes || [])].includes(node.id)).flatMap(node => node.strokes.map((stroke, i) => <path key={`${node.id}-${i}`} d={stroke.d} fill="none" stroke="#d4a14b" strokeWidth={(stroke.w || node.w || 3) + 8} opacity=".25" strokeLinecap="round" />))}
         </g>)}
-      </svg>}
-    <p className="sls-visual-caption">{started ? (language === 'hi' ? 'आवाज़ के साथ चित्र बनता है।' : 'The illustration follows your narration.') : (language === 'hi' ? 'चित्र को बनते देखने के लिए पाठ सुनिए।' : 'Play the narration to see this illustration unfold.')}</p>
+      </svg>
+    <p className="sls-visual-caption">{started ? (language === 'hi' ? 'आवाज़ के साथ चित्र बनता है।' : 'The illustration follows your narration.') : (language === 'hi' ? 'आवाज़ शुरू होने पर चित्र बनता है।' : 'The illustration begins with the narration.')}</p>
     {imageError && <p className="sls-visual-error" role="alert">Part of this illustration could not load. <button type="button" onClick={() => { setImageError(false); setAttempt(attempt + 1); }}>Retry images</button></p>}
   </div>;
 }

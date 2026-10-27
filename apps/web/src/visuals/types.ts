@@ -19,6 +19,7 @@ export type VisualStageProps = {
   replayKey: number;
   clipSha256?: string;
   hasStarted?: boolean;
+  onReady?: () => void;
 };
 
 export type SceneCue = { line: number; start_ms: number; end_ms: number; clip_sha256?: string; emphasis?: { start_ms: number; end_ms: number } | null };
