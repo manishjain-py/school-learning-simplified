@@ -1,0 +1,12 @@
+{
+  "factory": "explain",
+  "metadata": {
+    "mode": "generate",
+    "grade": 4,
+    "subject": "SYNTHETIC PLUMBING — NO CURRICULUM"
+  },
+  "files": {
+    "guideline": {"type": "json", "path": "guideline.json"},
+    "research": {"type": "json", "path": "research.json"}
+  }
+}

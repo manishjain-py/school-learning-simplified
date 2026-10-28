@@ -51,6 +51,9 @@ class Fixture:
         marker = 'SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT'
         if notes_pages:
             value = {'page_notes': [{'printed_page': p, 'observations': marker} for p in notes_pages]}
+        elif role.startswith('explain_'):
+            from .factories.explain_fixture import output
+            value = output(role)
         elif role == 'toc_review':
             value = {'ok': False, 'findings': [{'chapter_number': None, 'issue': marker,
                 'evidence': 'One-pixel synthetic images contain no printed chapter map.',

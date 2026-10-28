@@ -8,12 +8,12 @@ from pathlib import Path
 # Disable environment-driven external tracing before importing LangGraph.
 os.environ['LANGSMITH_TRACING'] = 'false'
 os.environ['LANGCHAIN_TRACING_V2'] = 'false'
-from reference.factories import guideline, toc
+from reference.factories import explain, guideline, toc
 from reference.inputs import load_manifest, read
 from reference.providers import validate_config
 from reference.runtime import Runner, exclusive, report
 
-FACTORIES = {guideline.NAME: guideline, toc.NAME: toc}
+FACTORIES = {guideline.NAME: guideline, toc.NAME: toc, explain.NAME: explain}
 
 
 def factory(name):

@@ -56,6 +56,8 @@ class Runner:
             save(self.workspace/'identity.json', self.identity)
             save(self.workspace/self.ledger_name, {'config': config, 'calls': []})
         self.config = validate_config(self.identity['config'])
+        if hasattr(factory, 'validate_inputs'):
+            factory.validate_inputs(self.bundle)
         self.ledger_path = self.workspace/self.ledger_name
         if not self.ledger_path.exists():
             raise RuntimeError('Missing ledger; refusing to reset evidence')
@@ -146,7 +148,7 @@ class Runner:
         """Every role sees all originals independently; no earlier image history."""
         pages = self.bundle['pages']
         limit = self.config['image_limit']
-        batches = [pages[i:i+limit] for i in range(0, len(pages), limit)]
+        batches = [pages[i:i+limit] for i in range(0, len(pages), limit)] or [[]]
         notes = []
         for index, batch in enumerate(batches):
             final = index == len(batches)-1
@@ -165,7 +167,15 @@ class Runner:
     def export(self, role, filename):
         result = self.result(role)
         if result and result['status'] == 'ok':
-            save(self.workspace/'artifacts'/filename, result['output']['artifact'])
+            target = self.workspace/'artifacts'/filename
+            artifact = result['output']['artifact']
+            if target.suffix == '.md' and isinstance(artifact, str):
+                target.parent.mkdir(parents=True, exist_ok=True)
+                tmp = target.with_suffix('.md.tmp')
+                tmp.write_text(artifact, encoding='utf-8')
+                os.replace(tmp, target)
+            else:
+                save(target, artifact)
 
 
 def report(workspace, factory):
@@ -202,6 +212,8 @@ def report(workspace, factory):
             esc(result.get('output', {'technical_failure': 'See private checkpoints/responses; details omitted here.'}))+'</pre></details>')
     for path in sorted((workspace/'diagnostics').glob('*.json')):
         chunks.append('<h2>Advisory pre-revision diagnostics</h2><pre>'+esc(read(path))+'</pre>')
+    for path in sorted((workspace/'metrics').glob('*.json')):
+        chunks.append('<h2>Host bookkeeping</h2><pre>'+esc(read(path))+'</pre>')
     chunks.append('<h2>Per-request usage and reservations</h2><pre>'+esc([{k: c[k] for k in ('key', 'role', 'status', 'usage', 'reserved_usd', 'actual_usd', 'request_sha256') if k in c} for c in ledger['calls']])+'</pre>')
     for key, result in results.items():
         if '__batch_' in key:
@@ -209,6 +221,8 @@ def report(workspace, factory):
     chunks.append('<h2>Authoritative exports</h2>')
     for path in sorted((workspace/'artifacts').glob('*.json')):
         chunks.append('<h3>'+html.escape(path.name)+'</h3><pre>'+esc(read(path))+'</pre>')
+    for path in sorted((workspace/'artifacts').glob('*.md')):
+        chunks.append('<h3>'+html.escape(path.name)+'</h3><pre>'+html.escape(path.read_text())+'</pre>')
     chunks.append('</html>')
     (workspace/'report.html').write_text('\n'.join(chunks))
     return summary

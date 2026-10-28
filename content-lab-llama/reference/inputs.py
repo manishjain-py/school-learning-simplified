@@ -52,8 +52,8 @@ def save(path, value):
 def runtime_identity():
     paths = [ROOT/'run_factory.py', ROOT/'requirements.lock']
     paths += sorted((ROOT/'reference').rglob('*.py'))
-    paths += sorted((ROOT/'prompts').glob('*.md'))
-    paths += sorted((ROOT/'schemas').glob('*.json'))
+    paths += sorted((ROOT/'prompts').rglob('*.md'))
+    paths += sorted((ROOT/'schemas').rglob('*.json'))
     packages = [line.split('==')[0] for line in (ROOT/'requirements.lock').read_text().splitlines() if '==' in line]
     return {'files': {str(p.relative_to(ROOT)): sha(p.read_bytes()) for p in paths},
             'python': sys.version, 'packages': {p: importlib.metadata.version(p)
@@ -98,7 +98,7 @@ def load_manifest(path, factory):
                       'format': fmt, 'sha256': sha(data)})
         blobs[name] = data
     numbers = [p['printed_page'] for p in pages]
-    if not numbers or len({canonical(n) for n in numbers}) != len(numbers):
+    if (not numbers and getattr(factory, 'REQUIRES_PAGES', True)) or len({canonical(n) for n in numbers}) != len(numbers):
         raise ValueError('Provide unique printed page labels in intended reading order')
     declared, file_identity = {}, {}
     for key, spec in value.get('files', {}).items():
@@ -114,6 +114,8 @@ def load_manifest(path, factory):
             raise ValueError('File type must be json or text')
     bundle = {'factory': factory.NAME, 'metadata': metadata, 'pages': pages,
               'declared': declared, 'file_identity': file_identity}
+    if hasattr(factory, 'validate_inputs'):
+        factory.validate_inputs(bundle)
     return bundle, blobs
 
 
