@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand, QueryCommand, TransactWriteCommand, type TransactWriteCommandInput } from '@aws-sdk/lib-dynamodb';
 import type { APIGatewayProxyEventV2WithJWTAuthorizer } from 'aws-lambda';
@@ -14,7 +14,7 @@ type Recommendation = Omit<GuidanceCandidate, 'datePhrase' | 'id'> & {
   id: string; schoolId: string; classId: string; logId: string; version: number; authorId: string; createdAt: string;
 };
 type Snapshot = { version: number; attempt: number; status: string; startedAt: string; recommendationIds: string[]; allRecommendationIds: string[]; unresolved: InterpretationResult['unresolved']; retryable: boolean; model?: InterpretationResult['model'] };
-export type OriginActivity = { recommendationId: string; studentId: string; accountId: string; studentEmailHash: string; startedAt: string; updatedAt: string; language: 'en' | 'hi'; currentCardId: string | null; completedCards: Set<string>; sessionId?: string };
+export type OriginActivity = { recommendationId: string; studentId: string; accountId: string; studentEmailHash: string; startedAt: string; updatedAt: string; language: 'en' | 'hi'; currentCardId: string | null; completedCards: Set<string>; sessionId?: string; practiceSetId?: string };
 const db = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-2' }));
 const table = () => process.env.TABLE_NAME!;
 const hash = (text: string) => createHash('sha256').update(text).digest('hex');
@@ -111,10 +111,9 @@ export async function requireOrigin(user: VerifiedAccount, id: string, chapterId
 export async function startOrigin(user: VerifiedAccount, id: string) {
   const record = await recommendation(id); const context = await requireOrigin(user, id, record.chapterId, record.mode, false);
   if (!context.activity) {
-    const timestamp = now(); const sessionId = record.mode === 'practice' ? randomUUID() : undefined;
-    const activity: Omit<OriginActivity, 'completedCards'> = { recommendationId: id, studentId: context.child.id, accountId: user.id, studentEmailHash: hash(user.email.trim().toLowerCase()), startedAt: timestamp, updatedAt: timestamp, currentCardId: null, language: 'en', ...(sessionId ? { sessionId } : {}) };
+    const timestamp = now();
+    const activity: Omit<OriginActivity, 'completedCards'> = { recommendationId: id, studentId: context.child.id, accountId: user.id, studentEmailHash: hash(user.email.trim().toLowerCase()), startedAt: timestamp, updatedAt: timestamp, currentCardId: null, language: 'en' };
     const writes: NonNullable<TransactWriteCommandInput['TransactItems']> = [currentLogCondition({ ...record, id: record.logId }), { Put: { TableName: table(), Item: { ...context.key, ...activity }, ConditionExpression: 'attribute_not_exists(PK)' } }];
-    if (sessionId) writes.push({ Put: { TableName: table(), Item: { PK: `USER#${user.id}`, SK: `PRACTICE#${record.chapterId}#SESSION#${sessionId}`, kind: 'practice-session', chapterId: record.chapterId, sessionId, recommendationId: id, studentId: context.child.id, startedAt: timestamp }, ConditionExpression: 'attribute_not_exists(PK)' } });
     try { await transaction(writes); } catch (error) { if (!(error instanceof SchoolError && error.status === 409) || !await get<OriginActivity>(context.key)) throw error; }
   }
   return { recommendation: safeRecommendation(record), activity: await get<OriginActivity>(context.key) };
@@ -156,6 +155,13 @@ async function familyRecommendations(child: ChildLink, role: 'student' | 'parent
 }
 async function activitySummary(record: Recommendation, row: Row) {
   if (record.mode === 'practice') {
+    if (row.practiceSetId) {
+      const set = await get<Row>({ PK: `USER#${row.accountId}`, SK: `PRACTICE_SET#${record.chapterId}#SET#${row.practiceSetId}` });
+      if (!set || set.kind !== 'practice-set' || set.id !== row.practiceSetId || set.chapterId !== record.chapterId || set.recommendationId !== record.id || set.studentId !== row.studentId || set.studentEmailHash !== row.studentEmailHash) return { status: 'started', startedAt: row.startedAt, total: 10 };
+      const answered = set.questionIds.filter((id: string) => set.answers[id]?.length).length;
+      return set.status === 'submitted' ? { status: 'submitted', setId: set.id, startedAt: row.startedAt, submittedAt: set.submittedAt, answered: set.answered, total: set.total, correct: set.score } : { status: 'started', setId: set.id, startedAt: row.startedAt, answered, total: set.total };
+    }
+    if (!row.sessionId) return { status: 'started', startedAt: row.startedAt, total: 10 };
     const prefix = `PRACTICE#${record.chapterId}#SESSION#${row.sessionId}`;
     const rows = await query(`USER#${row.accountId}`, prefix);
     const meta = rows.find(item => item.SK === prefix);

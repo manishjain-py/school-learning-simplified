@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowRight, BookOpen, LogOut, ShieldCheck } from 'lucide-react';
 import { GlobalSignOutCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthDialog } from './AuthDialog';
@@ -49,10 +49,17 @@ export default function App() {
   const accountGeneration = useRef(0);
   const [authMode, setAuthMode] = useState<'signin' | 'signup' | null>(null);
   const [path, setPath] = useState(window.location.pathname + window.location.search);
+  const currentPath = useRef(path); currentPath.current = path;
+  const beforeLeave = useRef<(() => Promise<void>) | null>(null);
+  const registerBeforeLeave = useCallback((guard: (() => Promise<void>) | null) => { beforeLeave.current = guard; }, []);
   const [sessionNotice, setSessionNotice] = useState('');
   const [retry, setRetry] = useState(0);
   useEffect(() => {
-    const pop = () => setPath(window.location.pathname + window.location.search);
+    const pop = async () => {
+      const next = window.location.pathname + window.location.search;
+      try { await beforeLeave.current?.(); setPath(next); }
+      catch (issue) { window.history.pushState({}, '', currentPath.current); setSessionNotice((issue as Error).message || 'Your answers could not save. Try again before leaving.'); }
+    };
     window.addEventListener('popstate', pop); return () => window.removeEventListener('popstate', pop);
   }, []);
   useEffect(() => {
@@ -95,10 +102,18 @@ export default function App() {
     });
     return () => abort.abort();
   }, [config, accountRetry]);
-  function navigate(next: string) { if (window.location.pathname + window.location.search !== next) window.history.pushState({}, '', next); setPath(next); setSessionNotice(''); window.scrollTo(0, 0); }
+  async function navigate(next: string) {
+    try { await beforeLeave.current?.(); }
+    catch (issue) { setSessionNotice((issue as Error).message || 'Your answers could not save. Try again before leaving.'); return; }
+    if (window.location.pathname + window.location.search !== next) window.history.pushState({}, '', next);
+    setPath(next); setSessionNotice(''); window.scrollTo(0, 0);
+  }
   async function signOut() {
+    try { await beforeLeave.current?.(); }
+    catch (issue) { setSessionNotice((issue as Error).message || 'Your answers could not save. Try again before signing out.'); return; }
+    beforeLeave.current = null;
     const token = session()?.accessToken; accountGeneration.current += 1; clearSession(); setUser(null); setAccountStatus('signedout'); setAccountError('');
-    navigate(isSchool ? '/school' : '/'); setSessionNotice('You are signed out on this device.');
+    await navigate(isSchool ? '/school' : '/'); setSessionNotice('You are signed out on this device.');
     if (config && token) { try { await identityClient(config).send(new GlobalSignOutCommand({ AccessToken: token })); } catch { /* Local session is already removed. */ } }
   }
   const preferences = useStudentPreferences(config, user);
@@ -108,6 +123,7 @@ export default function App() {
   }, [path, accountStatus, preferences.loading, preferences.profile.setupStep]);
   const pathname = path.split('?')[0];
   const recommendationId = new URLSearchParams(path.split('?')[1] || '').get('recommendation') ?? undefined;
+  const requestedSetId = new URLSearchParams(path.split('?')[1] || '').get('set') ?? undefined;
   const learningMatch = pathname.match(/^\/(learn|practice|revise)\/([a-zA-Z0-9_-]+)\/?$/);
   function learningPage() {
     if (!config || preferences.loading) return <main className="status-panel page-width" role="status">Opening your learning space…</main>;
@@ -118,7 +134,7 @@ export default function App() {
     const entry = catalog?.chapters.find((item) => item.id === chapterId);
     if (mode !== 'learn' && !entry?.modes?.includes(mode)) return <main className="status-panel page-width"><h1>This learning mode is on its way.</h1><p>Explore the available lesson in the meantime.</p><button className="button primary" onClick={() => navigate(`/learn/${chapterId}`)}>Go to Learn<ArrowRight size={17} /></button></main>;
     const props = { config, chapterId, user, recommendationId, preferredLanguage: preferences.profile.language || undefined, onSignIn: () => setAuthMode('signin'), onBack: () => navigate(`/chapters/${chapterId}${recommendationId !== undefined ? `?recommendation=${encodeURIComponent(recommendationId)}&mode=${mode}` : ''}`), onMode: (next: LearningMode) => navigate(`/${next}/${chapterId}${recommendationId !== undefined && next === mode ? `?recommendation=${encodeURIComponent(recommendationId)}` : ''}`) };
-    if (mode === 'practice') return <PracticeView key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} />;
+    if (mode === 'practice') return <PracticeView key={`${chapterId}:${recommendationId || 'library'}:${requestedSetId || 'current'}:${user?.id || 'anonymous'}`} {...props} requestedSetId={requestedSetId} registerBeforeLeave={registerBeforeLeave} onPracticeAgain={() => { void navigate(`/practice/${chapterId}`); }} onOpenDraftContext={(setId, origin) => { void navigate(`/practice/${chapterId}?${new URLSearchParams({ set: setId, ...(origin ? { recommendation: origin } : {}) })}`); }} />;
     if (mode === 'revise') return <ReviseView key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} />;
     return <LessonView key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} />;
   }

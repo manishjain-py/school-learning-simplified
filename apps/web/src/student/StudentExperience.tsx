@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronRight, Globe2, GraduationCap, Headphones, Leaf, ListChecks, Settings2, Sparkles, UserRound } from 'lucide-react';
 import { request } from '../api';
-import type { Catalog, Chapter, Config, LearningMode, PracticeSession, Progress, User } from '../types';
+import type { Catalog, Chapter, Config, LearningMode, PracticeSet, Progress, User } from '../types';
 import { curriculumLabel, hasLibrary, type LearnerPreferences, type PreferenceChanges, type PreferenceController } from './preferences';
 import './student.css';
 
@@ -92,8 +92,8 @@ function ChapterWorkspace({ config, user, chapter, profile, search, navigate }: 
     if (!user) return;
     Promise.all(modes.filter((mode) => chapter.modes?.includes(mode) ?? mode === 'learn').map(async (mode) => {
       if (mode === 'practice') {
-        const { session } = await request<{ session: PracticeSession | null }>(config, `/practice/${chapter.id}/session`, { authenticated: true, expectedUserId: user.id, signal: abort.signal });
-        return [mode, session ? `${session.answered} of ${session.totalQuestions} answered · ${session.correctCount} correct` : 'Ready for your first round'] as const;
+        const { set } = await request<{ set: PracticeSet | null }>(config, `/practice/${chapter.id}/sets/current`, { authenticated: true, expectedUserId: user.id, signal: abort.signal });
+        return [mode, set ? set.status === 'submitted' ? `${set.score}/${set.total} · submitted` : `${Object.values(set.answers).filter(picks => picks.length).length}/${set.total} answered · in progress` : 'Start 10 questions'] as const;
       }
       const value = await request<Progress>(config, `/progress/${chapter.id}?mode=${mode}`, { authenticated: true, expectedUserId: user.id, signal: abort.signal });
       return [mode, `${value.completedCardIds.length} of ${mode === 'learn' ? chapter.cardCount : chapter.reviseCount || 25} ${mode === 'learn' ? 'ideas explored' : 'cards reviewed'}`] as const;

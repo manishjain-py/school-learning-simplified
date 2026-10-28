@@ -1,14 +1,16 @@
 import type { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { CognitoIdentityProviderClient, GetUserCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, TransactWriteCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, GetCommand, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { gradeOptions, type AnswerKey, type OptionQuestion } from './grading.js';
+import { type AnswerKey, type OptionQuestion } from './grading.js';
 import { handleSchool, SchoolError } from './school/index.js';
 import { handlePreferences } from './preferences/index.js';
-import { handleRecommendations, originProgress, originPractice, originCondition } from './recommendations/index.js';
+import { handleRecommendations, originProgress, originPractice } from './recommendations/index.js';
+import { handlePracticeSets } from './practice/index.js';
+import type { SetQuestion } from './practice/selection.js';
 
 type Chapter = { id: string; title: string; languages: string[]; cardCount: number };
 type Catalog = { schemaVersion: number; chapters: Chapter[] };
@@ -91,6 +93,7 @@ function validSessionId(value: unknown): string {
 }
 
 async function practiceSession(userId: string, chapterId: string, sessionId: string, language: string) {
+  validSessionId(sessionId);
   const sessionKey = `PRACTICE#${chapterId}#SESSION#${sessionId}`;
   const rows = await db.send(new QueryCommand({
     TableName: process.env.TABLE_NAME, KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)',
@@ -100,7 +103,8 @@ async function practiceSession(userId: string, chapterId: string, sessionId: str
   if (!meta) throw new HttpError(404, 'SESSION_NOT_FOUND', 'This practice round could not be found in your account.');
   const bank = await readContent<PracticeBank>(modeKey(chapterId, language, 'practice'));
   const keys = await readContent<PrivateAnswers>(`${privatePrefix}/practice/${chapterId}/${language}.json`);
-  const answers = (rows.Items || []).filter((item) => item.kind === 'practice-answer').map((item) => {
+  const questionIds = new Set(bank.questions.map(question => question.id));
+  const answers = (rows.Items || []).filter((item) => item.kind === 'practice-answer' && item.sessionId === sessionId && item.chapterId === chapterId && questionIds.has(item.questionId)).map((item) => {
     const key = keys.answers[item.questionId];
     if (!key) throw new HttpError(503, 'REVIEW_UNAVAILABLE', 'The prepared review for this question is unavailable.');
     return { questionId: item.questionId, selectedOptionIds: item.selectedOptionIds, correct: item.correct, answeredAt: item.answeredAt, correctAnswerText: key.correctAnswerText, reason: key.reason };
@@ -156,6 +160,16 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
       }));
       return json(200, user);
     }
+    const setsMatch = path.match(/^\/api\/practice\/([^/]+)\/(sets|rounds)(?:\/|$)/);
+    if (setsMatch) {
+      learningMode('practice');
+      const user = await verifiedUser(event); const chapter = await chapterFor(setsMatch[1]);
+      return json(200, await handlePracticeSets(event, user, chapter.id, {
+        bank: language => readContent<{ questions: SetQuestion[] }>(modeKey(chapter.id, language, 'practice')),
+        keys: language => readContent<PrivateAnswers>(`${privatePrefix}/practice/${chapter.id}/${language}.json`),
+        legacy: practiceSession,
+      }));
+    }
     const practiceMatch = path.match(/^\/api\/practice\/([^/]+)\/(session|sessions|attempts)$/);
     if (practiceMatch) {
       learningMode('practice');
@@ -168,92 +182,14 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
         if (originId !== undefined) {
           const origin = await originPractice(user, originId, chapter.id);
           const language = validLanguage(event.queryStringParameters?.language || origin.activity!.language);
-          return json(200, { session: await practiceSession(user.id, chapter.id, origin.activity!.sessionId!, language) });
+          return json(200, { session: origin.activity!.sessionId ? await practiceSession(user.id, chapter.id, origin.activity!.sessionId, language) : null });
         }
         const state = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: stateKey, ConsistentRead: true }));
         if (!state.Item) return json(200, { session: null });
         const language = validLanguage(event.queryStringParameters?.language || state.Item.language || 'en');
         return json(200, { session: await practiceSession(user.id, chapter.id, state.Item.sessionId, language) });
       }
-      if (method === 'PUT' && practiceMatch[2] === 'session') {
-        const body = requestBody(event); const language = validLanguage(body.language);
-        if (body.recommendationId !== undefined) {
-          if (typeof body.recommendationId !== 'string') throw new HttpError(400, 'INVALID_ORIGIN', 'Open a valid learning recommendation.');
-          const origin = await originPractice(user, body.recommendationId, chapter.id, undefined, language);
-          return json(200, { session: await practiceSession(user.id, chapter.id, origin.activity!.sessionId!, language) });
-        }
-        const state = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: stateKey, ConsistentRead: true }));
-        if (!state.Item) throw new HttpError(404, 'SESSION_NOT_FOUND', 'Start a practice round first.');
-        await db.send(new UpdateCommand({ TableName: process.env.TABLE_NAME, Key: stateKey, UpdateExpression: 'SET #language = :language', ExpressionAttributeNames: { '#language': 'language' }, ExpressionAttributeValues: { ':language': language } }));
-        return json(200, { session: await practiceSession(user.id, chapter.id, state.Item.sessionId, language) });
-      }
-      if (method === 'POST' && practiceMatch[2] === 'sessions') {
-        const body = requestBody(event);
-        if (body.recommendationId !== undefined) {
-          if (typeof body.recommendationId !== 'string') throw new HttpError(400, 'INVALID_ORIGIN', 'Open a valid learning recommendation.');
-          const language = validLanguage(body.language);
-          const origin = await originPractice(user, body.recommendationId, chapter.id, undefined, language);
-          return json(200, { session: await practiceSession(user.id, chapter.id, origin.activity!.sessionId!, language) });
-        }
-        const sessionId = validSessionId(body.sessionId);
-        const language = validLanguage(body.language);
-        const sessionKey = { PK: pk, SK: `PRACTICE#${chapter.id}#SESSION#${sessionId}` };
-        const existing = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: sessionKey, ConsistentRead: true }));
-        if (existing.Item?.recommendationId) throw new HttpError(409, 'ORIGIN_REQUIRED', 'Open this practice round through its recommendation.');
-        if (!existing.Item) {
-          const now = new Date().toISOString();
-          try { await db.send(new TransactWriteCommand({ TransactItems: [
-            { Put: { TableName: process.env.TABLE_NAME, Item: { ...sessionKey, kind: 'practice-session', chapterId: chapter.id, sessionId, startedAt: now }, ConditionExpression: 'attribute_not_exists(PK)' } },
-            { Put: { TableName: process.env.TABLE_NAME, Item: { ...stateKey, sessionId, language, updatedAt: now } } },
-          ] })); } catch (issue) {
-            if ((issue as Error).name !== 'TransactionCanceledException') throw issue;
-            const winner = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: sessionKey, ConsistentRead: true }));
-            if (!winner.Item) throw issue;
-          }
-        }
-        return json(200, { session: await practiceSession(user.id, chapter.id, sessionId, language) });
-      }
-      if (method === 'POST' && practiceMatch[2] === 'attempts') {
-        const body = requestBody(event);
-        const sessionId = validSessionId(body.sessionId);
-        const language = validLanguage(body.language);
-        if (typeof body.questionId !== 'string') throw new HttpError(400, 'INVALID_QUESTION', 'Choose a question from this chapter.');
-        const sessionKey = `PRACTICE#${chapter.id}#SESSION#${sessionId}`;
-        const meta = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: { PK: pk, SK: sessionKey }, ConsistentRead: true }));
-        if (!meta.Item) throw new HttpError(404, 'SESSION_NOT_FOUND', 'Start a practice round in your account first.');
-        let origin: Awaited<ReturnType<typeof originPractice>> | undefined;
-        if (body.recommendationId !== undefined || meta.Item.recommendationId) {
-          if (typeof body.recommendationId !== 'string' || body.recommendationId !== meta.Item.recommendationId) throw new HttpError(409, 'ORIGIN_REQUIRED', 'Use the practice round linked to this recommendation.');
-          origin = await originPractice(user, body.recommendationId, chapter.id, sessionId, language);
-        }
-        const bank = await readContent<PracticeBank>(modeKey(chapter.id, language, 'practice'));
-        const question = bank.questions.find((item) => item.id === body.questionId);
-        if (!question) throw new HttpError(400, 'INVALID_QUESTION', 'This question does not belong to the chapter.');
-        const keys = await readContent<PrivateAnswers>(`${privatePrefix}/practice/${chapter.id}/${language}.json`);
-        const answerKey = keys.answers[question.id];
-        if (!answerKey) throw new HttpError(503, 'QUESTION_UNAVAILABLE', 'This question is temporarily unavailable.');
-        let correct: boolean;
-        try { correct = gradeOptions(question, answerKey, body.selectedOptionIds); }
-        catch (issue) { throw new HttpError(400, 'INVALID_ANSWER', (issue as Error).message); }
-        try {
-          const answer = { TableName: process.env.TABLE_NAME, Item: {
-            PK: pk, SK: `${sessionKey}#ANSWER#${question.id}`, kind: 'practice-answer', chapterId: chapter.id,
-            sessionId, questionId: question.id, language, selectedOptionIds: body.selectedOptionIds,
-            correct, answeredAt: new Date().toISOString(),
-          }, ConditionExpression: 'attribute_not_exists(PK)' };
-          if (origin) await db.send(new TransactWriteCommand({ TransactItems: [originCondition(origin.record), { Put: answer }] }));
-          else await db.send(new PutCommand(answer));
-        } catch (issue) {
-          if (origin && (issue as Error).name === 'TransactionCanceledException') {
-            await originPractice(user, String(body.recommendationId), chapter.id, sessionId);
-            const first = await db.send(new GetCommand({ TableName: process.env.TABLE_NAME, Key: { PK: pk, SK: `${sessionKey}#ANSWER#${question.id}` }, ConsistentRead: true }));
-            if (!first.Item) throw issue;
-          } else if ((issue as Error).name !== 'ConditionalCheckFailedException') throw issue;
-        }
-        // A retry reads the first recorded answer; it cannot award duplicate credit.
-        return json(200, { session: await practiceSession(user.id, chapter.id, sessionId, language) });
-      }
-      throw new HttpError(405, 'METHOD_NOT_ALLOWED', 'This practice action is not supported.');
+      throw new HttpError(409, 'ROUND_READ_ONLY', 'Earlier practice rounds are read-only. Refresh and start a ten-question set to practise.');
     }
     const progressMatch = path.match(/^\/api\/progress\/([^/]+)$/);
     if (progressMatch && (method === 'GET' || method === 'PUT')) {
