@@ -1,0 +1,212 @@
+"""Small local evidence/checkpoint surface shared by reference factory graphs."""
+from contextlib import contextmanager
+import fcntl
+import html
+import json
+import os
+from pathlib import Path
+import time
+from .inputs import canonical, frozen_inputs, read, runtime_identity, save, sha
+from .providers import Bedrock, Fixture, validate_config
+
+
+@contextmanager
+def exclusive(workspace):
+    workspace = Path(workspace).resolve()
+    workspace.mkdir(parents=True, exist_ok=True)
+    os.chmod(workspace, 0o700)
+    with (workspace/'operator.lock').open('a') as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise RuntimeError('Another operator owns this workspace') from None
+        try:
+            yield workspace
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+
+
+class Runner:
+    """One frozen run per workspace; a new run never silently replaces one."""
+    def __init__(self, workspace, factory, *, bundle=None, blobs=None, config=None, resume=False):
+        self.workspace = Path(workspace)
+        self.factory = factory
+        if resume:
+            self.identity = read(self.workspace/'identity.json')
+            self.bundle, self.blobs = frozen_inputs(self.workspace)
+            if self.identity['runtime'] != runtime_identity():
+                raise RuntimeError('Frozen runtime changed; resume refused')
+            if self.identity['input_sha256'] != sha(canonical(self.bundle)):
+                raise RuntimeError('Frozen inputs changed; resume refused')
+            if self.identity['factory'] != factory.NAME:
+                raise RuntimeError('Frozen factory mismatch')
+        else:
+            if any(p.name != 'operator.lock' for p in self.workspace.iterdir()):
+                raise RuntimeError('Workspace contains evidence; choose a new workspace or explicit resume')
+            self.bundle, self.blobs = bundle, blobs
+            validate_config(config)
+            self.identity = {'factory': factory.NAME, 'input_sha256': sha(canonical(bundle)),
+                'runtime': runtime_identity(), 'config': config, 'created_at': time.time(),
+                'policy': 'final-author; technical failures visible; no quality veto'}
+            for name, data in blobs.items():
+                target = self.workspace/'inputs'/name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(data)
+            save(self.workspace/'inputs.json', bundle)
+            save(self.workspace/'identity.json', self.identity)
+            save(self.workspace/self.ledger_name, {'config': config, 'calls': []})
+        self.config = validate_config(self.identity['config'])
+        self.ledger_path = self.workspace/self.ledger_name
+        if not self.ledger_path.exists():
+            raise RuntimeError('Missing ledger; refusing to reset evidence')
+        self.ledger = read(self.ledger_path)
+        if self.ledger['config'] != self.config:
+            raise RuntimeError('Ledger config differs from frozen identity')
+        self.provider = Fixture() if self.config['provider'] == 'fixture' else Bedrock(self.config)
+
+    @property
+    def ledger_name(self):
+        return 'synthetic-ledger.json' if self.identity['config']['provider'] == 'fixture' else 'ledger.json'
+
+    def result(self, key):
+        path = self.workspace/'checkpoints'/f'{key}.json'
+        if not path.exists():
+            return None
+        result = read(path)
+        calls = [c for c in self.ledger['calls'] if c['key'] == key]
+        if not calls or calls[-1].get('checkpoint_sha256') != sha(canonical(result)):
+            raise RuntimeError('Checkpoint lacks matching ledger identity')
+        return result
+
+    def output(self, role):
+        result = self.result(role)
+        if result and result['status'] == 'ok':
+            return result['output']
+        # Transport exceptions/IDs/paths stay in private evidence, never role inputs.
+        return {'technical_failure': {'role': role, 'status': 'unavailable'}}
+
+    def exposure(self):
+        return sum(c.get('actual_usd', c['reserved_usd']) for c in self.ledger['calls'])
+
+    def checkpoint(self, key, result, call):
+        # Ledger first: a crash in the gap blocks repeat instead of sending twice.
+        call['checkpoint_sha256'] = sha(canonical(result))
+        save(self.ledger_path, self.ledger)
+        save(self.workspace/'checkpoints'/f'{key}.json', result)
+        return result
+
+    def invoke(self, key, role, request, parse, *, notes_pages=None):
+        existing = self.result(key)
+        if existing is not None:
+            return existing
+        if any(c['key'] == key for c in self.ledger['calls']):
+            raise RuntimeError(f'{key}: interrupted call without checkpoint; manual reconciliation required; no repeat')
+        if runtime_identity() != self.identity['runtime']:
+            raise RuntimeError('Runtime changed during run')
+        bundle, _ = frozen_inputs(self.workspace)
+        if sha(canonical(bundle)) != self.identity['input_sha256']:
+            raise RuntimeError('Inputs changed during run')
+        evidence = json.loads(json.dumps(request, default=lambda data: {'sha256': sha(data), 'bytes': len(data)}))
+        save(self.workspace/'requests'/f'{key}.json', evidence)
+        fixture = self.config['provider'] == 'fixture'
+        reserved = 0 if fixture else (self.config['input_token_bound']*self.config['input_per_million'] +
+                      self.config['max_output_tokens']*self.config['output_per_million'])/1_000_000
+        if not fixture and self.exposure() + reserved > self.config['cap_usd']:
+            raise RuntimeError('Cumulative cap would be exceeded; no request sent')
+        call = {'key': key, 'role': role, 'request_sha256': sha(canonical(evidence)),
+                'reserved_usd': reserved, 'status': 'reserved', 'created_at': time.time(),
+                'synthetic': fixture}
+        self.ledger['calls'].append(call)
+        save(self.ledger_path, self.ledger)
+        try:
+            response = self.provider.invoke(request, role=role, notes_pages=notes_pages)
+            save(self.workspace/'responses'/f'{key}.json', response)
+        except Exception as error:
+            call.update(status='ambiguous_or_rejected', error=str(error))
+            return self.checkpoint(key, {'status': 'failed', 'error': str(error)}, call)
+        call.update(status='response', usage=response.get('usage'), stop_reason=response.get('stopReason'))
+        usage = response.get('usage', {})
+        if fixture:
+            call['actual_usd'] = 0
+        elif all(type(usage.get(k)) is int and usage[k] >= 0 for k in ('inputTokens', 'outputTokens')):
+            call['actual_usd'] = (usage['inputTokens']*self.config['input_per_million'] +
+                                  usage['outputTokens']*self.config['output_per_million'])/1_000_000
+        save(self.ledger_path, self.ledger)
+        try:
+            if response.get('stopReason') != 'end_turn':
+                raise ValueError('Non-final provider stop; raw response retained, no automatic retry')
+            text = ''.join(x.get('text', '') for x in response['output']['message']['content'])
+            value = parse(text)
+            result = {'status': 'ok', 'output': value}
+        except Exception as error:
+            result = {'status': 'failed', 'error': str(error)}
+        return self.checkpoint(key, result, call)
+
+    def role(self, role, declared):
+        """Every role sees all originals independently; no earlier image history."""
+        pages = self.bundle['pages']
+        limit = self.config['image_limit']
+        batches = [pages[i:i+limit] for i in range(0, len(pages), limit)]
+        notes = []
+        for index, batch in enumerate(batches):
+            final = index == len(batches)-1
+            key = role if final else f'{role}__batch_{index+1}'
+            numbers = [p['printed_page'] for p in batch]
+            request = self.factory.request(self, role, declared, batch, notes, final)
+            result = self.invoke(key, role, request,
+                lambda text: self.factory.parse(role, text, None if final else numbers),
+                notes_pages=None if final else numbers)
+            if result['status'] != 'ok':
+                return result
+            if not final:
+                notes.extend(result['output']['page_notes'])
+        return result
+
+    def export(self, role, filename):
+        result = self.result(role)
+        if result and result['status'] == 'ok':
+            save(self.workspace/'artifacts'/filename, result['output']['artifact'])
+
+
+def report(workspace, factory):
+    """Offline view: no Runner/provider creation or modification of source evidence."""
+    identity = read(workspace/'identity.json')
+    fixture = identity['config']['provider'] == 'fixture'
+    ledger = read(workspace/('synthetic-ledger.json' if fixture else 'ledger.json'))
+    results = {p.stem: read(p) for p in sorted((workspace/'checkpoints').glob('*.json'))}
+    complete = all(results.get(role, {}).get('status') == 'ok' for role in factory.ROLES)
+    actual = sum(c.get('actual_usd', 0) for c in ledger['calls'])
+    unknown = sum(c['reserved_usd'] for c in ledger['calls'] if 'actual_usd' not in c)
+    observations = factory.observations(results)
+    summary = {'factory': identity['factory'], 'synthetic': fixture,
+        'status': 'complete' if complete else 'partial_or_failed',
+        'requests': len(ledger['calls']), 'actual_estimate_usd': actual,
+        'unreconciled_reserved_usd': unknown, 'exposure_usd': actual+unknown,
+        'observations': observations, 'roles': {role: results.get(role, {}).get('status', 'unavailable') for role in factory.ROLES},
+        'report_renderer_sha256': sha(canonical(runtime_identity()))}
+    save(workspace/'summary.json', summary)
+    esc = lambda value: html.escape(json.dumps(value, ensure_ascii=False, indent=2))
+    title = 'Synthetic plumbing traversal' if fixture else 'Reader-owned Bedrock run'
+    chunks = [f'<!doctype html><html lang="en"><meta charset="utf-8"><title>{title}</title>',
+        '<style>body{font:16px system-ui;max-width:1000px;margin:40px auto;padding:0 20px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f5f5;padding:16px}summary{cursor:pointer;padding:12px}h1{color:#17494d}</style>',
+        f'<h1>{title}</h1><p>Built with Llama. Final author revision is authoritative; no later quality veto.</p>',
+        '<p>Synthetic fixtures prove graph plumbing only. Sequential images use independent role-local notes. '
+        'Token prices are reader-supplied pre-tax estimates; uncertain calls retain their reservation. '
+        'This local report may contain private supplied/generated content. Keep it private.</p>',
+        '<h2>Run summary</h2><pre>'+esc(summary)+'</pre>',
+        '<h2>Identity</h2><pre>'+esc({k: identity[k] for k in ('factory', 'input_sha256', 'config', 'policy')})+'</pre>',
+        '<h2>Workflow and feedback</h2>']
+    for role in factory.ROLES:
+        result = results.get(role, {})
+        chunks.append('<details open><summary>'+html.escape(role)+' — '+html.escape(result.get('status', 'unavailable'))+'</summary><pre>'+
+            esc(result.get('output', {'technical_failure': 'See private checkpoints/responses; details omitted here.'}))+'</pre></details>')
+    chunks.append('<h2>Per-request usage and reservations</h2><pre>'+esc([{k: c[k] for k in ('key', 'role', 'status', 'usage', 'reserved_usd', 'actual_usd', 'request_sha256') if k in c} for c in ledger['calls']])+'</pre>')
+    for key, result in results.items():
+        if '__batch_' in key:
+            chunks.append('<details><summary>'+html.escape(key)+' — role-local inspection</summary><pre>'+esc(result.get('output', {'technical_failure': 'Private evidence retained'}))+'</pre></details>')
+    chunks.append('<h2>Authoritative exports</h2>')
+    for path in sorted((workspace/'artifacts').glob('*.json')):
+        chunks.append('<h3>'+html.escape(path.name)+'</h3><pre>'+esc(read(path))+'</pre>')
+    chunks.append('</html>')
+    (workspace/'report.html').write_text('\n'.join(chunks))
+    return summary

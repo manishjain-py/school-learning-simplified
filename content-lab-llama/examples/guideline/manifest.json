@@ -1,0 +1,18 @@
+{
+  "factory": "guideline",
+  "metadata": {
+    "grade": 6,
+    "subject": "SYNTHETIC PLUMBING — NO CURRICULUM",
+    "chapter_number": 42,
+    "chapter_title": "SYNTHETIC INPUT ONLY",
+    "language": "English",
+    "audience": "Synthetic transport fixture; no student content"
+  },
+  "pages": [
+    {"printed_page": 101, "path": "sentinel.png"},
+    {"printed_page": 102, "path": "sentinel.png"},
+    {"printed_page": 103, "path": "sentinel.png"},
+    {"printed_page": 104, "path": "sentinel.png"}
+  ],
+  "files": {"context": {"path": "context.txt", "type": "text"}}
+}

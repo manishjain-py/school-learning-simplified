@@ -1,0 +1,11 @@
+{
+  "provider": "bedrock",
+  "model": "REPLACE_WITH_YOUR_IMAGE_CAPABLE_LLAMA_MODEL_OR_PROFILE",
+  "region": "REPLACE_WITH_YOUR_REGION",
+  "image_limit": 3,
+  "max_output_tokens": 8192,
+  "input_token_bound": 1000000,
+  "input_per_million": null,
+  "output_per_million": null,
+  "cap_usd": null
+}
