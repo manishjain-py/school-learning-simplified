@@ -1,0 +1,17 @@
+{
+  "questions": [
+    {
+      "format": "true_false",
+      "difficulty": "easy",
+      "concept_tag": "synthetic_sentinel",
+      "question_text": "SYNTHETIC CAPTION",
+      "statement": "SYNTHETIC EXISTING STATEMENT",
+      "correct_answer_bool": false,
+      "skill_key": "sentinel-a--sentinel",
+      "signature": "sentinel-a--sentinel | sentinel | existing | fixture",
+      "params": {},
+      "explanation_why": "SYNTHETIC FEEDBACK ONLY",
+      "audio_text": "SYNTHETIC SPOKEN SCRIPT ONLY"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "factory": "practice",
+  "metadata": {
+    "grade": 4,
+    "subject": "EVS",
+    "add": 10,
+    "run_cap": 10
+  },
+  "files": {
+    "guideline": {
+      "path": "guideline.json",
+      "type": "json"
+    },
+    "deck": {
+      "path": "deck.json",
+      "type": "json"
+    },
+    "bank": {
+      "path": "bank.json",
+      "type": "json"
+    }
+  }
+}

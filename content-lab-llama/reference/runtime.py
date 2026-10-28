@@ -184,7 +184,8 @@ def report(workspace, factory):
     fixture = identity['config']['provider'] == 'fixture'
     ledger = read(workspace/('synthetic-ledger.json' if fixture else 'ledger.json'))
     results = {p.stem: read(p) for p in sorted((workspace/'checkpoints').glob('*.json'))}
-    complete = all(results.get(role, {}).get('status') == 'ok' for role in factory.ROLES)
+    roles = factory.report_roles(workspace) if hasattr(factory, 'report_roles') else factory.ROLES
+    complete = all(results.get(role, {}).get('status') == 'ok' for role in roles)
     actual = sum(c.get('actual_usd', 0) for c in ledger['calls'])
     unknown = sum(c['reserved_usd'] for c in ledger['calls'] if 'actual_usd' not in c)
     observations = factory.observations(results)
@@ -192,7 +193,7 @@ def report(workspace, factory):
         'status': 'complete' if complete else 'partial_or_failed',
         'requests': len(ledger['calls']), 'actual_estimate_usd': actual,
         'unreconciled_reserved_usd': unknown, 'exposure_usd': actual+unknown,
-        'observations': observations, 'roles': {role: results.get(role, {}).get('status', 'unavailable') for role in factory.ROLES},
+        'observations': observations, 'roles': {role: results.get(role, {}).get('status', 'unavailable') for role in roles},
         'report_renderer_sha256': sha(canonical(runtime_identity()))}
     save(workspace/'summary.json', summary)
     esc = lambda value: html.escape(json.dumps(value, ensure_ascii=False, indent=2))
@@ -206,7 +207,7 @@ def report(workspace, factory):
         '<h2>Run summary</h2><pre>'+esc(summary)+'</pre>',
         '<h2>Identity</h2><pre>'+esc({k: identity[k] for k in ('factory', 'input_sha256', 'config', 'policy')})+'</pre>',
         '<h2>Workflow and feedback</h2>']
-    for role in factory.ROLES:
+    for role in roles:
         result = results.get(role, {})
         chunks.append('<details open><summary>'+html.escape(role)+' — '+html.escape(result.get('status', 'unavailable'))+'</summary><pre>'+
             esc(result.get('output', {'technical_failure': 'See private checkpoints/responses; details omitted here.'}))+'</pre></details>')

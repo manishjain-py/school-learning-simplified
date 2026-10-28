@@ -1,0 +1,31 @@
+{
+  "cards": [
+    {
+      "card_idx": 1,
+      "card_type": "welcome",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY",
+          "audio": "SYNTHETIC SPOKEN SCRIPT ONLY"
+        }
+      ],
+      "visual": null
+    },
+    {
+      "card_idx": 2,
+      "card_type": "summary",
+      "title": "SYNTHETIC SUMMARY",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY",
+          "audio": "SYNTHETIC SPOKEN SCRIPT ONLY"
+        }
+      ],
+      "visual": null
+    }
+  ],
+  "summary": {
+    "teaching_notes": "SYNTHETIC"
+  }
+}
