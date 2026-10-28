@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "metadata": {
+    "grade": 4,
+    "subject": "SYNTHETIC PLUMBING — NO CURRICULUM"
+  },
+  "chapter_number": 1,
+  "toc_pages": [
+    {"printed_page": "xix", "path": "../guideline/sentinel.png"}
+  ],
+  "chapter_pages": [
+    {"printed_page": 7, "path": "../guideline/sentinel.png"},
+    {"printed_page": 8, "path": "../guideline/sentinel.png"},
+    {"printed_page": 9, "path": "../guideline/sentinel.png"},
+    {"printed_page": 10, "path": "../guideline/sentinel.png"}
+  ],
+  "files": {
+    "context": {"path": "context.txt", "type": "text"},
+    "research": {"path": "../explain/research.json", "type": "json"},
+    "bank": {"path": "../practice/bank.json", "type": "json"},
+    "feedback": {"path": "feedback.json", "type": "json"},
+    "visual_targets": {"path": "../visuals/visual-targets.json", "type": "json"},
+    "board_targets": {"path": "../visuals/board-targets.json", "type": "json"},
+    "avatar_targets": {"path": "../avatar/targets.json", "type": "json"},
+    "artwork": {"path": "../avatar/synthetic-character.png", "type": "binary"},
+    "avatar_config": {"path": "../avatar/avatar-config.json", "type": "json"},
+    "speech_en": {"path": "../visuals/speech.json", "type": "json"},
+    "speech_hi": {"path": "speech-hi.json", "type": "json"},
+    "audio_selection": {"path": "../visuals/first-selection.json", "type": "json"},
+    "audio_hi_selection": {"path": "audio-hi-selection.json", "type": "json"}
+  },
+  "practice": {"mode": "seed-growth", "target": 5, "run_cap": 4, "scope": "additions"}
+}

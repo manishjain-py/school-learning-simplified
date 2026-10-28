@@ -53,6 +53,8 @@ def runtime_identity():
     paths = [ROOT/'run_factory.py', ROOT/'requirements.lock']
     if (ROOT/'run_audio.py').exists():
         paths.append(ROOT/'run_audio.py')
+    if (ROOT/'run_pipeline.py').exists():
+        paths.append(ROOT/'run_pipeline.py')
     paths += sorted((ROOT/'reference').rglob('*.py'))
     paths += sorted((ROOT/'prompts').rglob('*.md'))
     paths += sorted((ROOT/'schemas').rglob('*.json'))

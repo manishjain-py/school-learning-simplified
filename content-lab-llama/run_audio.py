@@ -2,10 +2,10 @@
 """Shared local narration for native Explain, Practice, Revise and R6 packs; no model."""
 import argparse
 from pathlib import Path
-from reference import media
-from reference.inputs import canonical, load_manifest, read, runtime_identity, save, sha
+from reference.inputs import load_manifest
 from reference.runtime import exclusive
 from reference.factories.media_common import BINARY_INPUTS
+from reference.pipeline_audio import create_audio
 
 NAME = 'audio'
 METADATA = {'kind'}
@@ -49,7 +49,8 @@ def blocks(bundle):
             texts = [l['audio'] for l in item.get('lines', [])]
         else:
             texts = [item.get('question_audio', ''), *item.get('options_audio', []),
-                     item.get('explanation_display', ''), item.get('hint_audio', ''), item.get('success_audio', '')]
+                     item.get('explanation_display', ''), item.get('hint_audio', ''),
+                     item.get('success_audio', ''), item.get('reveal_audio', '')]
         for position, text in enumerate(texts):
             if text:
                 if not isinstance(text, str): raise ValueError('Native spoken fields must be text')
@@ -70,6 +71,25 @@ def validate_inputs(bundle):
     blocks(bundle)
 
 
+def narration_inputs(bundle, workspace):
+    """Bind supplied audio only to the exact frozen, explicitly declared slots."""
+    scripts, _ = blocks(bundle)
+    speech = dict(bundle['declared'].get('speech', {}))
+    slots = speech.pop('clips', [])
+    if not isinstance(slots, list) or (slots and (len(slots) != len(scripts) or any(
+            s not in BINARY_INPUTS or s not in bundle['declared'] for s in slots))):
+        raise ValueError('Supplied clips must bind each script to one explicit binary slot')
+    supplied = {i: {'path': workspace/'inputs'/bundle['file_identity'][s]['file'],
+                    'sha256': bundle['file_identity'][s]['sha256']} for i, s in enumerate(slots)}
+    alignment = bundle['declared'].get('alignment', {}).get('blocks')
+    if alignment is not None:
+        if not slots or not isinstance(alignment, list) or len(alignment) != len(scripts):
+            raise ValueError('Alignment must bind each explicitly supplied clip')
+        for i, value in enumerate(alignment):
+            supplied[i]['alignment'] = value
+    return speech, supplied or None
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('manifest', type=Path)
@@ -77,36 +97,10 @@ def main(argv=None):
     args = parser.parse_args(argv)
     import sys
     bundle, blobs = load_manifest(args.manifest, sys.modules[__name__])
-    scripts, origins = blocks(bundle)
     with exclusive(args.workspace) as workspace:
         if any(p.name != 'operator.lock' for p in workspace.iterdir()):
             raise ValueError('Audio workspace contains evidence; use a fresh workspace')
-        save(workspace/'identity.json', {'factory': NAME, 'input_sha256': sha(canonical(bundle)),
-             'runtime': runtime_identity(), 'execution': media.runtime_identity(), 'paid_calls': 0})
-        save(workspace/'inputs.json', bundle)
-        for name, data in blobs.items():
-            (workspace/'inputs').mkdir(exist_ok=True)
-            (workspace/'inputs'/name).write_bytes(data)
-        save(workspace/'origins.json', {'kind': bundle['metadata']['kind'], 'input_sha256': bundle['file_identity']['pack']['sha256'],
-                                      'selection_namespace': 'one-based native pack array ordinal', 'blocks': origins})
-        speech = dict(bundle['declared'].get('speech', {}))
-        slots = speech.pop('clips', [])
-        if slots and (len(slots) != len(scripts) or any(s not in BINARY_INPUTS or s not in bundle['declared'] for s in slots)):
-            raise ValueError('Supplied clips must bind each script to one explicit binary slot')
-        supplied = {i: {'path': workspace/'inputs'/bundle['file_identity'][s]['file'],
-                         'sha256': bundle['file_identity'][s]['sha256']} for i, s in enumerate(slots)}
-        alignment = bundle['declared'].get('alignment', {}).get('blocks')
-        if alignment is not None:
-            if not slots or not isinstance(alignment, list) or len(alignment) != len(scripts):
-                raise ValueError('Alignment must bind each explicitly supplied clip')
-            for i, value in enumerate(alignment): supplied[i]['alignment'] = value
-        try:
-            result = media.synthesize(scripts, workspace/'audio', speech, supplied or None, allowed_roots=[workspace])
-            save(workspace/'summary.json', {'status': 'complete', 'blocks': len(scripts), 'paid_calls': 0,
-                 'audio': result['audio'], 'word_timing': result['word_timing'], 'alignment_verified': result['alignment_verified']})
-        except Exception:
-            save(workspace/'summary.json', {'status': 'failed', 'paid_calls': 0, 'kind': 'local_audio_execution'})
-            raise
+        create_audio(bundle, blobs, args.manifest.read_bytes(), workspace, factory=sys.modules[__name__])
     print('Shared audio:', args.workspace/'summary.json')
     return 0
 

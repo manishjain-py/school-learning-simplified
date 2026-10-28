@@ -1,0 +1,27 @@
+{
+  "settings": {
+    "provider": "bedrock",
+    "model": "READER-CHOOSES-AVAILABLE-IMAGE-CAPABLE-META-LLAMA",
+    "region": "READER-CHOOSES-REGION",
+    "image_limit": 3,
+    "max_output_tokens": 8192,
+    "input_token_bound": 1000000,
+    "input_per_million": null,
+    "output_per_million": null
+  },
+  "stage_caps_usd": {
+    "toc": null,
+    "guideline": null,
+    "explain": null,
+    "practice": null,
+    "revise": null,
+    "translate": null,
+    "visuals": null,
+    "boards_en": null,
+    "boards_hi": null,
+    "avatar_en": null,
+    "avatar_hi": null,
+    "feedback": null
+  },
+  "total_cap_usd": null
+}

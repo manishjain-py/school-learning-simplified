@@ -1,0 +1,4 @@
+SYNTHETIC PIPELINE TRANSPORT ONLY. R10-INPUT-EDGE-SENTINEL.
+The one-pixel supplied images and synthetic
+chapter markers exercise local input/output plumbing. They are not textbook pages,
+authored lessons, factual curriculum, content-quality evidence or paid-model output.
