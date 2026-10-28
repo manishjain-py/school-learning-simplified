@@ -3,21 +3,24 @@ import type { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 }
 import { draftParentNote, type ParentNoteInput, type ParentNoteResult } from '../ai/parent-note.js';
 import { MAX_ATTEMPTS, MODEL_ID, MODEL_REGION } from '../ai/types.js';
 import { recommendationContent } from '../recommendations/content.js';
-import { SchoolError, bodyOf, classPK, fail, get, id, json, listClassRosterForGuidance, normalizeEmail, put, requireClassStaff, schoolPK, version, write, type Student, type VerifiedAccount } from './index.js';
+import { SchoolError, bodyOf, classPK, fail, get, id, json, listClassRosterForGuidance, normalizeEmail, put, queryPage, requireClassStaff, schoolPK, version, write, type RecordValue, type Student, type VerifiedAccount } from './index.js';
 
 type DraftFields = { studentId: string; chapterId: string; cardId: string; observation: string; language: 'en' | 'hi' };
 type Chapter = ParentNoteInput['chapter'] & { languages?: string[]; modes?: string[] };
 type Lesson = { id: string; language: string; cards: ParentNoteInput['cards'] };
 type StaffContext = Awaited<ReturnType<typeof requireClassStaff>>;
 type Guard = { staff: StaffContext; child: Student; actor: VerifiedAccount };
+type RejectionReason = 'unsupported_claim' | 'unsafe_activity' | 'other';
+type Rejection = { version: number; attempt: number; reason: RejectionReason; rejectedAt: string; result: ParentNoteResult };
 export type ParentNoteActivity = { chapterId: string; cardId: string; chapterTitle: string; cardTitle: string; href: string };
-export type ParentNoteAssistance = { draftId: string; language: 'en' | 'hi'; activity: ParentNoteActivity };
+export type ParentNoteAssistance = { draftId: string; draftVersion?: number; language: 'en' | 'hi'; activity: ParentNoteActivity };
 export type PreparedParentNotePublication = { assistance: ParentNoteAssistance; checks: Parameters<typeof write>[0] };
 export type ParentNoteDraft = {
   id: string; schoolId: string; classId: string; authorId: string; fields: DraftFields;
   fingerprint: string; childFingerprint: string; contentFingerprint: string; rosterFingerprint: string;
   version: number; attempt: number; startedAt: string; updatedAt: string;
   result: ParentNoteResult;
+  rejections?: Rejection[];
 };
 export type ParentNoteDependencies = {
   authorize(user: VerifiedAccount, schoolId: string, classId: string): Promise<StaffContext>;
@@ -26,6 +29,7 @@ export type ParentNoteDependencies = {
   catalog(): Promise<{ chapters: Chapter[] }>;
   lesson(chapterId: string, language: 'en' | 'hi'): Promise<Lesson>;
   read(schoolId: string, classId: string, draftId: string): Promise<ParentNoteDraft | null>;
+  page(schoolId: string, classId: string, cursor?: RecordValue): Promise<{ drafts: ParentNoteDraft[]; cursor?: RecordValue }>;
   save(draft: ParentNoteDraft, expected: number | 'new', guard: Guard): Promise<void>;
   generate(input: ParentNoteInput): Promise<ParentNoteResult>;
   now(): Date;
@@ -60,6 +64,10 @@ const defaults: ParentNoteDependencies = {
   catalog: () => recommendationContent('catalog.json'),
   lesson: (chapterId, language) => recommendationContent(`lessons/${chapterId}/${language}.json`),
   read: (schoolId, classId, draftId) => get<ParentNoteDraft>(PK(schoolId, classId), SK(draftId)),
+  page: async (schoolId, classId, cursor) => {
+    const page = await queryPage(PK(schoolId, classId), 'DRAFT#', cursor);
+    return { drafts: page.items as ParentNoteDraft[], cursor: page.cursor };
+  },
   save: async (draft, expected, guard) => {
     await write([put(PK(draft.schoolId, draft.classId), SK(draft.id), draft, expected), ...canonicalChecks(draft.schoolId, draft.classId, guard)]);
   },
@@ -85,6 +93,7 @@ function visible(draft: ParentNoteDraft, now: Date) {
   const activity = result.status === 'ready' && result.activity ? { ...result.activity, href: `/learn/${encodeURIComponent(result.activity.chapterId)}?card=${encodeURIComponent(result.activity.cardId)}` } : undefined;
   return { id: draft.id, version: draft.version, attempt: draft.attempt, status: result.status, language: draft.fields.language, ...(result.status === 'ready' && result.text && activity ? { text: result.text, activity } : {}), retryable: result.retryable && draft.attempt < MAX_ATTEMPTS, code: result.code, message: result.message, model: result.model };
 }
+const recoverable = (draft: ParentNoteDraft, now: Date) => ({ ...visible(draft, now), inputs: { ...draft.fields } });
 
 /** The injectable storage boundary keeps race/idempotency tests independent of AWS. */
 export function createParentNotesService(overrides: Partial<ParentNoteDependencies> = {}) {
@@ -171,7 +180,50 @@ export function createParentNotesService(overrides: Partial<ParentNoteDependenci
     }
     return run(user, draft, canonical);
   }
-  async function read(user: VerifiedAccount, schoolId: string, classId: string, draftId: string) { return visible((await authorizedRecord(user, schoolId, classId, draftId)).draft, deps.now()); }
+  async function read(user: VerifiedAccount, schoolId: string, classId: string, draftId: string) { return recoverable((await authorizedRecord(user, schoolId, classId, draftId)).draft, deps.now()); }
+  async function list(user: VerifiedAccount, schoolId: string, classId: string, studentId: string) {
+    await authorize(user, schoolId, classId);
+    const child = await currentChild(schoolId, classId, id(studentId));
+    const fingerprint = childFingerprint(child);
+    const matching: ParentNoteDraft[] = []; let cursor: RecordValue | undefined;
+    // UUID sort keys cannot prove recency from a partial partition. Read bounded
+    // pages completely, or return an honest failure rather than a false latest list.
+    for (let pageNumber = 0; pageNumber < 20; pageNumber++) {
+      const page = await deps.page(schoolId, classId, cursor);
+      matching.push(...page.drafts.filter(draft => draft.authorId === user.id && draft.schoolId === schoolId && draft.classId === classId && draft.fields.studentId === studentId && draft.childFingerprint === fingerprint));
+      cursor = page.cursor;
+      if (!cursor) break;
+    }
+    if (cursor) return fail(503, 'DRAFT_LIST_TOO_LARGE', 'Saved drafts could not all be loaded. Please try again later.');
+    await authorize(user, schoolId, classId);
+    if (childFingerprint(await currentChild(schoolId, classId, studentId)) !== fingerprint) return fail(409, 'DRAFT_CHILD_CHANGED', 'This student record changed. Refresh the saved drafts.');
+    return matching.sort((left, right) => right.updatedAt.localeCompare(left.updatedAt) || right.id.localeCompare(left.id)).slice(0, 20).map(draft => ({ id: draft.id, version: draft.version, status: visible(draft, deps.now()).status, language: draft.fields.language, chapterId: draft.fields.chapterId, cardId: draft.fields.cardId, updatedAt: draft.updatedAt, attempt: draft.attempt }));
+  }
+  async function reject(user: VerifiedAccount, schoolId: string, classId: string, draftId: string, body: Record<string, unknown>) {
+    exactKeys(body, ['version', 'reason']);
+    const expectedVersion = version(body.version);
+    if (typeof body.reason !== 'string' || !['unsupported_claim', 'unsafe_activity', 'other'].includes(body.reason)) return fail(400, 'REJECTION_REASON_REQUIRED', 'Choose why this draft needs to be rewritten.');
+    const reason = body.reason as RejectionReason;
+    const { draft, guard } = await authorizedRecord(user, schoolId, classId, draftId);
+    const alreadyRejected = (current: ParentNoteDraft) => current.rejections?.some(item => item.version === expectedVersion && item.reason === reason);
+    if (alreadyRejected(draft)) return visible(draft, deps.now());
+    if (draft.version !== expectedVersion) return fail(409, 'DRAFT_CHANGED', 'This draft changed. Refresh it before rejecting it.');
+    if (draft.result.status !== 'ready') return fail(409, 'DRAFT_NOT_READY', 'Only a ready draft can be rejected.');
+    if ((draft.rejections?.length || 0) >= MAX_ATTEMPTS) return fail(409, 'DRAFT_ATTEMPT_LIMIT', 'This draft has used its three attempts. You can still write the note manually.');
+    const stamp = deps.now().toISOString();
+    const rejected: ParentNoteDraft = { ...draft, version: draft.version + 1, updatedAt: stamp,
+      rejections: [...(draft.rejections || []), { version: draft.version, attempt: draft.attempt, reason, rejectedAt: stamp, result: draft.result }],
+      result: { ...empty(draft.fields.language, 'failed', 'TEACHER_REJECTED', 'You rejected this draft. Retry within the remaining allowance or write the note manually.', draft.attempt < MAX_ATTEMPTS), requestKey: draft.result.requestKey, model: draft.result.model },
+    };
+    try { await deps.save(rejected, draft.version, guard); }
+    catch (issue) {
+      if (!(issue instanceof SchoolError && issue.status === 409)) throw issue;
+      const latest = await authorizedRecord(user, schoolId, classId, draftId);
+      if (alreadyRejected(latest.draft)) return visible(latest.draft, deps.now());
+      throw issue;
+    }
+    return visible((await authorizedRecord(user, schoolId, classId, draftId)).draft, deps.now());
+  }
   async function retry(user: VerifiedAccount, schoolId: string, classId: string, draftId: string, body: Record<string, unknown>) {
     exactKeys(body, ['version']);
     const { draft, guard } = await authorizedRecord(user, schoolId, classId, draftId);
@@ -186,8 +238,9 @@ export function createParentNotesService(overrides: Partial<ParentNoteDependenci
     await deps.save(next, draft.version, guard);
     return run(user, next, canonical);
   }
-  async function preparePublished(user: VerifiedAccount, schoolId: string, classId: string, studentId: string, draftId: string): Promise<PreparedParentNotePublication> {
+  async function preparePublished(user: VerifiedAccount, schoolId: string, classId: string, studentId: string, draftId: string, draftVersion: number): Promise<PreparedParentNotePublication> {
     const { draft } = await authorizedRecord(user, schoolId, classId, draftId);
+    if (version(draftVersion) !== draft.version) return fail(409, 'DRAFT_CHANGED', 'This draft changed. Reopen and review it before publishing.');
     if (draft.fields.studentId !== studentId) return fail(400, 'DRAFT_STUDENT_MISMATCH', 'Use the draft for the selected child.');
     const dto = visible(draft, deps.now());
     if (dto.status !== 'ready' || !dto.activity || !dto.text) return fail(400, 'DRAFT_NOT_READY', 'Only a ready draft can be attached to a family update.');
@@ -202,12 +255,12 @@ export function createParentNotesService(overrides: Partial<ParentNoteDependenci
       ExpressionAttributeNames: { '#version': 'version', '#fields': 'fields', '#result': 'result', '#status': 'status' },
       ExpressionAttributeValues: { ':version': draft.version, ':author': user.id, ':student': studentId, ':ready': 'ready', ':fingerprint': draft.fingerprint, ':childFingerprint': draft.childFingerprint },
     } });
-    return { assistance: { draftId: draft.id, language: draft.fields.language, activity: dto.activity }, checks };
+    return { assistance: { draftId: draft.id, draftVersion: draft.version, language: draft.fields.language, activity: dto.activity }, checks };
   }
-  async function published(user: VerifiedAccount, schoolId: string, classId: string, studentId: string, draftId: string): Promise<ParentNoteAssistance> {
-    return (await preparePublished(user, schoolId, classId, studentId, draftId)).assistance;
+  async function published(user: VerifiedAccount, schoolId: string, classId: string, studentId: string, draftId: string, draftVersion: number): Promise<ParentNoteAssistance> {
+    return (await preparePublished(user, schoolId, classId, studentId, draftId, draftVersion)).assistance;
   }
-  return { create, read, retry, published, preparePublished };
+  return { create, read, list, reject, retry, published, preparePublished };
 }
 
 const service = createParentNotesService();
@@ -216,11 +269,13 @@ export const requirePublishedParentNoteDraft = service.published;
 export const preparePublishedParentNoteDraft = service.preparePublished;
 export async function handleParentNotes(event: APIGatewayProxyEventV2WithJWTAuthorizer, user: VerifiedAccount): Promise<APIGatewayProxyResultV2> {
   const path = event.rawPath.replace(/\/$/, '');
-  const match = path.match(/^\/api\/school\/schools\/([^/]+)\/classes\/([^/]+)\/parent-note-drafts(?:\/([^/]+))?(?:\/(retry))?$/);
+  const match = path.match(/^\/api\/school\/schools\/([^/]+)\/classes\/([^/]+)\/parent-note-drafts(?:\/([^/]+))?(?:\/(retry|reject))?$/);
   if (!match) return fail(404, 'NOT_FOUND', 'This parent-note draft action could not be found.');
   const [, schoolId, classId, draftId, action] = match; const method = event.requestContext.http.method;
   if (!draftId && method === 'POST') return json(200, { draft: await service.create(user, schoolId, classId, bodyOf(event)) });
+  if (!draftId && method === 'GET') return json(200, { drafts: await service.list(user, schoolId, classId, event.queryStringParameters?.studentId || '') });
   if (draftId && !action && method === 'GET') return json(200, { draft: await service.read(user, schoolId, classId, draftId) });
+  if (draftId && action === 'reject' && method === 'POST') return json(200, { draft: await service.reject(user, schoolId, classId, draftId, bodyOf(event)) });
   if (draftId && action === 'retry' && method === 'POST') return json(200, { draft: await service.retry(user, schoolId, classId, draftId, bodyOf(event)) });
   return fail(404, 'NOT_FOUND', 'This parent-note draft action could not be found.');
 }

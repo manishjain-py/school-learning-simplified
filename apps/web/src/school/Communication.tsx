@@ -8,7 +8,7 @@ import { ParentNoteDraft, parentNoteActivityHref, type ParentNoteActivity, type 
 
 type Auth = { config: Config; userId: string };
 type Log = { id: string; authorId: string; authorName: string; subject: string; note: string; version: number; localDate: string; timeZone: string; createdAt: string; updatedAt: string; guidance: { status: string; message?: string } };
-type Assistance = { draftId: string; language: Language; activity: ParentNoteActivity };
+type Assistance = { draftId: string; draftVersion: number; language: Language; activity: ParentNoteActivity };
 type FamilyUpdate = { canEdit?: boolean; id: string; authorName: string; audience: 'class' | 'student'; studentId: string | null; text: string; logId: string | null; version: number; createdAt: string; updatedAt: string; assistance?: Assistance };
 type Thread = { id: string; childId: string; childName: string; teacherName: string; update: FamilyUpdate; createdAt: string };
 type Reply = { id: string; text: string; authorName: string; authorRole: 'parent' | 'teacher'; createdAt: string };
@@ -93,6 +93,7 @@ function UpdateForm({ classPath, students, record, onCancel, onSaved, ...auth }:
   const [audience, setAudience] = useState(record?.audience || 'class'); const [studentId, setStudentId] = useState(record?.studentId || ''); const [text, setText] = useState(record?.text || ''); const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const [assistance, setAssistance] = useState<Assistance | null>(null);
   const [draftReset, setDraftReset] = useState(0);
+  const [draftBusy, setDraftBusy] = useState(false);
   const editorVersion = useRef(0);
   const publishing = useRef(false);
   const mounted = useRef(true);
@@ -105,14 +106,15 @@ function UpdateForm({ classPath, students, record, onCancel, onSaved, ...auth }:
     if (!mounted.current || publishing.current || currentScope.current !== scope || audience !== 'student' || editorVersion.current !== expectedVersion || draft.status !== 'ready' || !draft.text || !draft.activity) return false;
     editorVersion.current += 1;
     setText(draft.text);
-    setAssistance({ draftId: draft.id, language: draft.language, activity: draft.activity });
+    setAssistance({ draftId: draft.id, draftVersion: draft.version, language: draft.language, activity: draft.activity });
     return true;
   }
   const { busy, error, submit } = useSubmit(async () => {
     // Publishing and manual edits both invalidate any still-running draft response.
     editorVersion.current += 1; publishing.current = true;
     try {
-      await save(auth, `${classPath}/updates${record ? `/${record.id}` : ''}`, { audience, studentId: audience === 'student' ? studentId : null, text, logId: record?.logId || null, ...(assistance && audience === 'student' ? { draftId: assistance.draftId } : {}), ...(record ? { version: record.version } : { clientId }) }, record ? 'PUT' : 'POST');
+      if (draftBusy) return;
+      await save(auth, `${classPath}/updates${record ? `/${record.id}` : ''}`, { audience, studentId: audience === 'student' ? studentId : null, text, logId: record?.logId || null, ...(assistance && audience === 'student' ? { draftId: assistance.draftId, draftVersion: assistance.draftVersion } : {}), ...(record ? { version: record.version } : { clientId }) }, record ? 'PUT' : 'POST');
       if (!mounted.current || currentScope.current !== scope) return;
       setText(''); setAssistance(null); setClientId(crypto.randomUUID()); setDraftReset(value => value + 1); onSaved();
     } finally { publishing.current = false; }
@@ -121,12 +123,12 @@ function UpdateForm({ classPath, students, record, onCancel, onSaved, ...auth }:
     <h3>{record ? 'Correct family update' : 'Share a family update'}</h3>
     <label>Who can see this?<select disabled={busy} value={audience} onChange={(event) => changeAudience(event.target.value as 'class' | 'student')}><option value="class">Whole class and linked parents</option><option value="student">One child and their linked parents</option></select></label>
     {audience === 'student' && <label>Student<select required disabled={busy} value={studentId} onChange={(event) => changeStudent(event.target.value)}><option value="">Choose a student</option>{students.map((student) => <option key={student.id} value={student.id}>{student.name}</option>)}</select></label>}
-    {audience === 'student' && students.some(student => student.id === studentId) && <ParentNoteDraft key={`${auth.userId}:${classPath}:${studentId}:${draftReset}`} {...auth} classPath={classPath} studentId={studentId} disabled={busy} getEditorVersion={() => editorVersion.current} onInputsChanged={() => { editorVersion.current += 1; }} onReady={acceptDraft} />}
+    {audience === 'student' && students.some(student => student.id === studentId) && <ParentNoteDraft key={`${auth.userId}:${classPath}:${studentId}:${draftReset}`} {...auth} classPath={classPath} studentId={studentId} disabled={busy} getEditorVersion={() => editorVersion.current} onInputsChanged={() => { editorVersion.current += 1; setAssistance(null); }} onRejected={draft => { editorVersion.current += 1; setAssistance(null); if (text === draft.text) setText(''); }} onBusyChange={setDraftBusy} onReady={acceptDraft} />}
     {record?.assistance && !assistance && <p className="school-help">The published note was written with Llama’s help. This correction will be marked as written manually unless you use a new draft.</p>}
     <label>{audience === 'class' ? 'Class announcement' : 'Individual feedback'}<textarea required rows={5} maxLength={3000} disabled={busy} lang={assistance?.language} value={text} onChange={(event) => { editorVersion.current += 1; setText(event.target.value); }} /></label>
     {assistance && <div className="parent-note-editor-source"><strong>Drafted with Llama</strong><p className="school-help">Edit the note to reflect your observation. Publish only when you are ready to share it with this child and their linked parents.</p><PublishedAssistance assistance={assistance} /></div>}
     <ErrorText error={error} />
-    <div className="school-form-actions"><button className="button primary" disabled={busy}>{busy ? 'Publishing…' : record ? 'Publish correction' : 'Publish update'}</button>{record && <button type="button" className="button secondary" disabled={busy} onClick={onCancel}>Cancel correction</button>}</div>
+    <div className="school-form-actions"><button className="button primary" disabled={busy || draftBusy}>{busy ? 'Publishing…' : record ? 'Publish correction' : 'Publish update'}</button>{record && <button type="button" className="button secondary" disabled={busy} onClick={onCancel}>Cancel correction</button>}</div>
   </form>;
 }
 

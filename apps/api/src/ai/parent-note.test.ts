@@ -20,6 +20,8 @@ const input: ParentNoteInput = {
 };
 const english = 'Your child mixed up day and night, so a little practice with the orange model may help. Together, hold an orange near a lamp and notice the bright side facing the light and the dark side facing away. Turn it gently to see how the sides change. If you use a needle for the model, an adult should help. Open the linked lesson activity and talk through what you notice together.';
 const hindi = 'आपके बच्चे को दिन और रात में थोड़ा भ्रम हुआ है। साथ बैठकर संतरे और लैम्प वाला अभ्यास करें। संतरे को रोशनी के सामने रखें और देखें कि कौन-सा हिस्सा उजला है और कौन-सा अँधेरा। उसे धीरे से घुमाकर बदलाव देखें। अगर मॉडल में सलाई का इस्तेमाल करें, तो किसी बड़े की मदद लें। फिर साथ में जुड़ी हुई सीखने की गतिविधि खोलें और बच्चे से अपनी देखी हुई बात बताने को कहें।';
+// Reproduces the two observed failure forms without private observation/account data.
+const ungroundedHindi = 'आपका बच्चा दिन और रात के बारे में जानने के लिए उत्साहित है। घर पर संतरे का model बनाकर rotation देखें। एक संतरे में सलाई घुसाकर और उसे धीरे-धीरे घुमाकर दिन और रात का अनुभव कराएं। कृपया दिए गए लिंक पर क्लिक करके इस गतिविधि को देखें।';
 const generation = (text = english, sourceCards = ['source_001', 'source_003', 'source_004']) => JSON.stringify({ text, sourceCards });
 const model = (text = english) => async () => ({ generation: generation(text), inputTokens: 500, outputTokens: 120, stopReason: 'stop' });
 const empty = (requestKey: string, status: 'processing' | 'failed', code: string, message: string, retryable = false): ParentNoteResult => ({ requestKey, status, code, message, retryable, language: 'en', model: { id: MODEL_ID, region: MODEL_REGION, inputTokens: 0, outputTokens: 0, usageKnown: false } });
@@ -38,6 +40,10 @@ test('canonical lamp/orange grounding includes adult help in both languages and 
     assert.equal(prepared.sourceAliases.length, 5); assert.equal(prepared.selectedAlias, 'source_003');
     assert(prepared.prompt.includes(language === 'en' ? "With an adult's help" : 'किसी बड़े की मदद से'));
     assert(prepared.prompt.includes(language === 'en' ? 'The lamp is our Sun.' : 'यह lamp हमारा Sun है।'));
+    assert.equal(prepared.sourceUsesNeedle, true); assert.equal(prepared.adultHelpSources.length, 1);
+    assert.equal(prepared.adultHelpSources[0].alias, 'source_001');
+    assert(prepared.adultHelpSources[0].instruction.includes(language === 'en' ? "With an adult's help" : 'किसी बड़े की मदद से'));
+    assert(prepared.prompt.includes('do not replace it with praise'));
     for (const privateValue of [input.schoolId, input.classId, input.actorId, input.draftId, input.student.id, input.chapter.id, cardId, 'Anika', 'Rao', 'Kabir', 'Joshi']) assert(!prepared.prompt.includes(privateValue), privateValue);
     assert.equal(prepared.activity.cardId, cardId); assert.equal(prepared.activity.chapterId, chapterId);
     assert(Buffer.byteLength(prepared.prompt, 'utf8') < MAX_PROMPT_BYTES);
@@ -92,6 +98,70 @@ test('unknown fields/sources, names, aliases, links and diagnostic framing never
   assert.throws(() => validateParentNote(JSON.stringify({ text: english, sourceCards: ['source_003'], href: '/learn/x' }), prepared));
   assert.throws(() => validateParentNote(generation(english), prepareParentNote({ ...input, language: 'hi' })), /Devanagari/);
   assert.throws(() => validateParentNote(generation('Too short.'), prepared), /bounded note length/);
+});
+test('observed Hindi failure and its independent praise/supervision defects are rejected', () => {
+  const prepared = prepareParentNote({ ...input, language: 'hi', cards: lesson('hi').cards });
+  assert.throws(() => validateParentNote(generation(ungroundedHindi), prepared), { code: 'MODEL_OBSERVATION' });
+  const correctedObservation = ungroundedHindi.replace('आपका बच्चा दिन और रात के बारे में जानने के लिए उत्साहित है।', 'आपके बच्चे को दिन और रात में भ्रम हुआ है।');
+  assert.throws(() => validateParentNote(generation(correctedObservation), prepared), { code: 'MODEL_SAFETY' });
+  const correctedSafety = `${ungroundedHindi} सलाई का उपयोग किसी बड़े की मदद से करें।`;
+  assert.throws(() => validateParentNote(generation(correctedSafety), prepared), { code: 'MODEL_OBSERVATION' });
+  const corrected = `${correctedObservation} सलाई का उपयोग किसी बड़े की मदद से करें।`;
+  assert.equal(validateParentNote(generation(corrected), prepared), corrected);
+});
+test('needle instructions retain affirmative canonical adult help and its source in both languages', () => {
+  for (const language of ['en', 'hi'] as const) {
+    const prepared = prepareParentNote({ ...input, language, cards: lesson(language).cards });
+    const original = language === 'en' ? english : hindi;
+    const positive = language === 'en' ? 'an adult should help' : 'किसी बड़े की मदद लें';
+    const replacements = language === 'en'
+      ? ['no adult help is needed', 'adult help is optional', 'you can do it alone', 'you can work without an adult’s help']
+      : ['किसी बड़े की मदद नहीं लें', 'किसी बड़े की मदद वैकल्पिक है', 'इसे अपने आप करें', 'किसी बड़े की मदद के बिना करें'];
+    for (const replacement of replacements) assert.throws(() => validateParentNote(generation(original.replace(positive, replacement)), prepared), { code: 'MODEL_SAFETY' });
+    const contradiction = `${original} ${language === 'en' ? 'Adult help is not needed.' : 'किसी बड़े की मदद की जरूरत नहीं है।'}`;
+    assert.throws(() => validateParentNote(generation(contradiction), prepared), { code: 'MODEL_SAFETY' });
+    assert.throws(() => validateParentNote(generation(original, ['source_003', 'source_004']), prepared), { code: 'MODEL_SOURCE' });
+    assert.equal(validateParentNote(generation(original), prepared), original);
+  }
+});
+test('enthusiasm must be honestly observed; warm invitations are not child-trait claims', () => {
+  const enthusiasticEnglish = english.replace('Your child mixed up day and night, so a little practice with the orange model may help.', 'Your child was enthusiastic about the day and night activity.');
+  const enthusiasticHindi = hindi.replace('आपके बच्चे को दिन और रात में थोड़ा भ्रम हुआ है।', 'आपका बच्चा दिन और रात की गतिविधि के लिए उत्साहित है।');
+  for (const language of ['en', 'hi'] as const) {
+    const text = language === 'en' ? enthusiasticEnglish : enthusiasticHindi;
+    for (const observation of ['Anika was enthusiastic about day and night.', 'Anika दिन और रात की गतिविधि के लिए उत्साहित थी।']) {
+      const prepared = prepareParentNote({ ...input, language, observation, cards: lesson(language).cards });
+      assert.equal(validateParentNote(generation(text), prepared), text);
+    }
+    for (const observation of ['Anika mixed up day and night.', 'Anika was not enthusiastic about day and night.', 'Anika उत्साहित नहीं थी।']) {
+      const prepared = prepareParentNote({ ...input, language, observation, cards: lesson(language).cards });
+      assert.throws(() => validateParentNote(generation(text), prepared), { code: 'MODEL_OBSERVATION' });
+    }
+  }
+  const invitation = english.replace('Your child mixed up day and night, so a little practice with the orange model may help.', 'Help your child feel excited about exploring day and night together.');
+  assert.equal(validateParentNote(generation(invitation), prepareParentNote(input)), invitation);
+});
+test('needle requirements come from sources and do not require equipment in a simpler supported activity', () => {
+  const prepared = prepareParentNote(input);
+  const simpler = english.replace('If you use a needle for the model, an adult should help. ', '');
+  assert.equal(validateParentNote(generation(simpler, ['source_003', 'source_004']), prepared), simpler);
+  const cards = [{ id: 'safe-card', title: 'Light and shadow', kind: 'concept', lines: [{ display: 'Hold an orange near a lamp and notice its bright and dark sides.' }] }];
+  const noNeedle = prepareParentNote({ ...input, cards, cardId: 'safe-card' });
+  assert.equal(noNeedle.sourceUsesNeedle, false); assert.deepEqual(noNeedle.adultHelpSources, []);
+  assert.throws(() => validateParentNote(generation(english, ['source_001']), noNeedle), { code: 'MODEL_SOURCE' });
+  const mentionOnly = prepareParentNote({ ...input, cards: [{ ...cards[0], lines: [{ display: 'Earth does not have a needle through its middle.' }] }], cardId: 'safe-card' });
+  assert.equal(mentionOnly.sourceUsesNeedle, true); assert.deepEqual(mentionOnly.adultHelpSources, []);
+  assert.throws(() => validateParentNote(generation(english, ['source_001']), mentionOnly), { code: 'MODEL_SOURCE' });
+});
+test('grounding failures retain measured usage and final-attempt limits without a second model call', async () => {
+  for (const [text, code] of [[ungroundedHindi, 'MODEL_OBSERVATION'], [hindi.replace('किसी बड़े की मदद लें', 'किसी बड़े की मदद नहीं लें'), 'MODEL_SAFETY']] as const) {
+    const memory = memoryLedger(); let calls = 0;
+    const result = await draftParentNote({ ...input, language: 'hi', cards: lesson('hi').cards, attempt: 3 }, { enabled: true, now, ledger: memory.ledger, invoke: async () => { calls++; return model(text)(); } });
+    assert.equal(result.status, 'failed'); assert.equal(result.code, code); assert.equal(result.retryable, false);
+    assert.equal(calls, 1); assert.equal(memory.claimed.size, 1); assert.equal(memory.results.size, 1);
+    assert.equal(result.model.usageKnown, true); assert.equal(result.model.inputTokens, 500); assert.equal(result.model.outputTokens, 120);
+    assert.equal(result.text, undefined); assert.equal(result.activity, undefined); assert(!JSON.stringify([...memory.results.values()]).includes(text));
+  }
 });
 test('failed generations expose only fixed validation categories, never rejected text or parser diagnostics', async () => {
   const cases: { code: ParentNoteValidationCode; output: string; language?: 'hi' }[] = [

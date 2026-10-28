@@ -64,7 +64,7 @@ async function updateFields(body: Record<string, any>, schoolId: string, classId
   const studentId = body.audience === 'student' ? (await requireActiveStudent(schoolId, classId, body.studentId)).id : null;
   const logId = body.logId ? (await getSchoolLog(schoolId, classId, body.logId)).id : null;
   if (body.draftId && !studentId) return fail(400, 'DRAFT_AUDIENCE', 'A parent-note draft can only be sent to its selected child.');
-  const prepared = body.draftId ? await preparePublishedParentNoteDraft(user, schoolId, classId, studentId!, id(body.draftId)) : null;
+  const prepared = body.draftId ? await preparePublishedParentNoteDraft(user, schoolId, classId, studentId!, id(body.draftId), version(body.draftVersion)) : null;
   return { fields: { audience: body.audience as 'class' | 'student', studentId, text: prose(body.text, 'a family update'), logId, assistance: prepared?.assistance || null }, checks: prepared?.checks || [] };
 }
 async function getUpdate(schoolId: string, classId: string, updateId: string) {
