@@ -1,0 +1,68 @@
+{
+  "cards": [
+    {
+      "card_idx": 5,
+      "card_type": "welcome",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM"
+        }
+      ],
+      "visual": null,
+      "concept_group": null,
+      "section_key": "sentinel-a",
+      "section_seq": 1
+    },
+    {
+      "card_idx": 6,
+      "card_type": "check_in",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM"
+        }
+      ],
+      "visual": null,
+      "concept_group": null,
+      "section_key": "sentinel-a",
+      "section_seq": 1,
+      "check_in": {
+        "correct_index": 0,
+        "hint": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM"
+      }
+    },
+    {
+      "card_idx": 7,
+      "card_type": "concept",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM"
+        }
+      ],
+      "visual": null,
+      "concept_group": null,
+      "section_key": "sentinel-a",
+      "section_seq": 1
+    },
+    {
+      "card_idx": 11,
+      "card_type": "summary",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM"
+        }
+      ],
+      "visual": null,
+      "concept_group": null,
+      "section_key": "sentinel-b",
+      "section_seq": 2
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "chapter_display_name": "SYNTHETIC PLUMBING ONLY — NOT CURRICULUM",
+  "sections": [
+    {
+      "topic_key": "sentinel-a",
+      "topic_title": "SYNTHETIC SECTION A",
+      "guidelines": "## Learning Objectives\nSYNTHETIC PLUMBING ONLY — NOT CURRICULUM\n## Common Misconceptions\nNo genuine misconception; synthetic sentinel input only.",
+      "prior_topics_context": null,
+      "source_page_start": 3,
+      "source_page_end": 5
+    },
+    {
+      "topic_key": "sentinel-b",
+      "topic_title": "SYNTHETIC SECTION B",
+      "guidelines": "## Learning Objectives\nSYNTHETIC PLUMBING ONLY — NOT CURRICULUM\n## Common Misconceptions\nNo genuine misconception; synthetic sentinel input only.",
+      "prior_topics_context": "SYNTHETIC PRIOR CONTEXT",
+      "source_page_start": 6,
+      "source_page_end": 7
+    }
+  ],
+  "misconceptions": []
+}

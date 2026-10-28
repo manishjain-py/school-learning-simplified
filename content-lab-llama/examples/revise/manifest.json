@@ -1,0 +1,17 @@
+{
+  "factory": "revise",
+  "metadata": {
+    "grade": 4,
+    "subject": "SYNTHETIC SUBJECT"
+  },
+  "files": {
+    "guideline": {
+      "type": "json",
+      "path": "guideline.json"
+    },
+    "deck": {
+      "type": "json",
+      "path": "deck.json"
+    }
+  }
+}
