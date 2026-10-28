@@ -1,0 +1,137 @@
+{
+  "questions": [
+    {
+      "format": "pick_one",
+      "difficulty": "medium",
+      "concept_tag": "synthetic_sentinel",
+      "question_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT practice_slot_1-1",
+      "explanation_why": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "skill_key": "sentinel-a--sentinel",
+      "signature": "sentinel-a--sentinel | revised | practice_slot_1-1 | fixture",
+      "params": {},
+      "options": [
+        "SYNTHETIC A",
+        "SYNTHETIC B"
+      ],
+      "correct_index": 0
+    },
+    {
+      "format": "fill_blank",
+      "difficulty": "medium",
+      "concept_tag": "synthetic_sentinel",
+      "question_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT practice_slot_1-2",
+      "explanation_why": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "skill_key": "sentinel-a--sentinel",
+      "signature": "sentinel-a--sentinel | sentinel | practice_slot_1-2 | fixture",
+      "params": {},
+      "options": [
+        "SYNTHETIC A",
+        "SYNTHETIC B"
+      ],
+      "correct_index": 0
+    },
+    {
+      "format": "multi_select",
+      "difficulty": "medium",
+      "concept_tag": "synthetic_sentinel",
+      "question_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT practice_slot_1-3",
+      "explanation_why": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "skill_key": "sentinel-a--sentinel",
+      "signature": "sentinel-a--sentinel | sentinel | practice_slot_1-3 | fixture",
+      "params": {},
+      "options": [
+        "SYNTHETIC A",
+        "SYNTHETIC B",
+        "SYNTHETIC C"
+      ],
+      "correct_indices": [
+        0,
+        2
+      ]
+    },
+    {
+      "format": "true_false",
+      "difficulty": "medium",
+      "concept_tag": "synthetic_sentinel",
+      "question_text": "SYNTHETIC CAPTION",
+      "explanation_why": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "skill_key": "sentinel-a--sentinel",
+      "signature": "sentinel-a--sentinel | sentinel | practice_slot_1-4 | fixture",
+      "params": {},
+      "statement": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT statement practice_slot_1-4",
+      "correct_answer_bool": false
+    },
+    {
+      "format": "pick_one",
+      "difficulty": "medium",
+      "concept_tag": "synthetic_sentinel",
+      "question_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT practice_slot_1-5",
+      "explanation_why": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "skill_key": "sentinel-a--sentinel",
+      "signature": "sentinel-a--sentinel | sentinel | practice_slot_1-5 | fixture",
+      "params": {},
+      "options": [
+        "SYNTHETIC A",
+        "SYNTHETIC B"
+      ],
+      "correct_index": 0
+    },
+    {
+      "format": "pick_one",
+      "difficulty": "easy",
+      "concept_tag": "synthetic_sentinel",
+      "question_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT practice_slot_2-0",
+      "explanation_why": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "skill_key": "sentinel-b--sentinel",
+      "signature": "sentinel-b--sentinel | sentinel | practice_slot_2-0 | fixture",
+      "params": {},
+      "options": [
+        "SYNTHETIC A",
+        "SYNTHETIC B"
+      ],
+      "correct_index": 0
+    },
+    {
+      "format": "fill_blank",
+      "difficulty": "easy",
+      "concept_tag": "synthetic_sentinel",
+      "question_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT practice_slot_2-1",
+      "explanation_why": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "skill_key": "sentinel-b--sentinel",
+      "signature": "sentinel-b--sentinel | sentinel | practice_slot_2-1 | fixture",
+      "params": {},
+      "options": [
+        "SYNTHETIC A",
+        "SYNTHETIC B"
+      ],
+      "correct_index": 0
+    },
+    {
+      "format": "multi_select",
+      "difficulty": "medium",
+      "concept_tag": "synthetic_sentinel",
+      "question_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT practice_slot_2-2",
+      "explanation_why": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "skill_key": "sentinel-b--sentinel",
+      "signature": "sentinel-b--sentinel | sentinel | practice_slot_2-2 | fixture",
+      "params": {},
+      "options": [
+        "SYNTHETIC A",
+        "SYNTHETIC B",
+        "SYNTHETIC C"
+      ],
+      "correct_indices": [
+        0,
+        2
+      ]
+    }
+  ]
+}

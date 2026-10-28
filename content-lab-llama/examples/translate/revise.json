@@ -1,0 +1,21 @@
+{
+  "cards": [
+    {
+      "idx": 1,
+      "question": {
+        "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT A 1?",
+        "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT A 1?"
+      },
+      "answer": {
+        "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT FINAL",
+        "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT FINAL"
+      },
+      "source_card_idxs": [
+        1
+      ],
+      "concept_key": "sentinel-1",
+      "section_key": "sentinel-a",
+      "section_seq": 1
+    }
+  ]
+}

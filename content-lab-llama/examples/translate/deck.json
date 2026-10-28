@@ -1,0 +1,177 @@
+{
+  "cards": [
+    {
+      "card_idx": 1,
+      "card_type": "welcome",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT 1",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT"
+        }
+      ],
+      "visual": null,
+      "section_key": "sentinel-a",
+      "section_seq": 1
+    },
+    {
+      "card_idx": 2,
+      "card_type": "concept",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT 2",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT"
+        }
+      ],
+      "visual": null,
+      "section_key": "sentinel-a",
+      "section_seq": 1
+    },
+    {
+      "card_idx": 3,
+      "card_type": "concept",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT 3",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT"
+        }
+      ],
+      "visual": null,
+      "section_key": "sentinel-a",
+      "section_seq": 1
+    },
+    {
+      "card_idx": 4,
+      "card_type": "concept",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT 4",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT"
+        }
+      ],
+      "visual": null,
+      "section_key": "sentinel-a",
+      "section_seq": 1
+    },
+    {
+      "card_idx": 5,
+      "card_type": "concept",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT 5",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT"
+        }
+      ],
+      "visual": null,
+      "section_key": "sentinel-a",
+      "section_seq": 1
+    },
+    {
+      "card_idx": 6,
+      "card_type": "concept",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT 6",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT"
+        }
+      ],
+      "visual": null,
+      "section_key": "sentinel-a",
+      "section_seq": 1
+    },
+    {
+      "card_idx": 7,
+      "card_type": "concept",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT 7",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT"
+        }
+      ],
+      "visual": null,
+      "section_key": "sentinel-b",
+      "section_seq": 2
+    },
+    {
+      "card_idx": 8,
+      "card_type": "concept",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT 8",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT"
+        }
+      ],
+      "visual": null,
+      "section_key": "sentinel-b",
+      "section_seq": 2
+    },
+    {
+      "card_idx": 9,
+      "card_type": "concept",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT 9",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT"
+        }
+      ],
+      "visual": null,
+      "section_key": "sentinel-b",
+      "section_seq": 2
+    },
+    {
+      "card_idx": 10,
+      "card_type": "concept",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT 10",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT"
+        }
+      ],
+      "visual": null,
+      "section_key": "sentinel-b",
+      "section_seq": 2
+    },
+    {
+      "card_idx": 11,
+      "card_type": "concept",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT 11",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT"
+        }
+      ],
+      "visual": null,
+      "section_key": "sentinel-b",
+      "section_seq": 2
+    },
+    {
+      "card_idx": 12,
+      "card_type": "summary",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT 12",
+      "lines": [
+        {
+          "display": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+          "audio": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT"
+        }
+      ],
+      "visual": null,
+      "section_key": "sentinel-b",
+      "section_seq": 2
+    }
+  ],
+  "summary": {
+    "key_analogies": [],
+    "key_examples": [],
+    "teaching_notes": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT explain_split_final"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "check_ins": [
+    {
+      "insert_after_card_idx": 3,
+      "activity_type": "pick_one",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "instruction": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "hint": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "success_message": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "options": [
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT A",
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT B",
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT C"
+      ],
+      "correct_index": 1
+    },
+    {
+      "insert_after_card_idx": 3,
+      "activity_type": "multi_select",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "instruction": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "hint": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "success_message": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "options": [
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT A",
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT B",
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT C"
+      ],
+      "correct_indices": [
+        0,
+        2
+      ]
+    },
+    {
+      "insert_after_card_idx": 7,
+      "activity_type": "fill_blank",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "instruction": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "hint": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "success_message": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "options": [
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT A",
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT B",
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT C"
+      ],
+      "correct_index": 1
+    },
+    {
+      "insert_after_card_idx": 7,
+      "activity_type": "multi_select",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "instruction": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "hint": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "success_message": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "options": [
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT A",
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT B",
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT C"
+      ],
+      "correct_indices": [
+        0,
+        2
+      ]
+    },
+    {
+      "insert_after_card_idx": 11,
+      "activity_type": "true_false",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "instruction": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "hint": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "success_message": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "statement": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "correct_answer": false
+    },
+    {
+      "insert_after_card_idx": 11,
+      "activity_type": "multi_select",
+      "title": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "instruction": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "hint": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "success_message": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "audio_text": "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT",
+      "options": [
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT A",
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT B",
+        "SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT C"
+      ],
+      "correct_indices": [
+        0,
+        2
+      ]
+    }
+  ]
+}

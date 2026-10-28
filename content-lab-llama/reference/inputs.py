@@ -106,6 +106,10 @@ def load_manifest(path, factory):
             raise ValueError('Undeclared file input or unsupported file fields')
         data = (path.parent/spec['path']).resolve().read_bytes()
         file_identity[key] = {'type': spec['type'], 'sha256': sha(data)}
+        if getattr(factory, 'PRESERVE_FILE_BYTES', False):
+            name = f'declared-{key}.{spec["type"]}'
+            file_identity[key]['file'] = name
+            blobs[name] = data
         if spec['type'] == 'json':
             declared[key] = strict_json(data)
         elif spec['type'] == 'text':
@@ -129,5 +133,18 @@ def frozen_inputs(workspace):
         data = (workspace/'inputs'/name).read_bytes()
         if sha(data) != page['sha256']:
             raise ValueError('Frozen image changed')
+        blobs[name] = data
+    for key, spec in bundle['file_identity'].items():
+        if 'file' not in spec:
+            continue
+        name = spec['file']
+        if Path(name).name != name:
+            raise ValueError('Invalid frozen declared file name')
+        data = (workspace/'inputs'/name).read_bytes()
+        if sha(data) != spec['sha256']:
+            raise ValueError('Frozen declared file changed')
+        value = strict_json(data) if spec['type'] == 'json' else data.decode('utf-8')
+        if value != bundle['declared'][key]:
+            raise ValueError('Frozen declared file differs from parsed input')
         blobs[name] = data
     return bundle, blobs

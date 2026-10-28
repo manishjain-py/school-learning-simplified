@@ -1,0 +1,10 @@
+{
+  "factory": "translate",
+  "metadata": {"grade": 4, "subject": "SYNTHETIC PLUMBING — NO CURRICULUM", "language": "hi", "batch_size": 50},
+  "files": {
+    "deck": {"type": "json", "path": "deck.json"},
+    "checkins": {"type": "json", "path": "checkins.json"},
+    "practice": {"type": "json", "path": "practice.json"},
+    "revise": {"type": "json", "path": "revise.json"}
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "mapping": [
+    {
+      "old_card_idx": 1,
+      "local_card_idx": 1
+    },
+    {
+      "old_card_idx": 2,
+      "local_card_idx": 2
+    },
+    {
+      "old_card_idx": 3,
+      "local_card_idx": 3
+    },
+    {
+      "old_card_idx": 4,
+      "local_card_idx": 4
+    },
+    {
+      "old_card_idx": 5,
+      "local_card_idx": 5
+    },
+    {
+      "old_card_idx": 6,
+      "local_card_idx": 6
+    },
+    {
+      "old_card_idx": 7,
+      "local_card_idx": 7
+    },
+    {
+      "old_card_idx": 8,
+      "local_card_idx": 8
+    },
+    {
+      "old_card_idx": 9,
+      "local_card_idx": 9
+    },
+    {
+      "old_card_idx": 10,
+      "local_card_idx": 10
+    },
+    {
+      "old_card_idx": 11,
+      "local_card_idx": 11
+    },
+    {
+      "old_card_idx": 12,
+      "local_card_idx": 12
+    }
+  ],
+  "reference_indices": "source_card_idxs refer to local teaching card_idx, not original indices"
+}

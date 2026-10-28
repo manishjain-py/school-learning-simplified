@@ -1,0 +1,34 @@
+{
+  "synthetic": true,
+  "purpose": "Native artifact plumbing only; no translation or curriculum quality proof",
+  "predecessors": {
+    "explain": {
+      "requests": 16,
+      "synthetic": true,
+      "status": "complete",
+      "exposure_usd": 0,
+      "input_sha256": "10f206b4aac8f27bfb22e71646efa42f8beed0abf421ec6ce2e7b6026f5a78e6"
+    },
+    "practice": {
+      "requests": 5,
+      "synthetic": true,
+      "status": "complete",
+      "exposure_usd": 0,
+      "input_sha256": "259f60feef9cd652fcf8e05c0729741e338130501006083aab3a2a08593b7590"
+    },
+    "revise": {
+      "requests": 8,
+      "synthetic": true,
+      "status": "complete",
+      "exposure_usd": 0,
+      "input_sha256": "1490feb64c09be23ca195ec7a0928277b937469e734a49421fe64f67dbd0f3c8"
+    }
+  },
+  "artifact_sha256": {
+    "deck.json": "bd36e4f7689b19b2a3a42bb6cc462ae7ccb568c9d3dd1ecf1f59726df267d4d8",
+    "checkins.json": "ca5787bbc8a6b3ef62d39d2092bfb05158d033b5f99be81fcfa0de69c036c2d5",
+    "practice.json": "88dd37cd1c00d243cf8e5d9994f3191d7818317dbbad312c678e35104c3ed741",
+    "revise.json": "51ce01d17d138cd898d728a2237853df5a9f432a81cc347282deaa737db18d27",
+    "r5-slim-index-map.json": "4391fe4c07e33f28ab76f1e97d69ec462899c7a6b0ab3b9fb0eb11265c488558"
+  }
+}
