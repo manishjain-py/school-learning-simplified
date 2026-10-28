@@ -1,0 +1,21 @@
+{
+  "factory": "audio",
+  "metadata": {
+    "kind": "explain"
+  },
+  "pages": [],
+  "files": {
+    "pack": {
+      "path": "deck.json",
+      "type": "json"
+    },
+    "selection": {
+      "path": "audio-selection.json",
+      "type": "json"
+    },
+    "speech": {
+      "path": "speech.json",
+      "type": "json"
+    }
+  }
+}

@@ -40,6 +40,8 @@ class Runner:
                 raise RuntimeError('Frozen inputs changed; resume refused')
             if self.identity['factory'] != factory.NAME:
                 raise RuntimeError('Frozen factory mismatch')
+            if hasattr(factory, 'execution_identity') and self.identity.get('execution') != factory.execution_identity():
+                raise RuntimeError('Frozen local execution tools/config changed; resume refused')
         else:
             if any(p.name != 'operator.lock' for p in self.workspace.iterdir()):
                 raise RuntimeError('Workspace contains evidence; choose a new workspace or explicit resume')
@@ -48,6 +50,8 @@ class Runner:
             self.identity = {'factory': factory.NAME, 'input_sha256': sha(canonical(bundle)),
                 'runtime': runtime_identity(), 'config': config, 'created_at': time.time(),
                 'policy': 'final-author; technical failures visible; no quality veto'}
+            if hasattr(factory, 'execution_identity'):
+                self.identity['execution'] = factory.execution_identity()
             for name, data in blobs.items():
                 target = self.workspace/'inputs'/name
                 target.parent.mkdir(parents=True, exist_ok=True)
@@ -105,6 +109,8 @@ class Runner:
             raise RuntimeError(f'{key}: interrupted call without checkpoint; manual reconciliation required; no repeat')
         if runtime_identity() != self.identity['runtime']:
             raise RuntimeError('Runtime changed during run')
+        if hasattr(self.factory, 'execution_identity') and self.identity.get('execution') != self.factory.execution_identity():
+            raise RuntimeError('Local execution tools/config changed during run')
         bundle, _ = frozen_inputs(self.workspace)
         if sha(canonical(bundle)) != self.identity['input_sha256']:
             raise RuntimeError('Inputs changed during run')
@@ -228,6 +234,16 @@ def report(workspace, factory):
         chunks.append('<h3>'+html.escape(path.name)+'</h3><pre>'+esc(read(path))+'</pre>')
     for path in sorted((workspace/'artifacts').glob('*.md')):
         chunks.append('<h3>'+html.escape(path.name)+'</h3><pre>'+html.escape(path.read_text())+'</pre>')
+    if hasattr(factory, 'report_media'):
+        from urllib.parse import quote
+        chunks.append('<h2>Local media execution</h2><p>Derived synthetic/local files; execution is separate from content quality. Serve this workspace locally for viewer playback.</p>')
+        for row in factory.report_media(workspace):
+            chunks.append('<h3>'+html.escape(row['name'])+' — '+html.escape(row['status'])+'</h3>')
+            for key in ('viewer','video','poster'):
+                if key in row:
+                    chunks.append('<a href="'+quote(row[key],safe='/')+'">'+html.escape(key)+'</a> ')
+            if 'frame' in row:
+                chunks.append('<p><img style="max-width:100%;max-height:350px" alt="Derived execution frame" src="'+quote(row['frame'],safe='/')+'"></p>')
     chunks.append('</html>')
     (workspace/'report.html').write_text('\n'.join(chunks))
     return summary

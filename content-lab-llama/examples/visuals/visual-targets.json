@@ -1,0 +1,16 @@
+{
+  "targets": [
+    {
+      "card_idx": 2,
+      "mode": "pixi"
+    },
+    {
+      "card_idx": 3,
+      "mode": "interactive"
+    },
+    {
+      "card_idx": 4,
+      "mode": "svg"
+    }
+  ]
+}

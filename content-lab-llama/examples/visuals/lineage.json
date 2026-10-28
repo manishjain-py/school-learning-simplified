@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "description": "Exact native R3 synthetic final deck copied from R6 predecessor inputs; no replacement curriculum authored. Guideline is the existing explicit R5 example input.",
+  "files": {
+    "deck.json": {
+      "origin": "examples/translate/deck.json",
+      "sha256": "bd36e4f7689b19b2a3a42bb6cc462ae7ccb568c9d3dd1ecf1f59726df267d4d8"
+    },
+    "guideline.json": {
+      "origin": "examples/revise/guideline.json",
+      "sha256": "d6e89b222188f004a444f9d1397e3c211c10711a5f9909f5daa8a1372fdc376e"
+    }
+  }
+}

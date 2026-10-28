@@ -1,0 +1,21 @@
+{
+  "factory": "audio",
+  "metadata": {
+    "kind": "revise"
+  },
+  "pages": [],
+  "files": {
+    "pack": {
+      "path": "../translate/revise.json",
+      "type": "json"
+    },
+    "selection": {
+      "path": "first-selection.json",
+      "type": "json"
+    },
+    "speech": {
+      "path": "speech.json",
+      "type": "json"
+    }
+  }
+}

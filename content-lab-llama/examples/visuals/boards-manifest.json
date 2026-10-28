@@ -1,0 +1,26 @@
+{
+  "factory": "boards",
+  "metadata": {
+    "grade": 4,
+    "subject": "EVS"
+  },
+  "pages": [],
+  "files": {
+    "guideline": {
+      "path": "guideline.json",
+      "type": "json"
+    },
+    "deck": {
+      "path": "deck.json",
+      "type": "json"
+    },
+    "targets": {
+      "path": "board-targets.json",
+      "type": "json"
+    },
+    "speech": {
+      "path": "speech.json",
+      "type": "json"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "factory": "audio",
+  "metadata": {
+    "kind": "practice"
+  },
+  "pages": [],
+  "files": {
+    "pack": {
+      "path": "../translate/practice.json",
+      "type": "json"
+    },
+    "selection": {
+      "path": "first-selection.json",
+      "type": "json"
+    },
+    "speech": {
+      "path": "speech.json",
+      "type": "json"
+    }
+  }
+}

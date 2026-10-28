@@ -51,6 +51,9 @@ class Fixture:
         marker = 'SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT'
         if notes_pages:
             value = {'page_notes': [{'printed_page': p, 'observations': marker} for p in notes_pages]}
+        elif role.startswith(('visuals_', 'boards_')):
+            from .factories.visuals_fixture import output
+            value = output(role, request)
         elif role.startswith('translate_'):
             from .factories.translate_fixture import output
             value = output(role, request)

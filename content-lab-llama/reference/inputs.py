@@ -51,9 +51,13 @@ def save(path, value):
 
 def runtime_identity():
     paths = [ROOT/'run_factory.py', ROOT/'requirements.lock']
+    if (ROOT/'run_audio.py').exists():
+        paths.append(ROOT/'run_audio.py')
     paths += sorted((ROOT/'reference').rglob('*.py'))
     paths += sorted((ROOT/'prompts').rglob('*.md'))
     paths += sorted((ROOT/'schemas').rglob('*.json'))
+    paths += sorted((ROOT/'media').glob('*.mjs'))
+    paths += [p for p in (ROOT/'media/package.json', ROOT/'media/package-lock.json') if p.exists()]
     packages = [line.split('==')[0] for line in (ROOT/'requirements.lock').read_text().splitlines() if '==' in line]
     return {'files': {str(p.relative_to(ROOT)): sha(p.read_bytes()) for p in paths},
             'python': sys.version, 'packages': {p: importlib.metadata.version(p)
@@ -106,7 +110,7 @@ def load_manifest(path, factory):
             raise ValueError('Undeclared file input or unsupported file fields')
         data = (path.parent/spec['path']).resolve().read_bytes()
         file_identity[key] = {'type': spec['type'], 'sha256': sha(data)}
-        if getattr(factory, 'PRESERVE_FILE_BYTES', False):
+        if getattr(factory, 'PRESERVE_FILE_BYTES', False) or spec['type'] == 'binary':
             name = f'declared-{key}.{spec["type"]}'
             file_identity[key]['file'] = name
             blobs[name] = data
@@ -114,8 +118,10 @@ def load_manifest(path, factory):
             declared[key] = strict_json(data)
         elif spec['type'] == 'text':
             declared[key] = data.decode('utf-8')
+        elif spec['type'] == 'binary' and key in getattr(factory, 'BINARY_INPUTS', ()):
+            declared[key] = {'sha256': sha(data), 'bytes': len(data)}
         else:
-            raise ValueError('File type must be json or text')
+            raise ValueError('File type must be json/text or an explicitly declared binary slot')
     bundle = {'factory': factory.NAME, 'metadata': metadata, 'pages': pages,
               'declared': declared, 'file_identity': file_identity}
     if hasattr(factory, 'validate_inputs'):
@@ -143,7 +149,8 @@ def frozen_inputs(workspace):
         data = (workspace/'inputs'/name).read_bytes()
         if sha(data) != spec['sha256']:
             raise ValueError('Frozen declared file changed')
-        value = strict_json(data) if spec['type'] == 'json' else data.decode('utf-8')
+        value = (strict_json(data) if spec['type'] == 'json' else
+                 {'sha256': sha(data), 'bytes': len(data)} if spec['type'] == 'binary' else data.decode('utf-8'))
         if value != bundle['declared'][key]:
             raise ValueError('Frozen declared file differs from parsed input')
         blobs[name] = data
