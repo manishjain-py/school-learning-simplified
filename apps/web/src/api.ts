@@ -31,7 +31,11 @@ async function accessToken(config: Config): Promise<string> {
         if (!result.AuthenticationResult?.AccessToken) throw new Error('Session ended');
         if (session()?.refreshToken !== saved.refreshToken) throw new Error('Account changed');
         return saveSession(result.AuthenticationResult.AccessToken, saved.refreshToken, result.AuthenticationResult.ExpiresIn || 3600);
-      }).catch(() => { if (session()?.refreshToken === saved.refreshToken) clearSession(); throw new ApiError('Your session has ended. Please sign in again.', 401); }).finally(() => { if (refreshingOwner === saved.refreshToken) { refreshing = null; refreshingOwner = ''; } });
+      }).catch((issue: Error) => {
+        if (session()?.refreshToken !== saved.refreshToken) throw new ApiError('The account changed. Please sign in again.', 401);
+        if (['NotAuthorizedException', 'UserNotFoundException', 'InvalidParameterException'].includes(issue.name)) { clearSession(); throw new ApiError('Your session has ended. Please sign in again.', 401); }
+        throw new Error('Your account could not reconnect. Check your connection and try again.');
+      }).finally(() => { if (refreshingOwner === saved.refreshToken) { refreshing = null; refreshingOwner = ''; } });
   }
   return (await refreshing).accessToken;
 }

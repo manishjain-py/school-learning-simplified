@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ConfirmForgotPasswordCommand, ConfirmSignUpCommand, ForgotPasswordCommand, InitiateAuthCommand, ResendConfirmationCodeCommand, SignUpCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { ArrowRight, Mail, ShieldCheck, X } from 'lucide-react';
-import { identityClient, request, saveSession, clearSession } from './api';
+import { ApiError, identityClient, request, saveSession, clearSession } from './api';
 import type { Config, User } from './types';
 
 type Mode = 'signin' | 'signup' | 'verify' | 'forgot' | 'reset';
@@ -16,26 +16,26 @@ export function AuthDialog({ config, initialMode, onClose, onSignedIn }: { confi
   const [notice, setNotice] = useState('');
   const ready = Boolean(config.userPoolClientId && config.userPoolId);
   useEffect(() => { dialog.current?.showModal(); return () => dialog.current?.close(); }, []);
-  const switchMode = (next: Mode) => { setMode(next); setError(''); setNotice(''); setPassword(''); };
+  const switchMode = (next: Mode) => { if (busy) return; setMode(next); setError(''); setNotice(''); setPassword(''); };
   const client = () => identityClient(config);
   const username = email.trim().toLowerCase();
   async function submit(event: FormEvent) {
-    event.preventDefault(); setBusy(true); setError(''); setNotice('');
+    event.preventDefault(); if (busy) return; setBusy(true); setError(''); setNotice('');
     try {
-      if (!ready) throw new Error('Account setup is not available in this preview yet. You can still explore the lesson.');
+      if (!ready) throw new Error('Account setup is temporarily unavailable. Please try again shortly.');
       if (mode === 'signup') {
         const result = await client().send(new SignUpCommand({ ClientId: config.userPoolClientId, Username: username, Password: password, UserAttributes: [{ Name: 'email', Value: username }] }));
         setPassword(''); setMode(result.UserConfirmed ? 'signin' : 'verify');
         setNotice(result.UserConfirmed ? 'Your account is ready. Sign in to continue.' : 'We sent a verification code to your email. Check your inbox and spam folder.');
       } else if (mode === 'verify') {
         await client().send(new ConfirmSignUpCommand({ ClientId: config.userPoolClientId, Username: username, ConfirmationCode: code.trim() }));
-        setMode('signin'); setCode(''); setNotice('Email verified. Sign in to save your place.');
+        setMode('signin'); setCode(''); setNotice('Email verified. Sign in to continue.');
       } else if (mode === 'signin') {
         const result = await client().send(new InitiateAuthCommand({ ClientId: config.userPoolClientId, AuthFlow: 'USER_PASSWORD_AUTH', AuthParameters: { USERNAME: username, PASSWORD: password } }));
         const auth = result.AuthenticationResult;
         if (!auth?.AccessToken || !auth.RefreshToken) throw new Error('This account requires an additional sign-in step. Please reset your password or try again.');
         saveSession(auth.AccessToken, auth.RefreshToken, auth.ExpiresIn || 3600);
-        try { const user = await request<User>(config, '/me', { authenticated: true }); setPassword(''); onSignedIn(user); }
+        try { const user = await request<User>(config, '/me', { authenticated: true }); if (!user.emailVerified) throw new ApiError('Verify your email before continuing.', 403); setPassword(''); onSignedIn(user); }
         catch (issue) { clearSession(); throw issue; }
       } else if (mode === 'forgot') {
         await client().send(new ForgotPasswordCommand({ ClientId: config.userPoolClientId, Username: username }));
@@ -64,13 +64,13 @@ export function AuthDialog({ config, initialMode, onClose, onSignedIn }: { confi
   }
   const titles: Record<Mode, string> = { signin: 'Welcome back.', signup: 'A little learning starts here.', verify: 'Check your inbox.', forgot: 'Let’s get you back in.', reset: 'Choose a fresh password.' };
   const actions: Record<Mode, string> = { signin: 'Sign in', signup: 'Create account', verify: 'Verify email', forgot: 'Send reset code', reset: 'Reset password' };
-  return <dialog ref={dialog} className="auth-dialog" aria-labelledby="auth-title" onCancel={onClose} onClick={(event) => { if (event.target === dialog.current) onClose(); }}>
+  return <dialog ref={dialog} className="auth-dialog" aria-labelledby="auth-title" onCancel={(event) => { event.preventDefault(); if (!busy) onClose(); }} onClick={(event) => { if (!busy && event.target === dialog.current) onClose(); }}>
     <div className="auth-inner">
-      <button className="icon-button close-dialog" aria-label="Close sign-in form" onClick={onClose}><X size={21} /></button>
+      <button className="icon-button close-dialog" aria-label="Close sign-in form" disabled={busy} onClick={onClose}><X size={21} /></button>
       <div className="dialog-symbol">{mode === 'verify' ? <Mail /> : <ShieldCheck />}</div>
       <p className="eyebrow">YOUR LEARNING SPACE</p><h2 id="auth-title">{titles[mode]}</h2>
       <p className="muted">{mode === 'signup' ? 'Save your place and pick up where curiosity left off.' : mode === 'verify' ? 'Use the code we sent to verify your email address.' : 'Your lessons and saved progress, all in one place.'}</p>
-      {!ready && <p className="notice">Account setup is not available in the local preview. Lessons are still open to explore.</p>}
+      {!ready && <p className="notice">Account setup is not available in this preview. Open the live website to sign in.</p>}
       <form onSubmit={submit}>
         <label>Email address<input type="email" name="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus placeholder="you@example.com" /></label>
         {(mode === 'signin' || mode === 'signup' || mode === 'reset') && <label>{mode === 'reset' ? 'New password' : 'Password'}<input type="password" name="password" autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} minLength={mode === 'signin' ? undefined : 10} value={password} onChange={(e) => setPassword(e.target.value)} required />{mode !== 'signin' && <small>10+ characters with uppercase, lowercase and a number.</small>}</label>}
@@ -80,10 +80,10 @@ export function AuthDialog({ config, initialMode, onClose, onSignedIn }: { confi
         <button className="button primary full" disabled={busy || !ready} type="submit">{busy ? 'One moment…' : actions[mode]}<ArrowRight size={18} /></button>
       </form>
       <div className="auth-options">
-        {mode === 'signin' && <><button className="text-button" onClick={() => switchMode('forgot')}>Forgot password?</button><p>New here? <button className="text-button" onClick={() => switchMode('signup')}>Create an account</button></p></>}
-        {mode === 'signup' && <p>Already have an account? <button className="text-button" onClick={() => switchMode('signin')}>Sign in</button></p>}
+        {mode === 'signin' && <><button className="text-button" disabled={busy} onClick={() => switchMode('forgot')}>Forgot password?</button><p>New here? <button className="text-button" disabled={busy} onClick={() => switchMode('signup')}>Create an account</button></p></>}
+        {mode === 'signup' && <p>Already have an account? <button className="text-button" disabled={busy} onClick={() => switchMode('signin')}>Sign in</button></p>}
         {mode === 'verify' && <button className="text-button" onClick={resend} disabled={busy || !ready || !username}>Send a new code</button>}
-        {mode !== 'signin' && mode !== 'signup' && <button className="text-button" onClick={() => switchMode('signin')}>Back to sign in</button>}
+        {mode !== 'signin' && mode !== 'signup' && <button className="text-button" disabled={busy} onClick={() => switchMode('signin')}>Back to sign in</button>}
       </div>
       <p className="auth-footnote">Students, parents and teachers use their own email accounts.</p>
     </div>
