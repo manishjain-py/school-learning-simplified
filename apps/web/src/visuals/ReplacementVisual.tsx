@@ -62,9 +62,14 @@ function Slider({label,value,min,max,step=1,onChange,valueText}:{label:string;va
     <input type="range" min={min} max={max} step={step} value={value} onChange={e=>onChange(Number(e.target.value))} aria-valuetext={valueText}/>
     <span className="sls-control-result" aria-live="polite">{valueText}</span></label>;
 }
-function useAnimation(key:string, enabled:boolean) {
+function useAnimation(key:string, enabled:boolean, playback?:{playing:boolean;ended:boolean}) {
   const [time,setTime]=useState(0),[running,setRunning]=useState(enabled),[replay,setReplay]=useState(0); const elapsedRef=useRef(0);
   useEffect(()=>{const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;elapsedRef.current=reduce?9:0;setTime(elapsedRef.current);setRunning(enabled&&!reduce);},[key,enabled]);
+  useEffect(()=>{
+    if(!playback)return;
+    if(playback.ended){elapsedRef.current=9;setTime(9);setRunning(false);}
+    else setRunning(enabled&&playback.playing&&elapsedRef.current<9&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  },[key,enabled,playback?.playing,playback?.ended]);
   useEffect(()=>{
     if(!running)return;
     let frame=0, previous=performance.now();
@@ -74,13 +79,13 @@ function useAnimation(key:string, enabled:boolean) {
   return {time,running,toggle:()=>{if(time>=9){elapsedRef.current=0;setTime(0);setReplay(n=>n+1);}setRunning(!running);},restart:()=>{elapsedRef.current=0;setTime(0);setReplay(n=>n+1);setRunning(true);}};
 }
 
-export function ReplacementVisual({visual,language,replayKey}:VisualStageProps) {
+export function ReplacementVisual({visual,language,replayKey,playing,hasStarted,ended}:VisualStageProps) {
   const key=visual.type==='replacement'?visual.sourceCardId:'';
   const stage=visual.type==='replacement'?Math.max(1,visual.stage||1):1;
   const [value,setValue]=useState(key===ids.distance?237:0),[pick,setPick]=useState('');
-  const animation=useAnimation(key+':'+language+':'+replayKey,![ids.distance,ids.coin,ids.daylight,ids.web,ids.egg,ids.chain,ids.sundial].includes(key)),uid=useId().replace(/:/g,'');
+  const animation=useAnimation(key+':'+language+':'+replayKey,![ids.distance,ids.coin,ids.daylight,ids.web,ids.egg,ids.chain,ids.sundial].includes(key),ended===undefined?undefined:{playing,ended}),uid=useId().replace(/:/g,'');
   useEffect(()=>{setValue(key===ids.distance?237:0);setPick('');},[key,language,replayKey]);
-  const t=animation.time,p=clamp((t-1.5)/4.5);
+  const t=ended?9:animation.time,p=clamp((t-1.5)/4.5);
   let drawing:ReactNode=null,control:ReactNode=null,background=c.paper;
   const interactive=[ids.distance,ids.coin,ids.daylight,ids.gas,ids.web,ids.egg].includes(key);
   const board=key===ids.sundial||key===ids.chain;
@@ -140,11 +145,11 @@ export function ReplacementVisual({visual,language,replayKey}:VisualStageProps) 
     drawing=<><g opacity={age(1)} stroke={mark(1)} fill="none" strokeWidth="3"><circle cx="60" cy="60" r="22"/>
       {Array.from({length:8},(_,i)=><line key={i} x1={60+29*Math.cos(i*Math.PI/4)} y1={60+29*Math.sin(i*Math.PI/4)} x2={60+39*Math.cos(i*Math.PI/4)} y2={60+39*Math.sin(i*Math.PI/4)}/>)}
       <ellipse cx="262" cy="215" rx="168" ry="80"/>{text(300,32,'sundial',29,mark(1))}</g>
-      {stage>=2&&<g className={stage===2?'sls-stage-new':''} opacity={age(2)}><line x1="262" y1="215" x2="262" y2="95" stroke={mark(2)} strokeWidth="8"/>{text(330,95,'gnomon',24,mark(2))}{text(144,118,'flat surface',20,mark(2))}<Arrow x1={145} y1={130} x2={160} y2={152} color={mark(2)} width={2}/></g>}
-      {stage>=3&&<g className={stage===3?'sls-stage-new':''} opacity={age(3)}><line x1="83" y1="65" x2="257" y2="97" stroke={mark(3)} strokeWidth="2" strokeDasharray="5 5"/>
+      {stage>=2&&<g className={!ended&&stage===2?'sls-stage-new':''} opacity={age(2)}><line x1="262" y1="215" x2="262" y2="95" stroke={mark(2)} strokeWidth="8"/>{text(330,95,'gnomon',24,mark(2))}{text(144,118,'flat surface',20,mark(2))}<Arrow x1={145} y1={130} x2={160} y2={152} color={mark(2)} width={2}/></g>}
+      {stage>=3&&<g className={!ended&&stage===3?'sls-stage-new':''} opacity={age(3)}><line x1="83" y1="65" x2="257" y2="97" stroke={mark(3)} strokeWidth="2" strokeDasharray="5 5"/>
         <path d="M262 215L399 253" stroke={mark(3)} strokeWidth="9"/><path d="M262 215L262 268 M262 215L125 253" stroke={mark(3)} strokeWidth="3" strokeDasharray="6 5" fill="none"/>
         {text(372,209,'shadow',21,mark(3))}<path d="M375 248Q250 302 140 253" stroke={mark(3)} fill="none" strokeWidth="3"/>{text(316,274,'moves',20,mark(3))}</g>}
-      {stage>=4&&<g className="sls-stage-new">{Array.from({length:7},(_,i)=>{const a=.24+i*(Math.PI-.48)/6;return <line key={i} x1={262+145*Math.cos(a)} y1={215+65*Math.sin(a)} x2={262+158*Math.cos(a)} y2={215+74*Math.sin(a)} stroke={mark(4)} strokeWidth={i%3===0?4:2}/>;})}
+      {stage>=4&&<g className={ended?undefined:'sls-stage-new'}>{Array.from({length:7},(_,i)=>{const a=.24+i*(Math.PI-.48)/6;return <line key={i} x1={262+145*Math.cos(a)} y1={215+65*Math.sin(a)} x2={262+158*Math.cos(a)} y2={215+74*Math.sin(a)} stroke={mark(4)} strokeWidth={i%3===0?4:2}/>;})}
         {text(427,278,'9',29,mark(4))}{text(262,318,'12',29,mark(4))}{text(97,278,'3',29,mark(4))}<circle cx="427" cy="278" r="24" fill="none" stroke={mark(4)} strokeWidth="2"/></g>}</>;
   } else if([ids.smooth,ids.chai,ids.window].includes(key)) {
     background='#edf4f4';
@@ -182,11 +187,11 @@ export function ReplacementVisual({visual,language,replayKey}:VisualStageProps) 
       <circle cx="370" cy="235" r="20" fill="#e8be5b"/><ellipse cx="408" cy="120" rx="25" ry="20" fill="#e99a46"/><ellipse cx="450" cy="120" rx="25" ry="20" fill="#e99a46"/>
       <path d="M429 101v40 M406 142Q380 157 370 228" stroke={c.ink} strokeWidth="7" fill="none"/><path d="M370 228Q380 157 406 142" stroke="#ed9e41" strokeWidth="4" fill="none" pathLength="1" strokeDasharray="1" strokeDashoffset={1-right}/>{text(322,311,'TUBE',25)}</>;
   } else if(key===ids.chain) {
-    drawing=<>{text(250,34,'OUR FOOD CHAIN',26,mark(1))}{[25,190,355].map((x,i)=>{const at=i+2;return <g key={x} opacity={stage>=at?age(at):.45} className={stage===at?'sls-stage-new':''}>
+    drawing=<>{text(250,34,'OUR FOOD CHAIN',26,mark(1))}{[25,190,355].map((x,i)=>{const at=i+2;return <g key={x} opacity={stage>=at?age(at):.45} className={!ended&&stage===at?'sls-stage-new':''}>
       <rect x={x} y="100" width="120" height="96" rx="11" fill="none" stroke={stage>=at?mark(at):c.muted} strokeWidth={stage>=at?4:2} strokeDasharray={stage>=at?undefined:'6 5'}/>{stage>=at&&text(x+60,148,['GRASS','DEER','TIGER'][i],26,mark(at))}</g>;})}
-      {stage>=5&&<g className={stage===5?'sls-stage-new':''} opacity={age(5)}><Arrow x1={145} y1={148} x2={190} y2={148} color={mark(5)}/><Arrow x1={310} y1={148} x2={355} y2={148} color={mark(5)}/></g>}
-      {stage>=6&&<g className={stage===6?'sls-stage-new':''} opacity={age(6)}><Arrow x1={128} y1={246} x2={168} y2={246} color={mark(6)} width={3}/>{text(283,246,'IS EATEN BY',22,mark(6))}</g>}
-      {stage>=7&&<g className="sls-stage-new"><rect x="18" y="86" width="464" height="124" rx="13" fill="none" stroke={mark(7)} strokeWidth="2"/>{text(250,296,'3 LINKS, 2 ARROWS',25,mark(7))}</g>}</>;
+      {stage>=5&&<g className={!ended&&stage===5?'sls-stage-new':''} opacity={age(5)}><Arrow x1={145} y1={148} x2={190} y2={148} color={mark(5)}/><Arrow x1={310} y1={148} x2={355} y2={148} color={mark(5)}/></g>}
+      {stage>=6&&<g className={!ended&&stage===6?'sls-stage-new':''} opacity={age(6)}><Arrow x1={128} y1={246} x2={168} y2={246} color={mark(6)} width={3}/>{text(283,246,'IS EATEN BY',22,mark(6))}</g>}
+      {stage>=7&&<g className={ended?undefined:'sls-stage-new'}><rect x="18" y="86" width="464" height="124" rx="13" fill="none" stroke={mark(7)} strokeWidth="2"/>{text(250,296,'3 LINKS, 2 ARROWS',25,mark(7))}</g>}</>;
   } else if(key===ids.web) {
     const nodes:Record<string,[number,number,string]>={grass:[90,250,c.green],rabbit:[90,110,'#477eaa'],deer:[250,180,'#477eaa'],tiger:[420,110,'#ba7344'],snake:[420,250,'#ba7344']};
     const links=[['grass','deer'],['grass','rabbit'],['deer','tiger'],['rabbit','snake']];
@@ -207,8 +212,8 @@ export function ReplacementVisual({visual,language,replayKey}:VisualStageProps) 
   }
   if(!drawing)return <div className="sls-visual-message" role="alert">This illustration is not available yet. You can keep reading.</div>;
   return <div className="sls-replacement" data-visual-id={key} data-animation-time={!interactive&&!board?t.toFixed(2):undefined} data-control-value={interactive?(pick||value):undefined}>
-    <svg className="sls-replacement-canvas" viewBox="0 0 500 350" role="img" aria-label={title}><title>{title}</title><rect width="500" height="350" rx="14" fill={background}/>{drawing}</svg>
+    <svg className="sls-replacement-canvas" viewBox="0 0 500 350" role="img" aria-label={title}><title>{title}</title><rect width="500" height="350" rx="14" fill={background}/>{(ended!==undefined&&!ended&&!hasStarted&&!interactive&&!board)?null:drawing}</svg>
     {control}{board&&<p className="sls-visual-caption">{language==='hi'?'चित्र का चरण':'Picture stage'} {stage} / {key===ids.chain?7:4}</p>}
-    {(!interactive||key===ids.gas)&&!board&&<div className="sls-animation-controls"><button type="button" onClick={animation.toggle}>{animation.running?'Pause animation':animation.time>=9?'Replay animation':'Play animation'}</button><button type="button" onClick={animation.restart}>Restart</button></div>}
+    {ended===undefined&&(!interactive||key===ids.gas)&&!board&&<div className="sls-animation-controls"><button type="button" onClick={animation.toggle}>{animation.running?'Pause animation':animation.time>=9?'Replay animation':'Play animation'}</button><button type="button" onClick={animation.restart}>Restart</button></div>}
   </div>;
 }

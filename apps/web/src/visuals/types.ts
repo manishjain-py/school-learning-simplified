@@ -19,6 +19,8 @@ export type VisualStageProps = {
   replayKey: number;
   clipSha256?: string;
   hasStarted?: boolean;
+  /** Whole-card playback finished or was stopped; show the final visual without advancing progress. */
+  ended?: boolean;
   onReady?: () => void;
 };
 

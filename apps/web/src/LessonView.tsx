@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, Headphones } from 'lucide-react';
 import { request } from './api';
 import type { Config, Language, LearningMode, Lesson, User } from './types';
@@ -43,6 +43,9 @@ export function LessonView({ config, chapterId, user, onSignIn, onBack, onMode, 
     const next = Math.min(index + 1, lesson.cards.length - 1);
     progress.visit(lesson.cards[next].id, [...new Set([...completed, card.id])]);
   }
+  function cardActions(control?: ReactNode) {
+    return <div className="lesson-actions"><button className="button secondary" onClick={() => goTo(index - 1)} disabled={index === 0 || progress.loading}><ArrowLeft size={16} />Previous</button>{control}<button className="button primary" onClick={finishCard} disabled={!checkinReady || progress.loading}>{index === lesson!.cards.length - 1 ? (full ? 'Finish chapter' : 'Finish preview') : 'Got it, next idea'}{index === lesson!.cards.length - 1 ? <Check size={17} /> : <ArrowRight size={17} />}</button></div>;
+  }
   return <main className={`lesson-page page-width${full ? ' full-lesson' : ''}`}>
     <button className="text-button back-link" onClick={onBack}><ArrowLeft size={16} />Back to chapter</button>
     {full && <ModeTabs mode="learn" onMode={onMode} />}
@@ -57,8 +60,7 @@ export function LessonView({ config, chapterId, user, onSignIn, onBack, onMode, 
         <div className="progress-summary"><progress max={lesson.cards.length} value={completed.length} aria-label="Completed lesson cards" /><span>{completed.length} of {lesson.cards.length} ideas explored</span></div>{!user && <div className="save-invitation"><p>Your curiosity deserves a bookmark.</p><button className="text-button" onClick={onSignIn}>Sign in to save your place <ArrowRight size={14} /></button></div>}
       </aside>
       <section className="reading-card" aria-label="Lesson card"><div className="card-kicker"><span>{activePart ? `PART ${activePart.sequence} · ` : ''}{card.kind === 'check_in' ? 'QUICK CHECK' : 'IDEA'} {String(index + 1).padStart(2, '0')}</span><span>{index + 1} / {lesson.cards.length}</span></div><h2 lang={language}>{card.title}</h2>
-        {card.kind === 'check_in' && card.question ? <>{card.visual && <VisualStage visual={card.visual} language={language} currentLine={0} currentTime={0} playing={false} replayKey={0} hasStarted={true} />}<QuestionCard key={`${card.id}-${language}`} question={card.question} language={language} onReviewed={() => setReviewed((current) => [...new Set([...current, card.id])])} /></> : <Narration key={`${card.id}-${language}`} lines={card.lines} language={language} autoPlay waitForVisual={card.visual?.type === 'scene'} mediaRef={lessonAudio}>{card.visual ? (clock, onVisualReady) => <VisualStage visual={card.visual!} language={language} {...clock} onReady={onVisualReady} /> : undefined}</Narration>}
-        <div className="lesson-actions"><button className="button secondary" onClick={() => goTo(index - 1)} disabled={index === 0 || progress.loading}><ArrowLeft size={16} />Previous</button><button className="button primary" onClick={finishCard} disabled={!checkinReady || progress.loading}>{index === lesson.cards.length - 1 ? (full ? 'Finish chapter' : 'Finish preview') : 'Got it, next idea'}{index === lesson.cards.length - 1 ? <Check size={17} /> : <ArrowRight size={17} />}</button></div>
+        {card.kind === 'check_in' && card.question ? <>{card.visual && <VisualStage visual={card.visual} language={language} currentLine={0} currentTime={0} playing={false} replayKey={0} hasStarted={true} />}<QuestionCard key={`${card.id}-${language}`} question={card.question} language={language} onReviewed={() => setReviewed((current) => [...new Set([...current, card.id])])} />{cardActions()}</> : <Narration key={`${card.id}-${language}`} lines={card.lines} language={language} autoPlay waitForVisual={card.visual?.type === 'scene'} mediaRef={lessonAudio} controlMode="play-stop" renderControls={cardActions}>{card.visual ? (clock, onVisualReady) => <VisualStage visual={card.visual!} language={language} {...clock} onReady={onVisualReady} /> : undefined}</Narration>}
         {allComplete && <div className="completion" role="status"><CheckCircle2 size={23} /><div><strong>A little more understood.</strong><p>You’ve explored every idea in this {full ? 'chapter' : 'preview'}. Come back for a listen whenever you like.</p><button className="text-button" onClick={onBack}>Back to chapter<ArrowRight size={15} /></button></div></div>}
         {user && <ProgressStatus {...progress} retry={() => progress.retry(card.id)} />}
       </section>

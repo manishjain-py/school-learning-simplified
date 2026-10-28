@@ -5,7 +5,7 @@ import type { SceneDocument, VisualStageProps } from './types';
 const sceneCache = new Map<string, SceneDocument>();
 
 export function NarratedScene(props: VisualStageProps) {
-  const { visual, language, currentLine, currentTime, clipSha256, hasStarted, onReady } = props;
+  const { visual, language, currentLine, currentTime, clipSha256, hasStarted, ended = false, onReady } = props;
   const [scene, setScene] = useState<SceneDocument | null>(null);
   const [error, setError] = useState('');
   const [imageError, setImageError] = useState(false);
@@ -62,23 +62,23 @@ export function NarratedScene(props: VisualStageProps) {
   }, [scene]);
   if (error) return <div className="sls-visual-message" role="alert"><p>{error} You can keep reading.</p><button type="button" onClick={() => { sceneCache.delete(url); setAttempt(attempt + 1); }}>Retry visual</button></div>;
   if (!scene) return <div className="sls-visual-message" role="status">{language === 'hi' ? 'चित्र खुल रहा है…' : 'Opening the illustration…'}</div>;
-  const started = hasStarted ?? (props.playing || currentLine > 0 || currentTime > 0);
-  const mismatched = started && clipSha256 && scene.beats.some(beat => {
+  const started = ended || (hasStarted ?? (props.playing || currentLine > 0 || currentTime > 0));
+  const mismatched = !ended && started && clipSha256 && scene.beats.some(beat => {
     const cue = cueFor(beat, language);
     return cue.line === currentLine && cue.clip_sha256 && cue.clip_sha256 !== clipSha256;
   });
   if (mismatched) return <div className="sls-visual-message" role="alert">This illustration does not match the current recording. Reload the lesson to try again.</div>;
-  const progress = (beat: SceneDocument['beats'][number]) => started ? cueProgress(cueFor(beat, language), currentLine, currentTime) : 0;
+  const progress = (beat: SceneDocument['beats'][number]) => ended ? 1 : started ? cueProgress(cueFor(beat, language), currentLine, currentTime) : 0;
   const nodeProgress = (id: string) => {
     const beats = intros.get(id);
     return !started ? 0 : !beats?.length ? 1 : Math.max(...beats.map(progress));
   };
   const activeGuides = scene.beats.filter(beat => {
     const cue = cueFor(beat, language);
-    return started && beat.treatment === 'guide' && currentLine === cue.line && currentTime * 1000 >= cue.start_ms && currentTime * 1000 <= cue.end_ms;
+    return !ended && started && beat.treatment === 'guide' && currentLine === cue.line && currentTime * 1000 >= cue.start_ms && currentTime * 1000 <= cue.end_ms;
   });
   const label = visual.description || visual.title || (language === 'hi' ? 'पाठ के साथ बनता चित्र' : 'An illustration drawn with the narration');
-  return <div className="sls-narrated-scene" data-scene-state={started ? 'narrating' : 'ready'}>
+  return <div className="sls-narrated-scene" data-scene-state={ended ? 'ended' : started ? 'narrating' : 'ready'}>
     <svg viewBox={`0 0 ${scene.canvas.w} ${scene.canvas.h}`} role="img" aria-label={label} className="sls-scene-canvas">
         <title>{label}</title>
         <desc>{scene.nodes.map(node => node.text).filter(Boolean).join(', ')}</desc>
