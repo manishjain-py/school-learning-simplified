@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowRight, BookOpen, LogOut, ShieldCheck } from 'lucide-react';
 import { GlobalSignOutCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthDialog } from './AuthDialog';
@@ -11,6 +11,31 @@ import { PracticeView } from './PracticeView';
 import { ReviseView } from './ReviseView';
 import { ApiError, clearSession, identityClient, request, session } from './api';
 import type { Catalog, Config, LearningMode, User } from './types';
+import type { Workspaces } from './school/types';
+
+/** Resolve a new account's family role before offering learner setup. */
+function LearnerEntry({ config, user, path, navigate, children }: { config: Config; user: User; path: string; navigate: (path: string) => void; children: ReactNode }) {
+  const [roles, setRoles] = useState<Workspaces | null>(null);
+  const [error, setError] = useState('');
+  const [retry, setRetry] = useState(0);
+  useEffect(() => {
+    const abort = new AbortController(); setRoles(null); setError('');
+    request<Workspaces>(config, '/school/workspaces', { authenticated: true, expectedUserId: user.id, signal: abort.signal })
+      .then(value => { if (!abort.signal.aborted) setRoles(value); })
+      .catch(issue => { if (!abort.signal.aborted) setError(issue.message); });
+    return () => abort.abort();
+  }, [config, user.id, retry]);
+  const parentOnly = Boolean(roles?.family.parent.children.length) && roles?.family.student.status === 'missing';
+  const home = path.split('?')[0] === '/';
+  useEffect(() => { if (parentOnly && home) navigate('/school'); }, [parentOnly, home]);
+  if (error) return <main className="status-panel page-width"><h1>Let’s reconnect to your school.</h1><p role="alert">{error}</p><button className="button primary" onClick={() => setRetry(value => value + 1)}>Try again</button><button className="button secondary" onClick={() => navigate('/school')}>Open school workspace</button></main>;
+  if (!roles || (parentOnly && home)) return <main className="status-panel page-width" role="status">Finding your school and family connections…</main>;
+  if (parentOnly) {
+    const destination = new URL(path, window.location.origin); destination.searchParams.set('learn', '1');
+    return <main className="account-entry page-width"><p className="eyebrow">YOUR OWN LEARNING SPACE</p><h1>Would you like to learn too?</h1><p>Your child’s next steps are in your family workspace. You can also set up a learning space for yourself.</p><div className="account-actions"><button className="button primary" onClick={() => navigate('/school')}>Open family workspace</button><button className="button secondary" onClick={() => navigate(destination.pathname + destination.search)}>Learn for myself</button></div></main>;
+  }
+  return children;
+}
 
 export default function App() {
   const [config, setConfig] = useState<Config | null>(null);
@@ -107,7 +132,10 @@ export default function App() {
     if (isLearner) {
       if (!user) return <main className="account-entry page-width"><span className="section-symbol"><ShieldCheck size={29} /></span><p className="eyebrow">YOUR LEARNING SPACE</p><h1>A little learning<br />starts here.</h1><p>Sign up or sign in to make this space yours. Then choose your class and learning language, and pick up where you left off.</p><div className="account-actions"><button className="button primary large" onClick={() => setAuthMode('signup')}>Sign up<ArrowRight size={18} /></button><button className="button secondary large" onClick={() => setAuthMode('signin')}>Sign in</button></div><p className="account-standalone">Learn independently or connect with your school using your own account.</p><a className="account-school" href="/school" onClick={event => { event.preventDefault(); navigate('/school'); }}>School staff or parent? Open your school workspace<ArrowRight size={16} /></a></main>;
       if (learningMatch && !preferences.loading && !preferences.error && preferences.profile.completed) return <>{recommendationId !== undefined && <div className="recommendation-banner page-width">This activity was opened from classroom guidance. Its new progress is recorded for your teacher. <a href="/" onClick={event => { event.preventDefault(); navigate('/'); }}>Latest recommendations</a></div>}{learningPage()}</>;
-      return <StudentExperience config={config} user={user} catalog={catalog} catalogError={catalogError} onRetryCatalog={() => setRetry(retry + 1)} path={pathname} search={path.includes('?') ? path.slice(path.indexOf('?')) : ''} navigate={navigate} onSignIn={() => setAuthMode('signin')} preferences={preferences} guidance={<GuidanceHome key={user.id} config={config} user={user} navigate={navigate} />} />;
+      const experience = <StudentExperience config={config} user={user} catalog={catalog} catalogError={catalogError} onRetryCatalog={() => setRetry(retry + 1)} path={pathname} search={path.includes('?') ? path.slice(path.indexOf('?')) : ''} navigate={navigate} onSignIn={() => setAuthMode('signin')} preferences={preferences} guidance={<GuidanceHome key={user.id} config={config} user={user} navigate={navigate} />} />;
+      const personalLearning = new URLSearchParams(path.split('?')[1] || '').get('learn') === '1';
+      return !preferences.loading && !preferences.error && !preferences.profile.completed && !personalLearning
+        ? <LearnerEntry key={user.id} config={config} user={user} path={path} navigate={navigate}>{experience}</LearnerEntry> : experience;
     }
     return <main className="status-panel page-width"><h1>Let’s find your way back.</h1><p>This page is not in our learning library.</p><button className="button primary" onClick={() => navigate('/')}>Go to my library<ArrowRight size={18} /></button></main>;
   }
