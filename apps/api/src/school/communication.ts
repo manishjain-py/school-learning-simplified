@@ -1,3 +1,4 @@
+import { preparePublishedParentNoteDraft, type ParentNoteAssistance } from './parent-notes.js';
 import { createHash } from 'node:crypto';
 import { processTeacherLog } from '../recommendations/index.js';
 import type { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda';
@@ -9,7 +10,7 @@ export type SchoolLog = {
   subject: string; note: string; localDate: string; timeZone: string; version: number;
   createdAt: string; updatedAt: string; guidance: GuidanceState;
 };
-type Update = { id: string; schoolId: string; classId: string; authorId: string; authorEmail: string; authorName: string; audience: 'class' | 'student'; studentId: string | null; text: string; logId: string | null; version: number; createdAt: string; updatedAt: string };
+type Update = { assistance?: ParentNoteAssistance | null; id: string; schoolId: string; classId: string; authorId: string; authorEmail: string; authorName: string; audience: 'class' | 'student'; studentId: string | null; text: string; logId: string | null; version: number; createdAt: string; updatedAt: string };
 type Thread = { id: string; schoolId: string; classId: string; childId: string; parentId: string; parentEmail: string; teacherId: string; teacherEmail: string; teacherName: string; updateId: string; createdAt: string };
 type Message = { id: string; text: string; authorId: string; authorRole: 'parent' | 'teacher'; authorName: string; createdAt: string };
 const commPK = (schoolId: string, classId: string) => `COMM#${schoolId}#${classId}`;
@@ -34,8 +35,8 @@ function cleanLog(log: SchoolLog) {
   return { id, schoolId, classId, authorId, authorName, subject, note, localDate, timeZone, version, createdAt, updatedAt, guidance };
 }
 function cleanUpdate(update: Update, canEdit?: boolean) {
-  const { id, authorName, audience, studentId, text, logId, version, createdAt, updatedAt } = update;
-  return { id, authorName, audience, studentId, text, logId, version, createdAt, updatedAt, ...(canEdit === undefined ? {} : { canEdit }) };
+  const { id, authorName, audience, studentId, text, logId, version, createdAt, updatedAt, assistance } = update;
+  return { id, authorName, audience, studentId, text, logId, version, createdAt, updatedAt, ...(assistance ? { assistance } : {}), ...(canEdit === undefined ? {} : { canEdit }) };
 }
 const relevant = (update: Update, childId: string) => update.audience === 'class' || update.studentId === childId;
 function cleanMessage(message: Message) { return { id: message.id, text: message.text, authorRole: message.authorRole, authorName: message.authorName, createdAt: message.createdAt }; }
@@ -58,11 +59,13 @@ async function requireActiveStudent(schoolId: string, classId: string, childId: 
   if (!child?.active) return fail(400, 'STUDENT_NOT_FOUND', 'Choose a current student in this class.');
   return child;
 }
-async function updateFields(body: Record<string, any>, schoolId: string, classId: string) {
+async function updateFields(body: Record<string, any>, schoolId: string, classId: string, user: VerifiedAccount) {
   if (body.audience !== 'class' && body.audience !== 'student') return fail(400, 'AUDIENCE_REQUIRED', 'Choose the class or one student for this update.');
   const studentId = body.audience === 'student' ? (await requireActiveStudent(schoolId, classId, body.studentId)).id : null;
   const logId = body.logId ? (await getSchoolLog(schoolId, classId, body.logId)).id : null;
-  return { audience: body.audience as 'class' | 'student', studentId, text: prose(body.text, 'a family update'), logId };
+  if (body.draftId && !studentId) return fail(400, 'DRAFT_AUDIENCE', 'A parent-note draft can only be sent to its selected child.');
+  const prepared = body.draftId ? await preparePublishedParentNoteDraft(user, schoolId, classId, studentId!, id(body.draftId)) : null;
+  return { fields: { audience: body.audience as 'class' | 'student', studentId, text: prose(body.text, 'a family update'), logId, assistance: prepared?.assistance || null }, checks: prepared?.checks || [] };
 }
 async function getUpdate(schoolId: string, classId: string, updateId: string) {
   const update = await get<Update>(commPK(schoolId, classId), `UPDATE#${id(updateId)}`);
@@ -183,14 +186,16 @@ export async function handleCommunication(event: APIGatewayProxyEventV2WithJWTAu
     if (!recordId && method === 'POST') {
       const body = bodyOf(event); const updateId = requestId(body.clientId); const old = await get<Update>(PK, `UPDATE#${updateId}`);
       if (old) { if (old.authorId !== user.id) return fail(409, 'REQUEST_CONFLICT', 'This update identifier is already in use.'); return json(200, { update: cleanUpdate(old) }); }
-      const stamp = now(); const update: Update = { id: updateId, schoolId, classId, authorId: user.id, authorEmail: user.email, authorName: await staffDisplayName(user, schoolId), ...await updateFields(body, schoolId, classId), version: 1, createdAt: stamp, updatedAt: stamp };
-      await write([put(PK, `UPDATE#${update.id}`, update, 'new'), put(PK, `UPDATEREV#${update.id}#000001`, update, 'new')]); return json(201, { update: cleanUpdate(update) });
+      const proposed = await updateFields(body, schoolId, classId, user);
+      const stamp = now(); const update: Update = { id: updateId, schoolId, classId, authorId: user.id, authorEmail: user.email, authorName: await staffDisplayName(user, schoolId), ...proposed.fields, version: 1, createdAt: stamp, updatedAt: stamp };
+      await write([put(PK, `UPDATE#${update.id}`, update, 'new'), put(PK, `UPDATEREV#${update.id}#000001`, update, 'new'), ...proposed.checks]); return json(201, { update: cleanUpdate(update) });
     }
     if (recordId && method === 'PUT') {
       const update = await getUpdate(schoolId, classId, recordId); editAllowed(user, update.authorId, context.role); const body = bodyOf(event);
       if (version(body.version) !== update.version) return fail(409, 'RECORD_CHANGED', 'This family update changed. Refresh before correcting it.');
-      const updated = { ...update, ...await updateFields(body, schoolId, classId), updatedAt: now(), version: update.version + 1 };
-      await write([put(PK, `UPDATE#${update.id}`, updated, update.version), put(PK, `UPDATEREV#${update.id}#${String(updated.version).padStart(6, '0')}`, { ...updated, correctedBy: user.id }, 'new')]); return json(200, { update: cleanUpdate(updated) });
+      const proposed = await updateFields(body, schoolId, classId, user);
+      const updated = { ...update, ...proposed.fields, updatedAt: now(), version: update.version + 1 };
+      await write([put(PK, `UPDATE#${update.id}`, updated, update.version), put(PK, `UPDATEREV#${update.id}#${String(updated.version).padStart(6, '0')}`, { ...updated, correctedBy: user.id }, 'new'), ...proposed.checks]); return json(200, { update: cleanUpdate(updated) });
     }
   }
   return fail(404, 'NOT_FOUND', 'This classroom action could not be found.');

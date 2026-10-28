@@ -129,6 +129,7 @@ export default function App() {
   }, [path, accountStatus, preferences.loading, preferences.profile.setupStep]);
   const pathname = path.split('?')[0];
   const recommendationId = new URLSearchParams(path.split('?')[1] || '').get('recommendation') ?? undefined;
+  const requestedCardId = new URLSearchParams(path.split('?')[1] || '').get('card') ?? undefined;
   const requestedSetId = new URLSearchParams(path.split('?')[1] || '').get('set') ?? undefined;
   const testPlanId = new URLSearchParams(path.split('?')[1] || '').get('plan') ?? undefined;
   const learningMatch = pathname.match(/^\/(learn|practice|revise)\/([a-zA-Z0-9_-]+)\/?$/);
@@ -147,7 +148,7 @@ export default function App() {
       if (recommendation.mode !== 'practice' || recommendation.chapterId !== chapterId) throw new Error('This test guidance changed. Open your latest school next steps.');
       await navigate(`/practice/${chapterId}?${new URLSearchParams({ recommendation: recommendation.id, plan: testPlanId })}`);
     } : undefined} />;
-    return <LessonView key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} />;
+    return <LessonView requestedCardId={requestedCardId} key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} />;
   }
   const parentReportMatch = pathname.match(/^\/school\/report\/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)\/?$/);
   const isSchool = pathname === '/school' || pathname === '/school/' || Boolean(parentReportMatch);

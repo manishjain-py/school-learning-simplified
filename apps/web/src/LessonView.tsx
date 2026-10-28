@@ -9,7 +9,8 @@ import { useLearningProgress } from './useLearningProgress';
 import { ProgressStatus } from './ProgressStatus';
 import { VisualStage } from './visuals';
 
-export function LessonView({ config, chapterId, user, onSignIn, onBack, onMode, recommendationId, preferredLanguage }: { config: Config; chapterId: string; user: User | null; onSignIn: () => void; onBack: () => void; onMode: (mode: LearningMode) => void; recommendationId?: string; preferredLanguage?: Language }) {
+export function LessonView({ config, chapterId, user, onSignIn, onBack, onMode, recommendationId, preferredLanguage, requestedCardId }: { config: Config; chapterId: string; user: User | null; onSignIn: () => void; onBack: () => void; onMode: (mode: LearningMode) => void; recommendationId?: string; preferredLanguage?: Language; requestedCardId?: string }) {
+  const appliedCard = useRef<string | null>(null);
   const [lesson, setLesson] = useState<Lesson | null>(null);
   // Keep the same media element across cards so a browser audio permission persists.
   const lessonAudio = useRef<HTMLAudioElement>(null);
@@ -30,13 +31,23 @@ export function LessonView({ config, chapterId, user, onSignIn, onBack, onMode, 
     }).catch((issue: Error) => { if (issue.name !== 'AbortError') setError(issue.message); }).finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
   }, [config, chapterId, language, retry]);
+  // A family note points to a public lesson idea, never to the child's progress.
+  // Wait for canonical saved progress before visiting so completed IDs are preserved.
+  const linkedCard = requestedCardId && lesson?.language === language
+    ? lesson.cards.find(item => item.id === requestedCardId) : undefined;
+  const openingLinkedCard = Boolean(linkedCard && appliedCard.current !== requestedCardId && !progress.error);
+  useEffect(() => {
+    if (!linkedCard || loading || progress.loading || progress.error || appliedCard.current === requestedCardId) return;
+    appliedCard.current = requestedCardId!;
+    progress.visit(linkedCard.id);
+  }, [linkedCard?.id, requestedCardId, loading, progress.loading, progress.error]);
   const index = Math.max(0, lesson?.cards.findIndex((card) => card.id === progress.currentCardId) ?? 0);
   const card = lesson?.cards[index];
   const full = Boolean(lesson && lesson.schemaVersion >= 2);
   const activePart = lesson?.parts?.find((part) => part.id === card?.partId);
   const completed = progress.completedIds.filter((id) => lesson?.cards.some((item) => item.id === id));
   const allComplete = Boolean(lesson && completed.length === lesson.cards.length);
-  const lessonPending = loading || progress.loading || (!error && lesson?.language !== language);
+  const lessonPending = loading || progress.loading || openingLinkedCard || (!error && lesson?.language !== language);
   const checkinReady = card?.kind !== 'check_in' || reviewed.includes(card.id) || completed.includes(card.id);
   function goTo(next: number) { if (lesson?.cards[next]) progress.visit(lesson.cards[next].id); }
   function finishCard() {

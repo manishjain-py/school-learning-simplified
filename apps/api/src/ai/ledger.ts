@@ -5,31 +5,36 @@ import { ACTOR_DAILY_LIMIT, PROJECT_LIMIT_MICRO_USD, RESERVE_MICRO_USD, emptyRes
 import { schoolLocalDate } from './dates.js';
 
 export type Reservation = { requestKey: string; fingerprint: string; actorId: string; now: Date };
-export type Claim = { claimed: true } | { claimed: false; result: InterpretationResult };
-export interface UsageLedger {
-  claim(value: Reservation): Promise<Claim>;
-  complete(value: Reservation, result: InterpretationResult): Promise<void>;
+export type UsageResult = Pick<InterpretationResult, 'requestKey' | 'model'>;
+export type Claim<Result extends UsageResult = InterpretationResult> = { claimed: true } | { claimed: false; result: Result };
+export type LedgerResultFactory<Result extends UsageResult> = (requestKey: string, status: 'processing' | 'failed', code: string, message: string, retryable?: boolean) => Result;
+export interface UsageLedger<Result extends UsageResult = InterpretationResult> {
+  claim(value: Reservation): Promise<Claim<Result>>;
+  complete(value: Reservation, result: Result): Promise<void>;
 }
 const digest = (value: string) => createHash('sha256').update(value).digest('hex');
 const project = { PK: 'AI_BUDGET#2026-10-27_2026-11-09', SK: 'PROJECT' };
 const request = (key: string) => ({ PK: `AI_REQUEST#${key}`, SK: 'META' });
-type RequestRecord = { fingerprint: string; state: 'running' | 'complete'; startedAt: string; result?: InterpretationResult };
+type RequestRecord<Result extends UsageResult> = { fingerprint: string; state: 'running' | 'complete'; startedAt: string; result?: Result };
 
 /** Reservations are never refunded: ambiguous network/timeout outcomes remain charged to the cap. */
-export class DynamoUsageLedger implements UsageLedger {
-  constructor(private tableName: string, private db = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' }))) {
+export class DynamoUsageLedger<Result extends UsageResult = InterpretationResult> implements UsageLedger<Result> {
+  private resultFactory: LedgerResultFactory<Result>;
+  constructor(private tableName: string, private db = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-2' })), ...factory: Result extends InterpretationResult ? [resultFactory?: LedgerResultFactory<Result>] : [resultFactory: LedgerResultFactory<Result>]) {
+    // Custom result shapes must supply their own factory; legacy callers retain their exact defaults.
+    this.resultFactory = (factory[0] || emptyResult) as unknown as LedgerResultFactory<Result>;
     if (tableName !== 'sls-hackathon-2026-data') throw new Error('AI ledger requires this project’s independent table.');
   }
-  private async existing(value: Reservation): Promise<InterpretationResult | null> {
+  private async existing(value: Reservation): Promise<Result | null> {
     const response = await this.db.send(new GetCommand({ TableName: this.tableName, Key: request(value.requestKey), ConsistentRead: true }));
-    const item = response.Item as RequestRecord | undefined;
+    const item = response.Item as RequestRecord<Result> | undefined;
     if (!item) return null;
-    if (item.fingerprint !== value.fingerprint) return emptyResult(value.requestKey, 'failed', 'REQUEST_CHANGED', 'This log attempt has different inputs. Correct the log to create a new version.');
+    if (item.fingerprint !== value.fingerprint) return this.resultFactory(value.requestKey, 'failed', 'REQUEST_CHANGED', 'This log attempt has different inputs. Correct the log to create a new version.');
     if (item.state === 'complete' && item.result) return item.result;
-    if (value.now.getTime() - Date.parse(item.startedAt) > 60_000) return emptyResult(value.requestKey, 'failed', 'ATTEMPT_INTERRUPTED', 'This attempt was interrupted. Retry with a new attempt; its original usage reservation remains.', true);
-    return emptyResult(value.requestKey, 'processing', 'IN_PROGRESS', 'This log is already being interpreted. Refresh shortly.');
+    if (value.now.getTime() - Date.parse(item.startedAt) > 60_000) return this.resultFactory(value.requestKey, 'failed', 'ATTEMPT_INTERRUPTED', 'This attempt was interrupted. Retry with a new attempt; its original usage reservation remains.', true);
+    return this.resultFactory(value.requestKey, 'processing', 'IN_PROGRESS', 'This log is already being interpreted. Refresh shortly.');
   }
-  async claim(value: Reservation): Promise<Claim> {
+  async claim(value: Reservation): Promise<Claim<Result>> {
     const prior = await this.existing(value);
     if (prior) return { claimed: false, result: prior };
     const day = schoolLocalDate(value.now, 'Asia/Kolkata');
@@ -46,12 +51,12 @@ export class DynamoUsageLedger implements UsageLedger {
       const existing = await this.existing(value);
       if (existing) return { claimed: false, result: existing };
       const reasons = (issue as { CancellationReasons?: { Code?: string }[] }).CancellationReasons;
-      if (reasons?.[0]?.Code === 'ConditionalCheckFailed') return { claimed: false, result: emptyResult(value.requestKey, 'failed', 'PROJECT_AI_LIMIT', 'The project’s current AI allowance is exhausted. Guidance was not generated.') };
-      if (reasons?.[1]?.Code === 'ConditionalCheckFailed') return { claimed: false, result: emptyResult(value.requestKey, 'failed', 'TEACHER_AI_LIMIT', 'This account has reached today’s AI limit. Retry tomorrow.', true) };
+      if (reasons?.[0]?.Code === 'ConditionalCheckFailed') return { claimed: false, result: this.resultFactory(value.requestKey, 'failed', 'PROJECT_AI_LIMIT', 'The project’s current AI allowance is exhausted. Guidance was not generated.') };
+      if (reasons?.[1]?.Code === 'ConditionalCheckFailed') return { claimed: false, result: this.resultFactory(value.requestKey, 'failed', 'TEACHER_AI_LIMIT', 'This account has reached today’s AI limit. Retry tomorrow.', true) };
       throw issue;
     }
   }
-  async complete(value: Reservation, result: InterpretationResult): Promise<void> {
+  async complete(value: Reservation, result: Result): Promise<void> {
     const { inputTokens, outputTokens, usageKnown } = result.model;
     // 0.72 micro-USD/token at the recorded Ohio tariff, rounded upward only for the ledger estimate.
     const estimatedMicroUsd = usageKnown ? Math.ceil((inputTokens + outputTokens) * 0.72) : 0;

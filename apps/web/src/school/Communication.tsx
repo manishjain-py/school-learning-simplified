@@ -1,17 +1,29 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { request } from '../api';
 import { TeacherLogGuidance } from '../guidance/TeacherLogGuidance';
 import { friendlySchoolDate, friendlySchoolTimestamp } from './dates';
-import type { Config } from '../types';
+import type { Config, Language } from '../types';
 import type { LinkedChild, RosterStudent } from './types';
+import { ParentNoteDraft, parentNoteActivityHref, type ParentNoteActivity, type ParentNoteResult } from './ParentNoteDraft';
 
 type Auth = { config: Config; userId: string };
 type Log = { id: string; authorId: string; authorName: string; subject: string; note: string; version: number; localDate: string; timeZone: string; createdAt: string; updatedAt: string; guidance: { status: string; message?: string } };
-type FamilyUpdate = { canEdit?: boolean; id: string; authorName: string; audience: 'class' | 'student'; studentId: string | null; text: string; logId: string | null; version: number; createdAt: string; updatedAt: string };
+type Assistance = { draftId: string; language: Language; activity: ParentNoteActivity };
+type FamilyUpdate = { canEdit?: boolean; id: string; authorName: string; audience: 'class' | 'student'; studentId: string | null; text: string; logId: string | null; version: number; createdAt: string; updatedAt: string; assistance?: Assistance };
 type Thread = { id: string; childId: string; childName: string; teacherName: string; update: FamilyUpdate; createdAt: string };
 type Reply = { id: string; text: string; authorName: string; authorRole: 'parent' | 'teacher'; createdAt: string };
 const message = (issue: unknown) => issue instanceof Error ? issue.message : 'Please try again.';
 const ErrorText = ({ error }: { error: string }) => error ? <p className="form-error" role="alert">{error}</p> : null;
+
+function PublishedAssistance({ assistance }: { assistance?: Assistance }) {
+  if (!assistance) return null;
+  const href = parentNoteActivityHref(assistance.activity);
+  const hindi = assistance.language === 'hi';
+  return <div className="parent-note-assistance" lang={assistance.language}>
+    <small>{hindi ? 'Llama की मदद से लिखा गया' : 'Written with Llama’s help'}</small>
+    {href && <a href={href}>{hindi ? 'संबंधित गतिविधि खोलें' : 'Open the related activity'} · {assistance.activity.chapterTitle} — {assistance.activity.cardTitle}</a>}
+  </div>;
+}
 
 function useRead<T>(auth: Auth, path: string, revision: number) {
   const [data, setData] = useState<T | null>(null); const [error, setError] = useState('');
@@ -74,13 +86,48 @@ function StaffUpdates({ classPath, revision, onChanged, timeZone, ...auth }: Aut
     <p className="school-help">Publish an announcement to the class or feedback to one child and their linked parents. Parents can reply privately to the author.</p>
     <UpdateForm key={editing ? `${editing.id}:${editing.version}` : 'new'} {...auth} classPath={classPath} students={roster.data?.students || []} record={editing || undefined} onCancel={() => setEditing(null)} onSaved={() => { setEditing(null); setNotice('Family update published to its selected audience.'); onChanged(); }} />
     {notice && <p className="notice" role="status">{notice}</p>}<ErrorText error={error || roster.error} />
-    {!data && !error ? <p className="school-help" role="status">Loading family updates…</p> : data?.updates.length === 0 ? <p className="school-help">No family updates yet.</p> : <div className="communication-feed">{data?.updates.map((update) => <article className="communication-entry" key={update.id}><span className="school-role">{update.audience === 'class' ? 'Whole class' : roster.data?.students.find((student) => student.id === update.studentId)?.name || 'Individual child'}</span><p className="communication-text">{update.text}</p><div className="communication-meta"><span>{update.authorName} · {friendlySchoolTimestamp(update.updatedAt, timeZone)}</span>{update.canEdit && <button className="text-button" onClick={() => setEditing(update)}>Correct update</button>}</div></article>)}</div>}
+    {!data && !error ? <p className="school-help" role="status">Loading family updates…</p> : data?.updates.length === 0 ? <p className="school-help">No family updates yet.</p> : <div className="communication-feed">{data?.updates.map((update) => <article className="communication-entry" key={update.id}><span className="school-role">{update.audience === 'class' ? 'Whole class' : roster.data?.students.find((student) => student.id === update.studentId)?.name || 'Individual child'}</span><p className="communication-text" lang={update.assistance?.language}>{update.text}</p><PublishedAssistance assistance={update.assistance} /><div className="communication-meta"><span>{update.authorName} · {friendlySchoolTimestamp(update.updatedAt, timeZone)}</span>{update.canEdit && <button className="text-button" onClick={() => setEditing(update)}>Correct update</button>}</div></article>)}</div>}
   </>;
 }
 function UpdateForm({ classPath, students, record, onCancel, onSaved, ...auth }: Auth & { classPath: string; students: RosterStudent[]; record?: FamilyUpdate; onCancel: () => void; onSaved: () => void }) {
   const [audience, setAudience] = useState(record?.audience || 'class'); const [studentId, setStudentId] = useState(record?.studentId || ''); const [text, setText] = useState(record?.text || ''); const [clientId, setClientId] = useState(() => crypto.randomUUID());
-  const { busy, error, submit } = useSubmit(async () => { await save(auth, `${classPath}/updates${record ? `/${record.id}` : ''}`, { audience, studentId: audience === 'student' ? studentId : null, text, logId: record?.logId || null, ...(record ? { version: record.version } : { clientId }) }, record ? 'PUT' : 'POST'); setText(''); setClientId(crypto.randomUUID()); onSaved(); });
-  return <form className="school-form school-inset" onSubmit={submit}><h3>{record ? 'Correct family update' : 'Share a family update'}</h3><label>Who can see this?<select value={audience} onChange={(event) => setAudience(event.target.value as 'class' | 'student')}><option value="class">Whole class and linked parents</option><option value="student">One child and their linked parents</option></select></label>{audience === 'student' && <label>Student<select required value={studentId} onChange={(event) => setStudentId(event.target.value)}><option value="">Choose a student</option>{students.map((student) => <option key={student.id} value={student.id}>{student.name}</option>)}</select></label>}<label>{audience === 'class' ? 'Class announcement' : 'Individual feedback'}<textarea required rows={3} maxLength={3000} value={text} onChange={(event) => setText(event.target.value)} /></label><ErrorText error={error} /><div className="school-form-actions"><button className="button primary" disabled={busy}>{busy ? 'Publishing…' : record ? 'Publish correction' : 'Publish update'}</button>{record && <button type="button" className="button secondary" onClick={onCancel}>Cancel correction</button>}</div></form>;
+  const [assistance, setAssistance] = useState<Assistance | null>(null);
+  const [draftReset, setDraftReset] = useState(0);
+  const editorVersion = useRef(0);
+  const publishing = useRef(false);
+  const mounted = useRef(true);
+  const scope = `${auth.userId}:${classPath}:${audience}:${studentId}:${record?.id || 'new'}`;
+  const currentScope = useRef(scope); currentScope.current = scope;
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; editorVersion.current += 1; }; }, []);
+  function changeAudience(value: 'class' | 'student') { editorVersion.current += 1; setAssistance(null); setAudience(value); }
+  function changeStudent(value: string) { editorVersion.current += 1; setAssistance(null); setStudentId(value); }
+  function acceptDraft(draft: ParentNoteResult, expectedVersion: number) {
+    if (!mounted.current || publishing.current || currentScope.current !== scope || audience !== 'student' || editorVersion.current !== expectedVersion || draft.status !== 'ready' || !draft.text || !draft.activity) return false;
+    editorVersion.current += 1;
+    setText(draft.text);
+    setAssistance({ draftId: draft.id, language: draft.language, activity: draft.activity });
+    return true;
+  }
+  const { busy, error, submit } = useSubmit(async () => {
+    // Publishing and manual edits both invalidate any still-running draft response.
+    editorVersion.current += 1; publishing.current = true;
+    try {
+      await save(auth, `${classPath}/updates${record ? `/${record.id}` : ''}`, { audience, studentId: audience === 'student' ? studentId : null, text, logId: record?.logId || null, ...(assistance && audience === 'student' ? { draftId: assistance.draftId } : {}), ...(record ? { version: record.version } : { clientId }) }, record ? 'PUT' : 'POST');
+      if (!mounted.current || currentScope.current !== scope) return;
+      setText(''); setAssistance(null); setClientId(crypto.randomUUID()); setDraftReset(value => value + 1); onSaved();
+    } finally { publishing.current = false; }
+  });
+  return <form className="school-form school-inset" onSubmit={submit}>
+    <h3>{record ? 'Correct family update' : 'Share a family update'}</h3>
+    <label>Who can see this?<select disabled={busy} value={audience} onChange={(event) => changeAudience(event.target.value as 'class' | 'student')}><option value="class">Whole class and linked parents</option><option value="student">One child and their linked parents</option></select></label>
+    {audience === 'student' && <label>Student<select required disabled={busy} value={studentId} onChange={(event) => changeStudent(event.target.value)}><option value="">Choose a student</option>{students.map((student) => <option key={student.id} value={student.id}>{student.name}</option>)}</select></label>}
+    {audience === 'student' && students.some(student => student.id === studentId) && <ParentNoteDraft key={`${auth.userId}:${classPath}:${studentId}:${draftReset}`} {...auth} classPath={classPath} studentId={studentId} disabled={busy} getEditorVersion={() => editorVersion.current} onInputsChanged={() => { editorVersion.current += 1; }} onReady={acceptDraft} />}
+    {record?.assistance && !assistance && <p className="school-help">The published note was written with Llama’s help. This correction will be marked as written manually unless you use a new draft.</p>}
+    <label>{audience === 'class' ? 'Class announcement' : 'Individual feedback'}<textarea required rows={5} maxLength={3000} disabled={busy} lang={assistance?.language} value={text} onChange={(event) => { editorVersion.current += 1; setText(event.target.value); }} /></label>
+    {assistance && <div className="parent-note-editor-source"><strong>Drafted with Llama</strong><p className="school-help">Edit the note to reflect your observation. Publish only when you are ready to share it with this child and their linked parents.</p><PublishedAssistance assistance={assistance} /></div>}
+    <ErrorText error={error} />
+    <div className="school-form-actions"><button className="button primary" disabled={busy}>{busy ? 'Publishing…' : record ? 'Publish correction' : 'Publish update'}</button>{record && <button type="button" className="button secondary" disabled={busy} onClick={onCancel}>Cancel correction</button>}</div>
+  </form>;
 }
 
 function TextReply({ path, label, button, updateId, onSaved, ...auth }: Auth & { path: string; label: string; button: string; updateId?: string; onSaved: () => void }) {
@@ -95,7 +142,7 @@ function Threads({ path, revision, onChanged, timeZone, ...auth }: Auth & { path
 }
 function ThreadMessages({ path, revision, onChanged, timeZone, ...auth }: Auth & { path: string; timeZone: string; revision: number; onChanged: () => void }) {
   const { data, error } = useRead<{ thread: Thread; messages: Reply[] }>(auth, path, revision);
-  return <div className="thread-messages"><ErrorText error={error} />{!data && !error && <p className="school-help" role="status">Opening private conversation…</p>}{data && <><blockquote>{data.thread.update.text}</blockquote>{data.messages.map((reply) => <div className={`communication-message ${reply.authorRole}`} key={reply.id}><small>{reply.authorName} · {friendlySchoolTimestamp(reply.createdAt, timeZone)}</small><p>{reply.text}</p></div>)}<TextReply {...auth} path={path} label="Private reply" button="Send private reply" onSaved={onChanged} /></>}</div>;
+  return <div className="thread-messages"><ErrorText error={error} />{!data && !error && <p className="school-help" role="status">Opening private conversation…</p>}{data && <><blockquote lang={data.thread.update.assistance?.language}>{data.thread.update.text}</blockquote><PublishedAssistance assistance={data.thread.update.assistance} />{data.messages.map((reply) => <div className={`communication-message ${reply.authorRole}`} key={reply.id}><small>{reply.authorName} · {friendlySchoolTimestamp(reply.createdAt, timeZone)}</small><p>{reply.text}</p></div>)}<TextReply {...auth} path={path} label="Private reply" button="Send private reply" onSaved={onChanged} /></>}</div>;
 }
 
 export function FamilyCommunication({ child, role, ...auth }: Auth & { child: LinkedChild; role: 'parent' | 'student' }) {
@@ -103,5 +150,5 @@ export function FamilyCommunication({ child, role, ...auth }: Auth & { child: Li
   const path = `/school/family/${role}/${child.schoolId}/${child.classId}/${child.id}`;
   const timeZone = child.timeZone;
   const { data, error } = useRead<{ updates: FamilyUpdate[] }>(auth, `${path}/updates`, revision);
-  return <section className="school-card family-communication"><div className="school-list-heading"><h3>{child.name} · Classroom updates</h3><button className="text-button" onClick={refresh}>Refresh updates</button></div><ErrorText error={error} />{!data && !error ? <p className="school-help" role="status">Opening classroom updates…</p> : data?.updates.length === 0 ? <p className="school-help">Your teacher’s class updates and individual feedback will appear here.</p> : <div className="communication-feed">{data?.updates.map((update) => <article className="communication-entry" key={update.id}><span className="school-role">{update.audience === 'class' ? 'Class update' : `Feedback for ${child.name}`}</span><p className="communication-text">{update.text}</p><small>{update.authorName} · {friendlySchoolTimestamp(update.updatedAt, timeZone)}</small>{role === 'parent' && <><button className="text-button family-reply-button" onClick={() => setReplyId(replyId === update.id ? '' : update.id)}>{replyId === update.id ? 'Close reply' : 'Reply privately to teacher'}</button>{replyId === update.id && <TextReply key={update.id} {...auth} path={`${path}/threads`} updateId={update.id} label="Your private reply" button="Send to teacher" onSaved={() => { setReplyId(''); refresh(); }} />}</>}</article>)}</div>}{role === 'parent' && <Threads timeZone={timeZone} {...auth} path={path} revision={revision} onChanged={refresh} />}</section>;
+  return <section className="school-card family-communication"><div className="school-list-heading"><h3>{child.name} · Classroom updates</h3><button className="text-button" onClick={refresh}>Refresh updates</button></div><ErrorText error={error} />{!data && !error ? <p className="school-help" role="status">Opening classroom updates…</p> : data?.updates.length === 0 ? <p className="school-help">Your teacher’s class updates and individual feedback will appear here.</p> : <div className="communication-feed">{data?.updates.map((update) => <article className="communication-entry" key={update.id}><span className="school-role">{update.audience === 'class' ? 'Class update' : `Feedback for ${child.name}`}</span><p className="communication-text" lang={update.assistance?.language}>{update.text}</p><PublishedAssistance assistance={update.assistance} /><small>{update.authorName} · {friendlySchoolTimestamp(update.updatedAt, timeZone)}</small>{role === 'parent' && <><button className="text-button family-reply-button" onClick={() => setReplyId(replyId === update.id ? '' : update.id)}>{replyId === update.id ? 'Close reply' : 'Reply privately to teacher'}</button>{replyId === update.id && <TextReply key={update.id} {...auth} path={`${path}/threads`} updateId={update.id} label="Your private reply" button="Send to teacher" onSaved={() => { setReplyId(''); refresh(); }} />}</>}</article>)}</div>}{role === 'parent' && <Threads timeZone={timeZone} {...auth} path={path} revision={revision} onChanged={refresh} />}</section>;
 }

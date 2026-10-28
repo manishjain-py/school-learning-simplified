@@ -188,6 +188,7 @@ export async function handleSchool(event: APIGatewayProxyEventV2WithJWTAuthorize
     if (!user.id || !user.emailVerified) return fail(403, 'EMAIL_NOT_VERIFIED', 'Verify your account email before opening a school workspace.');
     normalizeEmail(user.email);
     if (!table()) return fail(503, 'STORAGE_UNAVAILABLE', 'The school workspace is temporarily unavailable.');
+    if (/^\/api\/school\/schools\/[^/]+\/classes\/[^/]+\/parent-note-drafts(?:\/|$)/.test(event.rawPath)) return await (await import('./parent-notes.js')).handleParentNotes(event, user);
     const communication = await import('./communication.js');
     const handled = await communication.handleCommunication(event, user);
     if (handled) return handled;
