@@ -255,7 +255,9 @@ test('parent, wrong chapter/audience and revoked recommendation links cannot cre
 });
 
 test('the real handler checks gateway identity, verified email and owner partition; legacy writes are frozen', async t => {
-  const data = setup(t); const { handler } = await import('../index.js');
+  const data = setup(t);
+  for (const account of [owner, stranger]) data.put({ PK: `USER#${account.id}`, SK: 'PROFILE', email: account.email, emailVerified: true });
+  const { handler } = await import('../index.js');
   const call = async (method: string, suffix: string, body?: unknown, token = 'owner-token', claims = owner.id) => {
     const request = event(method, suffix, body);
     request.headers = token ? { authorization: `Bearer ${token}` } : {};

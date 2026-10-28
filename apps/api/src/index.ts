@@ -6,11 +6,13 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { type AnswerKey, type OptionQuestion } from './grading.js';
-import { handleSchool, SchoolError } from './school/index.js';
+import { bindLearnerAccount, handleSchool, SchoolError } from './school/index.js';
 import { handlePreferences } from './preferences/index.js';
 import { handleRecommendations, originProgress, originPractice } from './recommendations/index.js';
 import { handlePracticeSets } from './practice/index.js';
 import type { SetQuestion } from './practice/selection.js';
+import { handleReports } from './reports/index.js';
+import { syncVerifiedProfile } from './reports/identity.js';
 
 type Chapter = { id: string; title: string; languages: string[]; cardCount: number };
 type Catalog = { schemaVersion: number; chapters: Chapter[] };
@@ -128,7 +130,9 @@ async function verifiedUser(event: APIGatewayProxyEventV2WithJWTAuthorizer) {
   if (attrs.sub !== claims.sub) throw new HttpError(401, 'INVALID_SESSION', 'Please sign in again.');
   if (attrs.email_verified !== 'true') throw new HttpError(403, 'EMAIL_NOT_VERIFIED', 'Verify your email before saving progress.');
   if (!process.env.TABLE_NAME) throw new HttpError(503, 'STORAGE_UNAVAILABLE', 'Your progress storage is temporarily unavailable.');
-  return { id: String(claims.sub), email: attrs.email || '', emailVerified: true };
+  const user = { id: String(claims.sub), email: attrs.email || '', emailVerified: true };
+  await syncVerifiedProfile(user);
+  return user;
 }
 
 export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> {
@@ -148,16 +152,12 @@ export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
       return json(200, await readContent<Lesson | PracticeBank>(modeKey(chapter.id, language, mode)));
     }
     if (path === '/api/preferences') return await handlePreferences(event, await verifiedUser(event));
+    if (path === '/api/reports/mine' || /^\/api\/school\/family\/parent\/[^/]+\/[^/]+\/[^/]+\/report$/.test(path)) return json(200, await handleReports(event, await verifiedUser(event)));
     if (path.startsWith('/api/school/recommendations/')) return json(200, await handleRecommendations(event, await verifiedUser(event)));
     if (path.startsWith('/api/school/')) return await handleSchool(event, await verifiedUser(event));
     if (method === 'GET' && path === '/api/me') {
       const user = await verifiedUser(event);
-      const now = new Date().toISOString();
-      await db.send(new UpdateCommand({
-        TableName: process.env.TABLE_NAME, Key: { PK: `USER#${user.id}`, SK: 'PROFILE' },
-        UpdateExpression: 'SET email = :email, emailVerified = :verified, createdAt = if_not_exists(createdAt, :now), updatedAt = :now',
-        ExpressionAttributeValues: { ':email': user.email, ':verified': true, ':now': now },
-      }));
+      await bindLearnerAccount(user);
       return json(200, user);
     }
     const setsMatch = path.match(/^\/api\/practice\/([^/]+)\/(sets|rounds)(?:\/|$)/);

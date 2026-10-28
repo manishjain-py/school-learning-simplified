@@ -10,6 +10,7 @@ type Teacher = { email: string; name: string; active: boolean; version: number }
 type SchoolClass = { id: string; name: string; subject: string; teacherEmails: string[]; version: number };
 export type Student = { id: string; name: string; studentEmail: string; parentEmails: string[]; version: number; active: boolean };
 export type ChildLink = { id: string; schoolId: string; schoolName: string; timeZone: string; classId: string; className: string; name: string };
+export type LearnerAccountBinding = { kind: 'learner-account'; schemaVersion: 1; schoolId: string; classId: string; studentId: string; accountId: string; emailHash: string; boundAt: string };
 const db = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-2' }));
 const table = () => process.env.TABLE_NAME!;
 const hash = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -53,7 +54,7 @@ export async function get<T>(PK: string, SK: string): Promise<T | null> {
 export async function query(PK: string, prefix: string): Promise<RecordValue[]> {
   const items: RecordValue[] = []; let cursor: RecordValue | undefined;
   do {
-    const result = await db.send(new QueryCommand({ TableName: table(), KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)', ExpressionAttributeValues: { ':pk': PK, ':prefix': prefix }, ConsistentRead: true, ExclusiveStartKey: cursor }));
+    const result = await db.send(new QueryCommand({ TableName: table(), KeyConditionExpression: prefix ? 'PK = :pk AND begins_with(SK, :prefix)' : 'PK = :pk', ExpressionAttributeValues: { ':pk': PK, ...(prefix ? { ':prefix': prefix } : {}) }, ConsistentRead: true, ExclusiveStartKey: cursor }));
     items.push(...(result.Items || [])); cursor = result.LastEvaluatedKey;
   } while (cursor);
   return items;
@@ -121,6 +122,23 @@ export async function requireFamilyChild(user: VerifiedAccount, schoolId: string
   if (!child) return fail(403, 'CHILD_ACCESS_DENIED', 'This child is not linked to your verified account in this workspace.');
   return child;
 }
+/** Caller identity was freshly verified by GetUser; neither staff nor request fields choose the account. */
+export async function bindLearnerAccount(user: VerifiedAccount): Promise<ChildLink | null> {
+  if (!user.emailVerified) return fail(403, 'EMAIL_NOT_VERIFIED', 'Verify your email before connecting your report.');
+  const links = await linkedFamily(user); if (links.student.status !== 'linked') return null;
+  const child = links.student.children[0]; const PK = classPK(child.schoolId, child.classId); const email = normalizeEmail(user.email);
+  const roster = await get<Student>(PK, `STUDENT#${child.id}`);
+  if (!roster?.active || roster.studentEmail !== email) return null;
+  const previous = await get<LearnerAccountBinding>(PK, `LEARNER_ACCOUNT#${child.id}`);
+  if (previous?.kind === 'learner-account' && previous.schemaVersion === 1 && previous.accountId === user.id && previous.emailHash === hash(email) && previous.schoolId === child.schoolId && previous.classId === child.classId && previous.studentId === child.id) return child;
+  const binding: LearnerAccountBinding = { kind: 'learner-account', schemaVersion: 1, schoolId: child.schoolId, classId: child.classId, studentId: child.id, accountId: user.id, emailHash: hash(email), boundAt: now() };
+  await write([
+    { ConditionCheck: { TableName: table(), Key: { PK, SK: `STUDENT#${child.id}` }, ConditionExpression: '#active = :active AND studentEmail = :email AND #version = :version', ExpressionAttributeNames: { '#active': 'active', '#version': 'version' }, ExpressionAttributeValues: { ':active': true, ':email': email, ':version': roster.version } } },
+    { ConditionCheck: { TableName: table(), Key: { PK: `USER#${user.id}`, SK: 'PROFILE' }, ConditionExpression: 'email = :email AND emailVerified = :verified', ExpressionAttributeValues: { ':email': email, ':verified': true } } },
+    put(PK, `LEARNER_ACCOUNT#${child.id}`, binding),
+  ]);
+  return child;
+}
 async function staffWorkspaces(user: VerifiedAccount) {
   const [adminRefs, teacherRefs] = await Promise.all([query(`USER#${user.id}`, 'SCHOOL#'), query(emailPK(normalizeEmail(user.email)), 'TEACHER#')]);
   const workspaces = [];
@@ -159,6 +177,7 @@ function rosterIndexes(schoolId: string, classId: string, student: Student) {
 async function saveStudent(schoolId: string, classId: string, student: Student, old: Student | null) {
   const next = rosterIndexes(schoolId, classId, student); const previous = old ? rosterIndexes(schoolId, classId, old) : new Map();
   const writes: NonNullable<TransactWriteCommandInput['TransactItems']> = [put(classPK(schoolId, classId), `STUDENT#${student.id}`, { ...student, updatedAt: now() }, old ? old.version : 'new')];
+  if (old && (!student.active || student.studentEmail !== old.studentEmail)) writes.push(remove(classPK(schoolId, classId), `LEARNER_ACCOUNT#${student.id}`));
   for (const [key, ref] of previous) if (!next.has(key)) writes.push(remove(ref.PK, ref.SK));
   for (const ref of next.values()) writes.push(put(ref.PK, ref.SK, { schoolId, classId, studentId: student.id }));
   await write(writes);

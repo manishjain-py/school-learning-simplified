@@ -66,7 +66,12 @@ function setup(t: TestContext) {
     hooks.beforeTransaction?.();
     const items = command.input.TransactItems as Row[];
     if (!items.every(item => condition(item.Put || item.ConditionCheck))) throw Object.assign(new Error('Guard changed'), { name: 'TransactionCanceledException' });
-    for (const item of items) if (item.Put) { writes++; put(structuredClone(item.Put.Item)); }
+    for (const item of items) if (item.Put) {
+      // Report-origin writes also maintain identity/discovery rows; count actual origin creation for idempotency.
+      if (item.Put.Item.SK.startsWith('ACTIVITY#')) writes++;
+      else assert.ok(item.Put.Item.kind === 'report-origin' || item.Put.Item.SK === 'PROFILE');
+      put(structuredClone(item.Put.Item));
+    }
     return {};
   });
   t.mock.method(S3Client.prototype, 'send', async () => { assert.fail('Test plans use the local frozen catalog and revision deck.'); });

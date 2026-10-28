@@ -9,6 +9,7 @@ import { useStudentPreferences } from './student/preferences';
 import { LessonView } from './LessonView';
 import { PracticeView } from './PracticeView';
 import { ReviseView } from './ReviseView';
+import { ReportCardView } from './reports/ReportCardView';
 import { ApiError, clearSession, identityClient, request, session } from './api';
 import type { Catalog, Config, LearningMode, User } from './types';
 import type { Workspaces } from './school/types';
@@ -143,15 +144,18 @@ export default function App() {
     } : undefined} />;
     return <LessonView key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} />;
   }
-  const isSchool = pathname === '/school' || pathname === '/school/';
-  const isLearner = Boolean(learningMatch) || pathname === '/' || pathname === '/setup' || pathname === '/profile' || /^\/(subjects|chapters)\/[^/]+\/?$/.test(pathname);
+  const parentReportMatch = pathname.match(/^\/school\/report\/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)\/?$/);
+  const isSchool = pathname === '/school' || pathname === '/school/' || Boolean(parentReportMatch);
+  const isLearner = Boolean(learningMatch) || pathname === '/' || pathname === '/setup' || pathname === '/profile' || pathname === '/report' || /^\/(subjects|chapters)\/[^/]+\/?$/.test(pathname);
   function page() {
     if (configError) return <main className="status-panel page-width"><h1>A moment to reconnect.</h1><p role="alert">{configError}</p><button className="button primary" onClick={() => setRetry(retry + 1)}>Try again</button></main>;
     if (!config || accountStatus === 'restoring') return <main className="status-panel page-width" role="status">Opening your account…</main>;
     if (accountStatus === 'error') return <main className="status-panel page-width"><h1>Let’s reconnect to your account.</h1><p role="alert">{accountError}</p><div className="account-actions"><button className="button primary" onClick={() => { setAccountStatus('restoring'); setAccountRetry(value => value + 1); }}>Try again</button><button className="button secondary" onClick={() => { accountGeneration.current += 1; clearSession(); setUser(null); setAccountStatus('signedout'); setAuthMode('signin'); }}>Sign in again</button></div></main>;
+    if (parentReportMatch && user) return <ReportCardView key={`${user.id}:${parentReportMatch.slice(1).join(':')}`} config={config} user={user} navigate={navigate} parent={{ schoolId: parentReportMatch[1], classId: parentReportMatch[2], childId: parentReportMatch[3] }} />;
     if (isSchool) return <SchoolWorkspace key={user?.id || 'signedout'} config={config} user={user} onSignIn={() => setAuthMode('signin')} />;
     if (isLearner) {
       if (!user) return <main className="account-entry page-width"><span className="section-symbol"><ShieldCheck size={29} /></span><p className="eyebrow">YOUR LEARNING SPACE</p><h1>A little learning<br />starts here.</h1><p>Sign up or sign in to make this space yours. Then choose your class and learning language, and pick up where you left off.</p><div className="account-actions"><button className="button primary large" onClick={() => setAuthMode('signup')}>Sign up<ArrowRight size={18} /></button><button className="button secondary large" onClick={() => setAuthMode('signin')}>Sign in</button></div><p className="account-standalone">Learn independently or connect with your school using your own account.</p><a className="account-school" href="/school" onClick={event => { event.preventDefault(); navigate('/school'); }}>School staff or parent? Open your school workspace<ArrowRight size={16} /></a></main>;
+      if (pathname === '/report' && !preferences.loading && !preferences.error && preferences.profile.completed) return <ReportCardView key={user.id} config={config} user={user} navigate={navigate} />;
       if (learningMatch && !preferences.loading && !preferences.error && preferences.profile.completed) return <>{recommendationId !== undefined && <div className="recommendation-banner page-width">This activity was opened from classroom guidance. Its new progress is recorded for your teacher. <a href="/" onClick={event => { event.preventDefault(); navigate('/'); }}>Latest recommendations</a></div>}{learningPage()}</>;
       const experience = <StudentExperience config={config} user={user} catalog={catalog} catalogError={catalogError} onRetryCatalog={() => setRetry(retry + 1)} path={pathname} search={path.includes('?') ? path.slice(path.indexOf('?')) : ''} navigate={navigate} onSignIn={() => setAuthMode('signin')} preferences={preferences} guidance={<GuidanceHome key={user.id} config={config} user={user} navigate={navigate} />} />;
       const personalLearning = new URLSearchParams(path.split('?')[1] || '').get('learn') === '1';

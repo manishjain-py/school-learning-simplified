@@ -8,6 +8,7 @@ import { SchoolError, linkedFamily, requireClassStaff, requireFamilyChild, listC
 import { getSchoolLog, saveLogGuidance, type SchoolLog } from '../school/communication.js';
 import { recommendationCatalog, recommendationContent } from './content.js';
 import { pairTestGuidance } from './test-plans.js';
+import { reportOriginRow } from '../reports/origins.js';
 
 type Row = Record<string, any>;
 type Mode = 'learn' | 'practice' | 'revise';
@@ -109,36 +110,43 @@ export async function requireOrigin(user: VerifiedAccount, id: string, chapterId
   if (started && !activity) return fail(409, 'ORIGIN_NOT_STARTED', 'Open this recommendation from your homepage first.');
   return { record, child, key, activity };
 }
+function reportIndexWrite(user: VerifiedAccount, record: Recommendation, child: ChildLink) {
+  return { Put: { TableName: table(), Item: reportOriginRow(user.id, child.id, record) } };
+}
+function activityOwnerCondition(user: VerifiedAccount, record: Recommendation, child: ChildLink) {
+  return { ConditionCheck: { TableName: table(), Key: activityKey(record, child, user), ConditionExpression: 'accountId = :owner AND studentId = :student AND recommendationId = :recommendation', ExpressionAttributeValues: { ':owner': user.id, ':student': child.id, ':recommendation': record.id } } };
+}
 export async function startOrigin(user: VerifiedAccount, id: string, guards: NonNullable<TransactWriteCommandInput['TransactItems']> = []) {
   const record = await recommendation(id); const context = await requireOrigin(user, id, record.chapterId, record.mode, false);
   if (!context.activity) {
     const timestamp = now();
     const activity: Omit<OriginActivity, 'completedCards'> = { recommendationId: id, studentId: context.child.id, accountId: user.id, studentEmailHash: hash(user.email.trim().toLowerCase()), startedAt: timestamp, updatedAt: timestamp, currentCardId: null, language: 'en' };
-    const writes: NonNullable<TransactWriteCommandInput['TransactItems']> = [currentLogCondition({ ...record, id: record.logId }), ...guards, { Put: { TableName: table(), Item: { ...context.key, ...activity }, ConditionExpression: 'attribute_not_exists(PK)' } }];
+    const writes: NonNullable<TransactWriteCommandInput['TransactItems']> = [currentLogCondition({ ...record, id: record.logId }), ...guards, { Put: { TableName: table(), Item: { ...context.key, ...activity }, ConditionExpression: 'attribute_not_exists(PK)' } }, reportIndexWrite(user, record, context.child)];
     try { await transaction(writes); } catch (error) {
       if (!(error instanceof SchoolError && error.status === 409) || !await get<OriginActivity>(context.key)) throw error;
-      if (guards.length) await transaction([currentLogCondition({ ...record, id: record.logId }), ...guards]);
+      await transaction([currentLogCondition({ ...record, id: record.logId }), ...guards, activityOwnerCondition(user, record, context.child), reportIndexWrite(user, record, context.child)]);
     }
-  } else if (guards.length) await transaction([currentLogCondition({ ...record, id: record.logId }), ...guards]);
+  } else await transaction([currentLogCondition({ ...record, id: record.logId }), ...guards, activityOwnerCondition(user, record, context.child), reportIndexWrite(user, record, context.child)]);
   return { recommendation: safeRecommendation(record), activity: await get<OriginActivity>(context.key) };
 }
 export async function originProgress(user: VerifiedAccount, id: string, chapterId: string, mode: 'learn' | 'revise', body?: Row) {
-  const { record, key, activity } = await requireOrigin(user, id, chapterId, mode);
+  const { record, key, activity, child } = await requireOrigin(user, id, chapterId, mode);
   if (body) {
     if (!['en', 'hi'].includes(body.language)) return fail(400, 'INVALID_LANGUAGE', 'Choose English or Hindi.');
     const content = await recommendationContent<{ cards: { id: string }[] }>(`${mode === 'learn' ? 'lessons' : 'revise'}/${chapterId}/${body.language}.json`);
     const ids = new Set(content.cards.map(card => card.id));
     if (typeof body.currentCardId !== 'string' || !ids.has(body.currentCardId) || !Array.isArray(body.completedCardIds) || body.completedCardIds.length > ids.size || body.completedCardIds.some((card: unknown) => typeof card !== 'string' || !ids.has(card))) return fail(400, 'INVALID_PROGRESS', 'The progress update does not match this recommended activity.');
     const completed = [...new Set(body.completedCardIds as string[])];
-    await transaction([currentLogCondition({ ...record, id: record.logId }), { Update: { TableName: table(), Key: key, ConditionExpression: 'accountId = :owner', UpdateExpression: `SET currentCardId = :card, #language = :language, updatedAt = :now${completed.length ? ' ADD completedCards :cards' : ''}`, ExpressionAttributeNames: { '#language': 'language' }, ExpressionAttributeValues: { ':owner': user.id, ':card': body.currentCardId, ':language': body.language, ':now': now(), ...(completed.length ? { ':cards': new Set(completed) } : {}) } } }]);
-  }
+    await transaction([currentLogCondition({ ...record, id: record.logId }), { Update: { TableName: table(), Key: key, ConditionExpression: 'accountId = :owner', UpdateExpression: `SET currentCardId = :card, #language = :language, updatedAt = :now${completed.length ? ' ADD completedCards :cards' : ''}`, ExpressionAttributeNames: { '#language': 'language' }, ExpressionAttributeValues: { ':owner': user.id, ':card': body.currentCardId, ':language': body.language, ':now': now(), ...(completed.length ? { ':cards': new Set(completed) } : {}) } } }, reportIndexWrite(user, record, child)]);
+  } else await transaction([currentLogCondition({ ...record, id: record.logId }), activityOwnerCondition(user, record, child), reportIndexWrite(user, record, child)]);
   const saved = body ? (await get<OriginActivity>(key))! : activity!;
   return { chapterId, currentCardId: saved.currentCardId, completedCardIds: [...saved.completedCards || []], language: saved.language, updatedAt: saved.updatedAt };
 }
 export async function originPractice(user: VerifiedAccount, id: string, chapterId: string, sessionId?: string, language?: 'en' | 'hi') {
   const context = await requireOrigin(user, id, chapterId, 'practice');
   if (sessionId && context.activity!.sessionId !== sessionId) return fail(409, 'ORIGIN_SESSION_MISMATCH', 'Use the practice round opened from this recommendation.');
-  if (language) await transaction([currentLogCondition({ ...context.record, id: context.record.logId }), { Update: { TableName: table(), Key: context.key, UpdateExpression: 'SET #language = :language, updatedAt = :now', ExpressionAttributeNames: { '#language': 'language' }, ExpressionAttributeValues: { ':language': language, ':now': now() } } }]);
+  if (language) await transaction([currentLogCondition({ ...context.record, id: context.record.logId }), { Update: { TableName: table(), Key: context.key, ConditionExpression: 'accountId = :owner', UpdateExpression: 'SET #language = :language, updatedAt = :now', ExpressionAttributeNames: { '#language': 'language' }, ExpressionAttributeValues: { ':owner': user.id, ':language': language, ':now': now() } } }, reportIndexWrite(user, context.record, context.child)]);
+  else await transaction([currentLogCondition({ ...context.record, id: context.record.logId }), activityOwnerCondition(user, context.record, context.child), reportIndexWrite(user, context.record, context.child)]);
   return context;
 }
 export function originCondition(record: Recommendation) { return currentLogCondition({ ...record, id: record.logId }); }
