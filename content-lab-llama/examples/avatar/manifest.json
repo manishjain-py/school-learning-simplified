@@ -1,0 +1,30 @@
+{
+  "factory": "avatar",
+  "metadata": {
+    "grade": 4,
+    "subject": "EVS"
+  },
+  "pages": [],
+  "files": {
+    "deck": {
+      "path": "../translate/deck.json",
+      "type": "json"
+    },
+    "targets": {
+      "path": "targets.json",
+      "type": "json"
+    },
+    "avatar_config": {
+      "path": "avatar-config.json",
+      "type": "json"
+    },
+    "speech": {
+      "path": "speech.json",
+      "type": "json"
+    },
+    "artwork": {
+      "path": "synthetic-character.png",
+      "type": "binary"
+    }
+  }
+}

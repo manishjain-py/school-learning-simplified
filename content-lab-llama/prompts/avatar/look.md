@@ -1,0 +1,9 @@
+Inspect the attached actual encoded frames and square crop of the supplied fictional stylized character for the declared card. The artwork is reader supplied. Judge visual appearance against that explicit stylized presentation, without assuming a reference portrait or a photorealistic person.
+
+Each attached image corresponds, in order, to the declared frame descriptors. Across temporal frames, inspect the mouth for distortion or misplaced overlay, face features for drift, and hands if visible for obvious warping. Name the specific frame descriptor/time and defect behind any fail verdict. A simple drawing and intentional mouth shape changes are expected. Vague concern alone is not a specific defect.
+
+From an app_crop frame only, report head_in_frame: is the entire head including hair and chin inside the square? A cropped head is a specific appearance defect. If this bounded batch contains no app_crop, omit head_in_frame and state that framing was not checked. The declared square crop represents a 512x512 crop at y56 of the 512x768 portrait, resized to290x290.
+
+DO NOT judge lip-sync or claim to have. Still frames cannot establish whether lips match the words. Decoded-audio-energy-driven animation is an approximation, not phoneme alignment. These frames also do not establish what words were spoken, language correctness, speech/text alignment, or educational accuracy. List only what you actually checked in checked. If this batch has only one temporal image, do not claim temporal identity/motion consistency from it.
+
+Return card_idx, verdict(pass/fail), reason and optional checked/head_in_frame. Preserve card_idx exactly. Every observation is advisory: a negative verdict is retained with the media, never a publication decision or quality veto. Do not author/rewrite curriculum or request tools. Use only the declared task inputs and attached image bytes; no filesystem, services or operational history is available.

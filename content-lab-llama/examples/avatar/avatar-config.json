@@ -1,0 +1,16 @@
+{
+  "face": {
+    "x": 145,
+    "y": 95,
+    "width": 222,
+    "height": 335
+  },
+  "mouth": {
+    "cx": 256,
+    "cy": 330,
+    "width": 68,
+    "max_height": 52
+  },
+  "fps": 6,
+  "end_hold_ms": 250
+}

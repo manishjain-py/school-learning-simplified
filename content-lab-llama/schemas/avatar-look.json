@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "card_idx",
+    "verdict",
+    "reason"
+  ],
+  "properties": {
+    "card_idx": {
+      "type": [
+        "integer",
+        "string"
+      ]
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "fail"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "checked": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "head_in_frame": {
+      "type": "boolean"
+    }
+  }
+}

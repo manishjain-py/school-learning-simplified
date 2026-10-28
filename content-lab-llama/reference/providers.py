@@ -51,6 +51,12 @@ class Fixture:
         marker = 'SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT'
         if notes_pages:
             value = {'page_notes': [{'printed_page': p, 'observations': marker} for p in notes_pages]}
+        elif role.startswith('avatar_'):
+            data = json.loads(request['messages'][0]['content'][0]['text'].split('Declared task data:\n', 1)[1])['task_inputs']
+            value = {'card_idx': data['card']['card_idx'], 'verdict': 'fail',
+                     'reason': marker+' — advisory negative fixture, no actual defect asserted.',
+                     'checked': ['Synthetic plumbing response only; no model appearance or lip-sync judgment.'],
+                     'head_in_frame': False}
         elif role.startswith(('visuals_', 'boards_')):
             from .factories.visuals_fixture import output
             value = output(role, request)
