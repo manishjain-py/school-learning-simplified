@@ -9,7 +9,7 @@ type School = { id: string; name: string; timeZone: string; createdAt: string; a
 type Teacher = { email: string; name: string; active: boolean; version: number };
 type SchoolClass = { id: string; name: string; subject: string; teacherEmails: string[]; version: number };
 export type Student = { id: string; name: string; studentEmail: string; parentEmails: string[]; version: number; active: boolean };
-export type ChildLink = { id: string; schoolId: string; schoolName: string; classId: string; className: string; name: string };
+export type ChildLink = { id: string; schoolId: string; schoolName: string; timeZone: string; classId: string; className: string; name: string };
 const db = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-2' }));
 const table = () => process.env.TABLE_NAME!;
 const hash = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -103,7 +103,7 @@ export async function linkedFamily(user: VerifiedAccount) {
       if (!student?.active || (kind === 'STUDENT' ? student.studentEmail !== email : !student.parentEmails.includes(email))) continue;
       const school = await get<School>(schoolPK(ref.schoolId), 'META');
       const schoolClass = await get<SchoolClass>(schoolPK(ref.schoolId), `CLASS#${ref.classId}`);
-      if (school && schoolClass) links.push({ id: student.id, schoolId: school.id, schoolName: school.name, classId: schoolClass.id, className: schoolClass.name, name: student.name });
+      if (school && schoolClass) links.push({ id: student.id, schoolId: school.id, schoolName: school.name, timeZone: school.timeZone, classId: schoolClass.id, className: schoolClass.name, name: student.name });
     }
     return links;
   }

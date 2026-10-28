@@ -3,6 +3,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand, QueryCommand, TransactWriteCommand, type TransactWriteCommandInput } from '@aws-sdk/lib-dynamodb';
 import type { APIGatewayProxyEventV2WithJWTAuthorizer } from 'aws-lambda';
 import { interpretTeacherLog, type GuidanceCandidate, type InterpretationResult } from '../ai/index.js';
+import { schoolLocalDate } from '../ai/dates.js';
 import { SchoolError, linkedFamily, requireClassStaff, requireFamilyChild, listClassRosterForGuidance, type VerifiedAccount, type ChildLink } from '../school/index.js';
 import { getSchoolLog, saveLogGuidance, type SchoolLog } from '../school/communication.js';
 import { recommendationCatalog, recommendationContent } from './content.js';
@@ -140,15 +141,18 @@ export async function originPractice(user: VerifiedAccount, id: string, chapterI
 export function originCondition(record: Recommendation) { return currentLogCondition({ ...record, id: record.logId }); }
 
 async function familyRecommendations(child: ChildLink, role: 'student' | 'parent', user: VerifiedAccount) {
-  await requireFamilyChild(user, child.schoolId, child.classId, child.id, role);
+  child = await requireFamilyChild(user, child.schoolId, child.classId, child.id, role);
+  const localToday = schoolLocalDate(new Date(), child.timeZone);
   const snapshots = await query(`GUIDANCE#${child.schoolId}#${child.classId}`, 'LOG#'); const recommendations = [];
   for (const snapshot of snapshots) for (const id of snapshot.recommendationIds || []) {
     const record = await recommendation(id);
-    if ((record.audience.type === 'student' && record.audience.studentId !== child.id) || !await active(record)) continue;
+    // Expiry changes the family's current next steps only. Keep origin access and
+    // teacher history governed by revision/membership, without deleting old work.
+    if ((record.date && record.date < localToday) || (record.audience.type === 'student' && record.audience.studentId !== child.id) || !await active(record)) continue;
     recommendations.push(safeRecommendation(record));
   }
   recommendations.sort((a,b)=>(a.date || '9999').localeCompare(b.date || '9999') || a.title.localeCompare(b.title));
-  return { child: { id: child.id, name: child.name, className: child.className, schoolName: child.schoolName }, recommendations };
+  return { child: { id: child.id, name: child.name, className: child.className, schoolName: child.schoolName }, timeZone: child.timeZone, localToday, recommendations };
 }
 async function activitySummary(record: Recommendation, row: Row) {
   if (record.mode === 'practice') {

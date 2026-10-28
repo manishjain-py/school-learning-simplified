@@ -124,7 +124,7 @@ function SchoolPanel({ config, userId, schoolId, revision, onChanged }: { config
           <div className="school-class-heading"><div><p className="eyebrow">{selected.subject}</p><h3>{selected.name}</h3></div>{admin && <button className="text-button" onClick={() => setEditClass((value) => !value)}>{editClass ? 'Close class settings' : 'Edit class & teachers'}</button>}</div>
           {editClass && admin && <ClassForm key={selected.id + ':' + selected.version} record={selected} teachers={detail.teachers} schoolPath={schoolPath} save={save} onCancel={() => setEditClass(false)} />}
           <p className="school-help school-assigned">Assigned teachers: {selected.teacherEmails.length ? selected.teacherEmails.map((email) => detail.teachers.find((item) => item.email === email)?.name || email).join(', ') : 'No teacher assigned yet'}</p>
-          <ClassCommunication key={`communication:${selected.id}`} config={config} userId={userId} classPath={`${schoolPath}/classes/${encoded(selected.id)}`} subject={selected.subject} admin={admin} />
+          <ClassCommunication timeZone={detail.school.timeZone} key={`communication:${selected.id}`} config={config} userId={userId} classPath={`${schoolPath}/classes/${encoded(selected.id)}`} subject={selected.subject} admin={admin} />
           <Roster key={selected.id} config={config} classPath={`${schoolPath}/classes/${encoded(selected.id)}`} admin={admin} revision={revision} save={save} />
         </> : <div className="school-empty school-empty-small"><GraduationCap size={31} /><h3>A classroom belongs here.</h3><p>{admin ? 'Add a class, assign its teachers and record each student’s own email.' : 'Your assigned classes will appear here.'}</p></div>}
       </div>
