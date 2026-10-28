@@ -1,0 +1,57 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "winner_index",
+    "concerns",
+    "note"
+  ],
+  "properties": {
+    "winner_index": {
+      "type": "integer"
+    },
+    "scores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "index",
+          "overall"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer"
+          },
+          "coverage": {
+            "type": "number"
+          },
+          "boundaries": {
+            "type": "number"
+          },
+          "guidelines": {
+            "type": "number"
+          },
+          "naming": {
+            "type": "number"
+          },
+          "sequencing": {
+            "type": "number"
+          },
+          "overall": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "concerns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "note": {
+      "type": "string"
+    }
+  }
+}
