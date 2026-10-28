@@ -19,6 +19,23 @@ export type ParentNoteResult = {
   retryable: boolean; language: Language; text?: string; activity?: ParentNoteActivity;
   model: InterpretationResult['model'];
 };
+/** Fixed diagnostics only: never expose parser errors or any rejected model text. */
+export const parentNoteValidationMessages = {
+  MODEL_RESPONSE_SIZE: 'The parent draft response was too large.',
+  MODEL_JSON: 'The parent draft was not valid JSON.',
+  MODEL_SCHEMA: 'The parent draft did not match the required response format.',
+  MODEL_SOURCE: 'The parent draft did not use the selected allowlisted lesson sources.',
+  MODEL_LENGTH: 'The parent draft did not fit the bounded note length.',
+  MODEL_LANGUAGE: 'The Hindi draft was not written in Devanagari.',
+  MODEL_CONTACT: 'The parent draft contained a contact, identifier or generated link.',
+  MODEL_IDENTITY: 'The parent draft contained private identity information.',
+  MODEL_LABELS: 'The parent draft contained unsupported labels or comparisons.',
+} as const;
+export type ParentNoteValidationCode = keyof typeof parentNoteValidationMessages;
+class ParentNoteValidationError extends Error {
+  constructor(public readonly code: ParentNoteValidationCode) { super(parentNoteValidationMessages[code]); }
+}
+const invalidDraft = (code: ParentNoteValidationCode): never => { throw new ParentNoteValidationError(code); };
 type NameEntry = { text: string; owners: Set<string> };
 export type PreparedParentNote = {
   prompt: string; observation: string; requestKey: string; fingerprint: string;
@@ -89,18 +106,22 @@ export function prepareParentNote(input: ParentNoteInput): PreparedParentNote {
 
 /** Structural/privacy bounds only; the teacher remains responsible for reviewing the draft. */
 export function validateParentNote(generation: string, prepared: PreparedParentNote): string {
-  if (typeof generation !== 'string' || Buffer.byteLength(generation, 'utf8') > 32_000) throw new Error('The parent draft response was too large.');
+  if (typeof generation !== 'string' || Buffer.byteLength(generation, 'utf8') > 32_000) return invalidDraft('MODEL_RESPONSE_SIZE');
   const raw = generation.trim().replace(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/i, '$1').trim();
-  const value: unknown = JSON.parse(raw);
-  if (!object(value) || Object.keys(value).some(key => !['text', 'sourceCards'].includes(key)) || !prose(value.text, 1800) || !Array.isArray(value.sourceCards) || value.sourceCards.length > prepared.sourceAliases.length || new Set(value.sourceCards).size !== value.sourceCards.length || !value.sourceCards.includes(prepared.selectedAlias) || value.sourceCards.some(alias => typeof alias !== 'string' || !prepared.sourceAliases.includes(alias))) throw new Error('The parent draft did not match the required source format.');
+  let value: unknown;
+  try { value = JSON.parse(raw); } catch { return invalidDraft('MODEL_JSON'); }
+  if (!object(value) || Object.keys(value).some(key => !['text', 'sourceCards'].includes(key)) || typeof value.text !== 'string' || !Array.isArray(value.sourceCards)) return invalidDraft('MODEL_SCHEMA');
+  if ([...value.text].length > 1800) return invalidDraft('MODEL_LENGTH');
+  if (!prose(value.text, 1800)) return invalidDraft('MODEL_SCHEMA');
+  if (value.sourceCards.length > prepared.sourceAliases.length || new Set(value.sourceCards).size !== value.sourceCards.length || !value.sourceCards.includes(prepared.selectedAlias) || value.sourceCards.some(alias => typeof alias !== 'string' || !prepared.sourceAliases.includes(alias))) return invalidDraft('MODEL_SOURCE');
   const text = value.text.trim(); const words = text.split(/\s+/).length;
-  if (words < 40 || words > 120) throw new Error('The parent draft did not fit the bounded note length.');
+  if (words < 40 || words > 120) return invalidDraft('MODEL_LENGTH');
   const canonical = normalized(text);
-  if (prepared.language === 'hi' && !/[\u0900-\u097f]/.test(canonical)) throw new Error('The Hindi draft was not written in Devanagari.');
-  if (canonical.match(contactPattern) || canonical.match(identifierPattern) || /\b(?:student|source|card)_\d+\b|\[[^\]]*(?:removed|redacted)[^\]]*\]|<\||(?:\]\s*\()|\/(?:learn|practice|revise)\//i.test(canonical)) throw new Error('The parent draft contained a contact, identifier or generated link.');
+  if (prepared.language === 'hi' && !/[\u0900-\u097f]/.test(canonical)) return invalidDraft('MODEL_LANGUAGE');
+  if (canonical.match(contactPattern) || canonical.match(identifierPattern) || /\b(?:student|source|card)_\d+\b|\[[^\]]*(?:removed|redacted)[^\]]*\]|<\||(?:\]\s*\()|\/(?:learn|practice|revise)\//i.test(canonical)) return invalidDraft('MODEL_CONTACT');
   const names = boundaryPattern(prepared.privateNames); const ids = boundaryPattern(prepared.privateIds);
-  if ((names && names.test(canonical)) || (ids && ids.test(canonical))) throw new Error('The parent draft contained private identity information.');
-  if (/\b(?:adhd|autis\w*|dyslex\w*|diagnos\w*|disabilit\w*|lazy|slow learner|weak student|classmates?|other (?:children|students)|better than|worse than)\b|मंदबुद्धि|आलसी|डिस्लेक्सिया|ऑटिज़्म|निदान|दूसरे बच्चों|अन्य बच्चों|कमज़ोर बच्च|कमजोर बच्च/iu.test(canonical)) throw new Error('The parent draft contained unsupported labels or comparisons.');
+  if ((names && names.test(canonical)) || (ids && ids.test(canonical))) return invalidDraft('MODEL_IDENTITY');
+  if (/\b(?:adhd|autis\w*|dyslex\w*|diagnos\w*|disabilit\w*|lazy|slow learner|weak student|classmates?|other (?:children|students)|better than|worse than)\b|मंदबुद्धि|आलसी|डिस्लेक्सिया|ऑटिज़्म|निदान|दूसरे बच्चों|अन्य बच्चों|कमज़ोर बच्च|कमजोर बच्च/iu.test(canonical)) return invalidDraft('MODEL_LABELS');
   return text;
 }
 
@@ -140,7 +161,11 @@ export async function draftParentNote(input: ParentNoteInput, dependencies: { le
       try {
         const text = validateParentNote(output.generation, prepared);
         result = { requestKey, status: 'ready', code: 'DRAFT_READY', message: 'Drafted with Llama. Review and edit the note before sending.', retryable: false, language, text, activity: prepared.activity, model };
-      } catch { result = { ...empty(requestKey, 'failed', 'MODEL_FORMAT', 'The draft could not be accepted as a bounded, private note from these sources. Retry or write manually.', true), model }; }
+      } catch (issue) {
+        const diagnostic = issue instanceof ParentNoteValidationError ? { code: issue.code, message: `${parentNoteValidationMessages[issue.code]} Retry or write manually.` }
+          : { code: 'MODEL_FORMAT', message: 'The draft could not be accepted as a bounded, private note from these sources. Retry or write manually.' };
+        result = { ...empty(requestKey, 'failed', diagnostic.code, diagnostic.message, true), model };
+      }
     }
   } catch { result = empty(requestKey, 'failed', 'MODEL_UNAVAILABLE', 'The model request failed or timed out. Nothing was sent. Retry within the allowance or write manually.', true); }
   if (input.attempt >= MAX_ATTEMPTS) result.retryable = false;

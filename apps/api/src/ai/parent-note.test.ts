@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { test } from 'node:test';
 import type { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { DynamoUsageLedger, type Reservation, type UsageLedger } from './ledger.js';
-import { draftParentNote, prepareParentNote, validateParentNote, type ParentNoteInput, type ParentNoteResult } from './parent-note.js';
+import { draftParentNote, prepareParentNote, validateParentNote, parentNoteValidationMessages, type ParentNoteInput, type ParentNoteResult, type ParentNoteValidationCode } from './parent-note.js';
 import { BUDGET_END, BUDGET_START, MAX_PROMPT_BYTES, MODEL_ID, MODEL_REGION, PROJECT_LIMIT_MICRO_USD } from './types.js';
 
 const root = resolve(import.meta.dirname, '../../../..');
@@ -92,6 +92,36 @@ test('unknown fields/sources, names, aliases, links and diagnostic framing never
   assert.throws(() => validateParentNote(JSON.stringify({ text: english, sourceCards: ['source_003'], href: '/learn/x' }), prepared));
   assert.throws(() => validateParentNote(generation(english), prepareParentNote({ ...input, language: 'hi' })), /Devanagari/);
   assert.throws(() => validateParentNote(generation('Too short.'), prepared), /bounded note length/);
+});
+test('failed generations expose only fixed validation categories, never rejected text or parser diagnostics', async () => {
+  const cases: { code: ParentNoteValidationCode; output: string; language?: 'hi' }[] = [
+    { code: 'MODEL_RESPONSE_SIZE', output: 'private-oversize-value '.repeat(1800) },
+    { code: 'MODEL_JSON', output: '{"private-parser-value": not JSON}' },
+    { code: 'MODEL_SCHEMA', output: JSON.stringify({ text: english, sourceCards: ['source_003'], extra: 'private-extra-value' }) },
+    { code: 'MODEL_SOURCE', output: generation(english, ['private-source-value']) },
+    { code: 'MODEL_LENGTH', output: generation('private-short-value') },
+    { code: 'MODEL_LANGUAGE', output: generation(english), language: 'hi' },
+    { code: 'MODEL_CONTACT', output: generation(`${english} private-contact@example.test`) },
+    { code: 'MODEL_IDENTITY', output: generation(english.replace('Your child', 'Anika')) },
+    { code: 'MODEL_LABELS', output: generation(`${english} Your child has ADHD.`) },
+  ];
+  for (const item of cases) {
+    const memory = memoryLedger();
+    const result = await draftParentNote({ ...input, language: item.language || 'en' }, { enabled: true, now, ledger: memory.ledger, invoke: async () => ({ generation: item.output, inputTokens: 500, outputTokens: 120, stopReason: 'stop' }) });
+    assert.equal(result.code, item.code); assert.equal(result.status, 'failed'); assert.equal(result.retryable, true);
+    assert.equal(result.message, `${parentNoteValidationMessages[item.code]} Retry or write manually.`);
+    assert.equal(result.text, undefined); assert.equal(result.activity, undefined);
+    assert.equal(result.model.usageKnown, true); assert.equal(result.model.outputTokens, 120);
+    const saved = JSON.stringify([...memory.results.values()]);
+    assert(!/private-(?:oversize|parser|extra|source|short|contact)-value|private-contact@example\.test|Anika|ADHD/.test(saved));
+    assert(!saved.includes(item.output));
+  }
+});
+test('diagnostic categories preserve exact existing word and character bounds', () => {
+  const prepared = prepareParentNote(input);
+  for (const words of [39, 121]) assert.throws(() => validateParentNote(generation(Array(words).fill('idea').join(' '), ['source_003']), prepared), { code: 'MODEL_LENGTH' });
+  for (const words of [40, 120]) assert.equal(validateParentNote(generation(Array(words).fill('idea').join(' '), ['source_003']), prepared).split(' ').length, words);
+  assert.throws(() => validateParentNote(generation(Array(40).fill('a'.repeat(46)).join(' '), ['source_003']), prepared), { code: 'MODEL_LENGTH' });
 });
 test('disabled, invalid attempt and funding-window requests fail before reserve/invoke', async () => {
   const memory = memoryLedger(); let calls = 0; const invoke = async () => { calls++; return model()(); };
