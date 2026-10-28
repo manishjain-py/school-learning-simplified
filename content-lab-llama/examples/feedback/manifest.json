@@ -1,0 +1,21 @@
+{
+  "factory": "feedback",
+  "metadata": {
+    "grade": 4,
+    "subject": "SYNTHETIC PLUMBING — NO CURRICULUM"
+  },
+  "files": {
+    "feedback": {
+      "type": "json",
+      "path": "feedback.json"
+    },
+    "guideline": {
+      "type": "json",
+      "path": "../explain/guideline.json"
+    },
+    "deck": {
+      "type": "json",
+      "path": "../translate/deck.json"
+    }
+  }
+}

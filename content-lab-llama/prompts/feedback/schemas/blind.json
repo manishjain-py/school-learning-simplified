@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "checks"
+  ],
+  "properties": {
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "point_id",
+          "agrees",
+          "derived",
+          "note"
+        ],
+        "properties": {
+          "point_id": {
+            "type": "string"
+          },
+          "agrees": {
+            "type": "boolean"
+          },
+          "derived": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

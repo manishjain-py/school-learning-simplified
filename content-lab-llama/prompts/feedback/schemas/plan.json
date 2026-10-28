@@ -1,0 +1,226 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "points",
+    "fixes",
+    "hindi_items",
+    "teacher_line",
+    "notes"
+  ],
+  "properties": {
+    "points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "verdict",
+          "evidence",
+          "changes_fact",
+          "unsure",
+          "why",
+          "action",
+          "fix_ids"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "verdict": {
+            "enum": [
+              "agree",
+              "disagree",
+              "bigger_change",
+              "app_bug",
+              "unclear",
+              "nothing_to_fix",
+              "already_fixed"
+            ]
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "changes_fact": {
+            "type": "boolean"
+          },
+          "unsure": {
+            "type": "boolean"
+          },
+          "why": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "action": {
+            "type": "string"
+          },
+          "fix_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "new_card": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "fixes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fix_id",
+          "point_ids",
+          "object_kind",
+          "component",
+          "coverage_locator",
+          "object_after",
+          "rationale",
+          "canonical_correction"
+        ],
+        "properties": {
+          "fix_id": {
+            "type": "string"
+          },
+          "point_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "object_kind": {
+            "enum": [
+              "explain_card",
+              "check_in_card",
+              "practice_question",
+              "revise_card",
+              "guideline_row",
+              "translation_item",
+              "practice_translation_item",
+              "revise_translation_face"
+            ]
+          },
+          "component": {
+            "enum": [
+              "explain_cards",
+              "check_ins",
+              "practice_questions",
+              "revise_cards",
+              "guideline_sections",
+              "translations",
+              "practice_translations",
+              "revise_translations"
+            ]
+          },
+          "coverage_locator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object"
+              }
+            ]
+          },
+          "object_after": {
+            "type": "object"
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "canonical_correction": {
+            "type": "string"
+          },
+          "student_impact_notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "hindi_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "card_id",
+          "item"
+        ],
+        "properties": {
+          "card_id": {
+            "type": "string"
+          },
+          "item": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "pictures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "card_id",
+          "why"
+        ],
+        "properties": {
+          "card_id": {
+            "type": "string"
+          },
+          "why": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "new_cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "point_id",
+          "anchor_card_id",
+          "brief"
+        ],
+        "properties": {
+          "point_id": {
+            "type": "string"
+          },
+          "anchor_card_id": {
+            "type": "string"
+          },
+          "brief": {
+            "type": "string"
+          },
+          "section_key": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "card_type": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "teacher_line": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

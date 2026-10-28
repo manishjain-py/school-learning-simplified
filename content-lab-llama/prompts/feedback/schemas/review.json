@@ -1,0 +1,83 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "overall",
+    "fixes",
+    "rebinds",
+    "coherence_notes",
+    "deferral_spot_checks",
+    "dismissed_points_check"
+  ],
+  "properties": {
+    "overall": {
+      "enum": [
+        "SATISFIED",
+        "NOT_SATISFIED"
+      ]
+    },
+    "fixes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "verdict",
+          "notes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "verdict": {
+            "enum": [
+              "APPROVE",
+              "REVISE",
+              "REJECT"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "rebinds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "verdict",
+          "notes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "verdict": {
+            "enum": [
+              "APPROVE",
+              "REVISE",
+              "REJECT"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "coherence_notes": {
+      "type": "string"
+    },
+    "deferral_spot_checks": {
+      "type": "string"
+    },
+    "dismissed_points_check": {
+      "type": "string"
+    }
+  }
+}

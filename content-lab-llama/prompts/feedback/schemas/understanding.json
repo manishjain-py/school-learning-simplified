@@ -1,0 +1,152 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "summary",
+    "points",
+    "files"
+  ],
+  "properties": {
+    "summary": {
+      "type": "string"
+    },
+    "points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "says",
+          "where",
+          "wants",
+          "kind",
+          "evidence_in_inputs",
+          "unclear"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "says": {
+            "type": "string"
+          },
+          "where": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "surface"
+            ],
+            "properties": {
+              "surface": {
+                "enum": [
+                  "learn",
+                  "practice",
+                  "revise",
+                  "hindi",
+                  "app"
+                ]
+              },
+              "part": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "card_idx": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "card_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "card_title": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "question_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "revise_idx": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "line_idx": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "screen": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          },
+          "wants": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "fact",
+              "wording",
+              "picture",
+              "audio",
+              "hindi",
+              "practice",
+              "flashcard",
+              "app",
+              "praise",
+              "other"
+            ]
+          },
+          "evidence_in_inputs": {
+            "type": "string"
+          },
+          "unclear": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "filename",
+          "what"
+        ],
+        "properties": {
+          "filename": {
+            "type": "string"
+          },
+          "what": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "injection_seen": {
+      "type": "boolean"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}
