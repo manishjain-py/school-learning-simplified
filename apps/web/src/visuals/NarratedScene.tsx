@@ -93,7 +93,10 @@ export function NarratedScene(props: VisualStageProps) {
         {(scene.assets?.layers || []).map((layer, i) => <image key={`${layer.url}-${attempt}`} href={layer.url} x={layer.bbox[0]} y={layer.bbox[1]} width={layer.bbox[2]} height={layer.bbox[3]} mask={`url(#${prefix}-reveal-${i})`} onError={() => setImageError(true)} />)}
         {scene.nodes.map(node => {
           const p = nodeProgress(node.id);
-          return <g key={node.id} data-scene-node={node.id} data-progress={p.toFixed(3)}>
+          // Separate idea 59's overlapping label rows in our renderer, preserving
+          // the prepared strokes and narration cues unchanged.
+          const transform = url === '/content/releases/m2/scenes/7818d587-2954-43fc-95f0-5f0576b12f66/4c0f6523-dc0f-458d-948e-58ea678f79ec.json' && node.id === 'l_dark' ? 'translate(0 45)' : undefined;
+          return <g key={node.id} data-scene-node={node.id} data-progress={p.toFixed(3)} transform={transform}>
             {(node.fills || []).map((fill, i) => <path key={`f${i}`} d={fill.d} fill={ink(fill.color || node.color)} opacity={(fill.opacity ?? 1) * p} />)}
             {node.strokes.map((stroke, i) => {
               const part = clamp(p * node.strokes.length - i);
