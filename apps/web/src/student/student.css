@@ -6,3 +6,16 @@
 @media(max-width:760px){.site-header .nav-link{display:flex;font-size:12px}}
 
 @media(max-width:760px){.lesson-page .audio-info input[type=range]{min-height:44px}}
+
+/* Devanagari needs room above and below the baseline and unspaced letterforms. */
+.student-area[lang=hi]{line-height:1.7}
+.student-area[lang=hi] h1,.student-area[lang=hi] h2,.student-area[lang=hi] .student-mode-copy>strong,.student-area[lang=hi] .book-cover strong{line-height:1.5;letter-spacing:normal}
+.student-area[lang=hi] .student-kicker,.student-area[lang=hi] .subject-art>span,.student-area[lang=hi] .recommended-mode,.student-area[lang=hi] .book-cover>span{letter-spacing:normal;line-height:1.7}
+.student-area[lang=hi] .student-kicker{font-size:11px}
+.student-area[lang=hi] .subject-art>span,.student-area[lang=hi] .book-cover>span{font-size:10px}
+.student-area[lang=hi] .recommended-mode{font-size:11px}
+.student-area[lang=hi] .student-subject>span:nth-child(2),.student-area[lang=hi] .student-mode-copy,.student-area[lang=hi] .setup-cycle>div>div{min-width:0}
+.student-area[lang=hi] .button{line-height:1.6;white-space:normal}
+.student-area[lang=hi] .button>svg{flex-shrink:0}
+.student-area[lang=hi] .setup-actions{flex-wrap:wrap}
+.student-area[lang=hi] .student-field select{line-height:1.6}

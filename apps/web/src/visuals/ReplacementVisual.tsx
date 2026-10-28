@@ -80,6 +80,8 @@ function useAnimation(key:string, enabled:boolean, playback?:{playing:boolean;en
 }
 
 export function ReplacementVisual({visual,language,replayKey,playing,hasStarted,ended}:VisualStageProps) {
+  const copy=(en:string,hi:string)=>language==='hi'?hi:en;
+  const animalName=(name:string)=>language==='hi'?({rabbit:'खरगोश',deer:'हिरण',tiger:'बाघ',snake:'साँप'}[name]||name):name;
   const key=visual.type==='replacement'?visual.sourceCardId:'';
   const stage=visual.type==='replacement'?Math.max(1,visual.stage||1):1;
   const [value,setValue]=useState(key===ids.distance?237:0),[pick,setPick]=useState('');
@@ -106,11 +108,11 @@ export function ReplacementVisual({visual,language,replayKey,playing,hasStarted,
       {t>=3.2&&<><rect x="311" y="140" width="23" height="23" fill="#9c724c"/>{text(392,152,'29 land',25)}</>}
       {t>=4.5&&text(386,226,'71 + 29 = 100',24)}{t>=6&&<><path d="M285 48h8v247h-8" fill="none" stroke={c.ink} strokeWidth="2"/>{text(375,292,'whole surface',18)}</>}</>;
   } else if(key===ids.distance) {
-    background='#14273f';const result=value<175?'Too hot':value>300?'Too cold':'Just right';
+    background='#14273f';const result=value<175?copy('Too hot','बहुत गरम'):value>300?copy('Too cold','बहुत ठंडा'):copy('Just right','बिल्कुल सही');
     drawing=<><circle cx="0" cy="175" r="560" fill="#82c5d8" opacity=".28"/><circle cx="0" cy="175" r="300" fill="#4d9a6a" opacity=".7"/><circle cx="0" cy="175" r="175" fill="#bc5637" opacity=".8"/><circle cx="0" cy="175" r="70" fill="#ffc45d"/>
       {text(27,175,'Sun',20,'#14273f')}{text(124,87,'too hot',20,'white')}{text(244,55,'just right',20,'white')}{text(407,95,'too cold',20,'white')}
       <Planet x={value} y={175} r={23}/>{text(value,217,'Earth',19,'white')}</>;
-    control=<Slider label={language==='hi'?'ग्रह को Sun के पास या दूर ले जाएँ':'Move the planet nearer to or farther from the Sun'} value={value} min={110} max={413} onChange={setValue} valueText={result}/>;
+    control=<Slider label={copy('Move the planet nearer to or farther from the Sun','ग्रह को सूर्य के पास या दूर ले जाएँ')} value={value} min={110} max={413} onChange={setValue} valueText={result}/>;
   } else if(key===ids.ant) {
     const a=Math.PI*.66-p*Math.PI*2,ax=250+Math.cos(a)*110,ay=175+Math.sin(a)*30;
     drawing=<><Orange x={250} y={175} r={110}/><ellipse cx="250" cy="175" rx="110" ry="30" fill="none" stroke="#75502b" strokeWidth="2" strokeDasharray="5 5"/>
@@ -123,7 +125,7 @@ export function ReplacementVisual({visual,language,replayKey,playing,hasStarted,
     drawing=<>{text(140,67,'coin',25)}{text(360,67,'orange',25)}<ellipse cx="140" cy="170" rx={w/2} ry="65" fill="#bbc4c3" stroke="#697b76" strokeWidth="4"/>
       <g transform={move(140,170)+' scale('+w/130+' 1)'}>{text(0,0,'1',38,'#596b64')}</g><Orange x={360} y={170} turn={value*Math.PI/180}/>
       {text(140,272,value>65?'thin from the side':'flat and round',19)}{text(360,272,'round like a ball',19)}</>;
-    control=<Slider label={language==='hi'?'coin और orange को घुमाएँ':'Turn the coin and the orange'} value={value} min={0} max={90} onChange={setValue} valueText={value>65?'The coin is thin; the orange stays round.':'Both faces look round.'}/>;
+    control=<Slider label={copy('Turn the coin and the orange','सिक्के और संतरे को घुमाएँ')} value={value} min={0} max={90} onChange={setValue} valueText={value>65?copy('The coin is thin; the orange stays round.','सिक्का पतला दिखता है; संतरा गोल ही रहता है।'):copy('Both faces look round.','दोनों सामने से गोल दिखते हैं।')}/>;
   } else if(key===ids.spin) {
     drawing=<><path d="M90 130Q90 90 130 90T170 130Q164 190 130 245Q96 190 90 130" fill="#d77348"/><path d="M95 139q35 15 70 0 M105 177q25 10 50 0" fill="none" stroke="#f7ddb3" strokeWidth="12"/>
       <line x1="80" x2="180" y1="248" y2="248" stroke={c.ink}/><line x1="130" x2="130" y1="68" y2="265" stroke={c.ink} strokeDasharray="7 6"/>
@@ -140,7 +142,7 @@ export function ReplacementVisual({visual,language,replayKey,playing,hasStarted,
       {text(292,170,'day',24,'#172b42')}{text(379,170,'night',24,'white')}
       <circle cx="335" cy="170" r="97" fill="none" stroke="#a0b7bd" strokeDasharray="4 5"/><circle cx={335+97*Math.cos(a)} cy={170+97*Math.sin(a)} r="14" fill="#d5b367" stroke="white" strokeWidth="2" aria-hidden="true"/><circle cx={335+97*Math.cos(a)} cy={170+97*Math.sin(a)} r="32" fill="transparent" onPointerDown={onOrbit} onPointerMove={onOrbit} style={{touchAction:'none',cursor:'grab'}} aria-hidden="true"/>
       {text(85,318,'lamp = Sun',19,'white')}</>;
-    control=<Slider label={language==='hi'?'lamp के सामने orange को घुमाएँ':'Turn the orange in front of the lamp'} value={value} min={0} max={360} onChange={setValue} valueText={Math.cos(a)<0?'The marked place faces the lamp: day.':'The marked place faces away: night.'}/>;
+    control=<Slider label={copy('Turn the orange in front of the lamp','लैंप के सामने संतरे को घुमाएँ')} value={value} min={0} max={360} onChange={setValue} valueText={Math.cos(a)<0?copy('The marked place faces the lamp: day.','निशान वाली जगह लैंप की ओर है: दिन।'):copy('The marked place faces away: night.','निशान वाली जगह लैंप से दूसरी ओर है: रात।')}/>;
   } else if(key===ids.sundial) {
     drawing=<><g opacity={age(1)} stroke={mark(1)} fill="none" strokeWidth="3"><circle cx="60" cy="60" r="22"/>
       {Array.from({length:8},(_,i)=><line key={i} x1={60+29*Math.cos(i*Math.PI/4)} y1={60+29*Math.sin(i*Math.PI/4)} x2={60+39*Math.cos(i*Math.PI/4)} y2={60+39*Math.sin(i*Math.PI/4)}/>)}
@@ -172,13 +174,13 @@ export function ReplacementVisual({visual,language,replayKey,playing,hasStarted,
     const absent=key===ids.exchange?(t>1.5&&t<3.75?'plant':t>=4.15&&t<6.5?'animal':''):'';
     const panel=(side:'animal'|'plant',x:number)=><g opacity={absent===side?.25:1}><rect x={x} y="90" width="120" height="170" rx="16" fill={side==='animal'?'#cbdadd':'#d0dfc1'}/>{text(x+60,175,side.toUpperCase(),22)}
       {absent===side&&<path d={'M'+(x+42)+' 135l36 80m0 -80l-36 80'} stroke="#bd584b" strokeWidth="6"/>}</g>;
-    const gasArrow=(gas:string,y:number,toPlant:boolean,label:string)=><g onClick={key===ids.gas?()=>setPick(gas):undefined} role={key===ids.gas?'button':undefined} tabIndex={key===ids.gas?0:undefined} aria-label={label}
+    const gasArrow=(gas:string,y:number,toPlant:boolean,label:string)=><g onClick={key===ids.gas?()=>setPick(gas):undefined} role={key===ids.gas?'button':undefined} tabIndex={key===ids.gas?0:undefined} aria-label={language==='hi'&&key===ids.gas?(gas==='oxygen'?'ऑक्सीजन का तीर चुनें':'कार्बन डाइऑक्साइड का तीर चुनें'):label}
       onKeyDown={e=>{if(key===ids.gas&&(e.key==='Enter'||e.key===' ')){e.preventDefault();setPick(gas);}}}
       style={key===ids.gas?{cursor:'pointer'}:undefined} opacity={key===ids.exchange&&((toPlant&&absent==='animal')||(!toPlant&&absent==='plant'))?.12:pick&&pick!==gas?.25:1}>
       <rect x="145" y={y-33} width="210" height="55" fill="transparent"/><Arrow x1={toPlant?145:355} y1={y} x2={toPlant?355:145} y2={y} color={toPlant?'#c2733e':c.teal} width={pick===gas?8:5} progress={key===ids.gas&&!pick?clamp((t-(toPlant?1.5:3.5))/.6):1}/>{text(250,y-17,label,17,toPlant?'#a55d2e':c.teal)}</g>;
     drawing=<>{panel('animal',20)}{panel('plant',360)}{key===ids.gas?<>{gasArrow('carbon-dioxide',137,true,'CARBON DIOXIDE')}{gasArrow('oxygen',222,false,'OXYGEN')}</>:<>{gasArrow('food',119,false,'FOOD')}{gasArrow('oxygen',160,false,'OXYGEN')}{gasArrow('carbon-dioxide',207,true,'CARBON DIOXIDE')}{gasArrow('seeds',250,true,'POLLEN, SEEDS')}</>}</>;
-    if(key===ids.gas)control=<div className="sls-visual-picks"><p>{language==='hi'?'एक तीर चुनें':'Choose an arrow'}</p><button type="button" aria-pressed={pick==='carbon-dioxide'} onClick={()=>setPick('carbon-dioxide')}>Carbon dioxide</button><button type="button" aria-pressed={pick==='oxygen'} onClick={()=>setPick('oxygen')}>Oxygen</button>
-      <p aria-live="polite">{pick==='carbon-dioxide'?'The animal gives out carbon dioxide.':pick==='oxygen'?'The plant gives out oxygen.':'Follow the arrow from one living thing to the other.'}</p></div>;
+    if(key===ids.gas)control=<div className="sls-visual-picks"><p>{language==='hi'?'एक तीर चुनें':'Choose an arrow'}</p><button type="button" aria-pressed={pick==='carbon-dioxide'} onClick={()=>setPick('carbon-dioxide')}>{copy('Carbon dioxide','कार्बन डाइऑक्साइड')}</button><button type="button" aria-pressed={pick==='oxygen'} onClick={()=>setPick('oxygen')}>{copy('Oxygen','ऑक्सीजन')}</button>
+      <p aria-live="polite">{pick==='carbon-dioxide'?copy('The animal gives out carbon dioxide.','जानवर कार्बन डाइऑक्साइड छोड़ता है।'):pick==='oxygen'?copy('The plant gives out oxygen.','पौधा ऑक्सीजन छोड़ता है।'):copy('Follow the arrow from one living thing to the other.','तीर को देखें: वह एक जीव से दूसरे जीव की ओर जाता है।')}</p></div>;
   } else if(key===ids.straw) {
     const left=clamp((t-1.5)/1.2),right=clamp((t-3.5)/1.2);
     drawing=<><line x1="250" x2="250" y1="55" y2="290" stroke="#bbc7bf" strokeWidth="2"/><path d="M85 170h90l-10 110H95Z" fill="none" stroke={c.ink} strokeWidth="4"/><path d="M90 205h80l-6 71H96Z" fill="#e9a04c"/>
@@ -196,24 +198,24 @@ export function ReplacementVisual({visual,language,replayKey,playing,hasStarted,
     const nodes:Record<string,[number,number,string]>={grass:[90,250,c.green],rabbit:[90,110,'#477eaa'],deer:[250,180,'#477eaa'],tiger:[420,110,'#ba7344'],snake:[420,250,'#ba7344']};
     const links=[['grass','deer'],['grass','rabbit'],['deer','tiger'],['rabbit','snake']];
     drawing=<>{text(250,30,'BALANCE OF NATURE',25)}{links.map(([a,b])=>{const [x,y]=nodes[a],[xx,yy]=nodes[b],dx=xx-x,dy=yy-y,len=Math.hypot(dx,dy),gap=Math.abs(dx)>Math.abs(dy)?52:28;return <Arrow key={a+b} x1={x+dx/len*gap} y1={y+dy/len*gap} x2={xx-dx/len*gap} y2={yy-dy/len*gap} color={a===pick||b===pick?'#bb5147':c.ink} broken={a===pick||b===pick}/>;})}
-      {Object.entries(nodes).map(([name,[x,y,fill]])=><g key={name} role={name!=='grass'?'button':undefined} tabIndex={name!=='grass'?0:undefined} aria-label={name!=='grass'?'Remove '+name:undefined}
+      {Object.entries(nodes).map(([name,[x,y,fill]])=><g key={name} role={name!=='grass'?'button':undefined} tabIndex={name!=='grass'?0:undefined} aria-label={name!=='grass'?copy('Remove '+name,animalName(name)+' हटाएँ'):undefined}
         onClick={name!=='grass'?()=>setPick(name):undefined} onKeyDown={e=>{if(name!=='grass'&&(e.key==='Enter'||e.key===' ')){e.preventDefault();setPick(name);}}}
         opacity={pick===name?.25:(pick==='rabbit'&&name==='snake')||(pick==='deer'&&name==='tiger')?.5:1}>
         <rect x={x-48} y={y-23} width="96" height="46" rx="9" fill={fill}/>{text(x,y,name.toUpperCase(),21,'white')}{pick===name&&<path d={'M'+(x-17)+' '+(y-18)+'l34 36m0 -36l-34 36'} stroke="#b84237" strokeWidth="6"/>}</g>)}</>;
-    control=<div className="sls-visual-picks"><p>{language==='hi'?'किसी एक animal को हटाकर देखें':'Take one animal out of the web'}</p>{['rabbit','deer','tiger','snake'].map(name=><button type="button" key={name} aria-pressed={pick===name} onClick={()=>setPick(name)}>{name}</button>)}
-      <button type="button" onClick={()=>setPick('')}>Restore all</button><p aria-live="polite">{pick?'The links touching the '+pick+' are broken.':'All the links are connected.'}</p></div>;
+    control=<div className="sls-visual-picks"><p>{copy('Take one animal out of the web','जाल से किसी एक जानवर को हटाकर देखें')}</p>{['rabbit','deer','tiger','snake'].map(name=><button type="button" key={name} aria-pressed={pick===name} onClick={()=>setPick(name)}>{animalName(name)}</button>)}
+      <button type="button" onClick={()=>setPick('')}>{copy('Restore all','सभी को वापस लाएँ')}</button><p aria-live="polite">{pick?copy('The links touching the '+pick+' are broken.',animalName(pick)+' से जुड़े संबंध टूट गए हैं।'):copy('All the links are connected.','सभी संबंध जुड़े हुए हैं।')}</p></div>;
   } else if(key===ids.egg) {
     const chick=clamp((value-.08)/.92);
     drawing=<><ellipse cx="250" cy="165" rx="90" ry="115" fill="#fffdf7" stroke={c.ink} strokeWidth="4"/><circle cx="250" cy="190" r={48-value*26} fill="#e6c458"/>
       {chick>0&&<g opacity={clamp(chick*5)} transform={move(250,171)+' scale('+(.36+.64*chick)+')'}><ellipse cy="23" rx="48" ry="40" fill="#f4d894"/><circle cx="7" cy="-27" r="30" fill="#f4d894"/>
         {chick>.5&&<><path d="M33 -29l18 7-18 9" fill="#de9340"/><circle cx="17" cy="-31" r="3.5" fill={c.ink}/></>}</g>}
       <line x1="100" x2="400" y1="300" y2="300" stroke={c.ink} strokeWidth="3"/><circle cx={100+value*300} cy="300" r="13" fill={c.teal}/>{text(100,329,'LAID',20)}{text(400,329,'READY',20)}</>;
-    control=<Slider label={language==='hi'?'LAID से READY तक आगे बढ़ाएँ':'Move from LAID to READY'} value={value} min={0} max={1} step={.01} onChange={setValue} valueText={value<.1?'Yolk inside the unbroken egg.':value<.7?'The baby is growing inside.':'The baby fills more of the egg; the shell is still unbroken.'}/>;
+    control=<Slider label={copy('Move from LAID to READY','अंडा दिए जाने से बच्चे के तैयार होने तक आगे बढ़ाएँ')} value={value} min={0} max={1} step={.01} onChange={setValue} valueText={value<.1?copy('Yolk inside the unbroken egg.','बिना टूटे अंडे के अंदर जर्दी है।'):value<.7?copy('The baby is growing inside.','बच्चा अंदर बढ़ रहा है।'):copy('The baby fills more of the egg; the shell is still unbroken.','बच्चा अंडे में अधिक जगह घेर रहा है; खोल अभी टूटा नहीं है।')}/>;
   }
-  if(!drawing)return <div className="sls-visual-message" role="alert">This illustration is not available yet. You can keep reading.</div>;
+  if(!drawing)return <div className="sls-visual-message" role="alert">{copy('This illustration is not available yet. You can keep reading.','यह चित्र अभी उपलब्ध नहीं है। आप पढ़ना जारी रख सकते हैं।')}</div>;
   return <div className="sls-replacement" data-visual-id={key} data-animation-time={!interactive&&!board?t.toFixed(2):undefined} data-control-value={interactive?(pick||value):undefined}>
     <svg className="sls-replacement-canvas" viewBox="0 0 500 350" role="img" aria-label={title}><title>{title}</title><rect width="500" height="350" rx="14" fill={background}/>{(ended!==undefined&&!ended&&!hasStarted&&!interactive&&!board)?null:drawing}</svg>
     {control}{board&&<p className="sls-visual-caption">{language==='hi'?'चित्र का चरण':'Picture stage'} {stage} / {key===ids.chain?7:4}</p>}
-    {ended===undefined&&(!interactive||key===ids.gas)&&!board&&<div className="sls-animation-controls"><button type="button" onClick={animation.toggle}>{animation.running?'Pause animation':animation.time>=9?'Replay animation':'Play animation'}</button><button type="button" onClick={animation.restart}>Restart</button></div>}
+    {ended===undefined&&(!interactive||key===ids.gas)&&!board&&<div className="sls-animation-controls"><button type="button" onClick={animation.toggle}>{animation.running?copy('Pause animation','एनिमेशन रोकें'):animation.time>=9?copy('Replay animation','एनिमेशन फिर से चलाएँ'):copy('Play animation','एनिमेशन चलाएँ')}</button><button type="button" onClick={animation.restart}>{copy('Restart','शुरू से चलाएँ')}</button></div>}
   </div>;
 }

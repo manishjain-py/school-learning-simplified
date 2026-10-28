@@ -22,6 +22,7 @@ export function Narration({ lines, language, showText = true, autoPlay = false, 
   const shouldPlay = useRef(autoPlay);
   const playGeneration = useRef(0);
   const source = lines[line];
+  const copy = (en: string, hi: string) => language === 'hi' ? hi : en;
   const clipSha256 = source?.audioSha256 || source?.audioUrl.match(/([a-f0-9]{64})\.mp3/)?.[1];
   async function start() {
     const element = audio.current;
@@ -95,15 +96,15 @@ export function Narration({ lines, language, showText = true, autoPlay = false, 
   if (!source) return null;
   const clock = { currentLine: line, currentTime: time, playing, replayKey, clipSha256, hasStarted: started, ended };
   const active = playing || starting;
-  const compactLabel = active ? 'Stop narration' : needsGesture ? 'Enable lesson audio' : 'Play narration from the beginning';
+  const compactLabel = active ? copy('Stop narration', 'पाठ रोकें') : needsGesture ? copy('Enable lesson audio', 'पाठ की आवाज़ शुरू करें') : copy('Play narration from the beginning', 'पाठ शुरू से सुनें');
   const compactControl = <button type="button" className="lesson-play-stop" aria-label={compactLabel} title={compactLabel} onClick={playOrStop}>{active ? <Square size={17} fill="currentColor" /> : <Play size={19} fill="currentColor" />}</button>;
-  const label = needsGesture ? 'Enable lesson audio' : active ? 'Pause narration' : 'Play narration';
+  const label = needsGesture ? copy('Enable lesson audio', 'पाठ की आवाज़ शुरू करें') : active ? copy('Pause narration', 'आवाज़ थोड़ी देर रोकें') : copy('Play narration', 'पाठ सुनें');
   const title = needsGesture ? (language === 'hi' ? 'आवाज़ शुरू करने के लिए टैप करें' : 'Tap to enable audio') : starting ? (language === 'hi' ? 'पाठ तैयार हो रहा है…' : 'Getting narration ready…') : playing ? (language === 'hi' ? 'सुनते रहिए…' : 'Listen and discover') : (language === 'hi' ? 'पाठ सुनिए' : 'Listen to this idea');
   return <>
     {children?.(clock, onVisualReady)}
     {showText && <div className="lesson-copy" lang={language}>{lines.map((item, index) => <p key={index} className={line === index && playing ? 'spoken-line' : ''}><Text>{item.display}</Text></p>)}</div>}
-    {controlMode === 'play-stop' ? (renderControls ? renderControls(compactControl) : compactControl) : <div className="audio-player"><button className="audio-play" onClick={toggle} aria-label={label}>{active ? <Pause size={21} fill="currentColor" /> : <Play size={21} fill="currentColor" />}</button><div className="audio-info"><strong>{title}</strong><span><Volume2 size={13} />{language === 'hi' ? 'हिन्दी' : 'English'} · Line {line + 1} of {lines.length}</span><input aria-label="Narration position" type="range" min={0} max={duration || 1} step={0.05} value={Math.min(time, duration || 1)} disabled={!duration || (autoPlay && !started)} onChange={(event) => { const value = Number(event.target.value); if (audio.current) audio.current.currentTime = value; setTime(value); setStarted(true); }} /></div><button className="icon-button" onClick={replay} aria-label="Replay narration from the beginning"><RotateCcw size={19} /></button></div>}
+    {controlMode === 'play-stop' ? (renderControls ? renderControls(compactControl) : compactControl) : <div className="audio-player"><button className="audio-play" onClick={toggle} aria-label={label}>{active ? <Pause size={21} fill="currentColor" /> : <Play size={21} fill="currentColor" />}</button><div className="audio-info"><strong>{title}</strong><span><Volume2 size={13} />{language === 'hi' ? 'हिन्दी' : 'English'} · {copy(`Line ${line + 1} of ${lines.length}`, `पंक्ति ${line + 1} / ${lines.length}`)}</span><input aria-label={copy('Narration position', 'आवाज़ में स्थान')} type="range" min={0} max={duration || 1} step={0.05} value={Math.min(time, duration || 1)} disabled={!duration || (autoPlay && !started)} onChange={(event) => { const value = Number(event.target.value); if (audio.current) audio.current.currentTime = value; setTime(value); setStarted(true); }} /></div><button className="icon-button" onClick={replay} aria-label={copy('Replay narration from the beginning', 'पाठ फिर से शुरू से सुनें')}><RotateCcw size={19} /></button></div>}
     {!mediaRef && <audio ref={ownAudio} preload="metadata" />}
-    {error && <p className="form-error" role="alert">{error}</p>}
+    {error && <p className="form-error" role="alert">{copy(error, error.startsWith('This audio') ? 'यह आवाज़ उपलब्ध नहीं है। आप पढ़ना जारी रख सकते हैं और सुनने के लिए फिर कोशिश कर सकते हैं।' : 'आवाज़ नहीं चल सकी। फिर कोशिश करें।')}</p>}
   </>;
 }

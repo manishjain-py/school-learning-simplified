@@ -1,3 +1,4 @@
+import { uiError } from '../uiCopy';
 import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, GraduationCap, Layers, Leaf, ListChecks, RefreshCw } from 'lucide-react';
 import { request } from '../api';
@@ -10,11 +11,11 @@ type ChapterReport = { id: string; title: string; learn: Coverage; revise: Cover
 type Report = { view: 'self' | 'parent'; readOnly: boolean; learner: { name: string; language: Language }; timeZone: string; generatedAt: string; summary: { chaptersStudied: number; ideasExplored: number; cardsRevised: number; practiceSetsDone: number }; subjects: { subject: string; title: string; chapters: ChapterReport[] }[] };
 type ReportResponse = { report: Report } | { report: null; status: 'learner_not_connected' };
 type ParentContext = { schoolId: string; classId: string; childId: string };
-type Props = { config: Config; user: User; navigate: (path: string) => void; parent?: ParentContext };
+type Props = { config: Config; user: User; navigate: (path: string) => void; preferredLanguage?: Language; parent?: ParentContext };
 type State = { scope: string; data: ReportResponse | null; error: string; loading: boolean };
 const text = (language: Language, en: string, hi: string) => language === 'hi' ? hi : en;
 
-export function ReportCardView({ config, user, navigate, parent }: Props) {
+export function ReportCardView({ config, user, navigate, parent, preferredLanguage = 'en' }: Props) {
   const path = parent ? `/school/family/parent/${encodeURIComponent(parent.schoolId)}/${encodeURIComponent(parent.classId)}/${encodeURIComponent(parent.childId)}/report` : '/reports/mine';
   const scope = `${user.id}:${path}`;
   const [state, setState] = useState<State>({ scope: '', data: null, error: '', loading: true });
@@ -38,14 +39,14 @@ export function ReportCardView({ config, user, navigate, parent }: Props) {
   }, []);
   const current = state.scope === scope ? state : { scope, data: null, error: '', loading: true };
   const report = current.data?.report;
-  const language = report?.learner.language || 'en';
+  const language = report?.learner.language || preferredLanguage;
   const copy = (en: string, hi: string) => text(language, en, hi);
   const readOnly = Boolean(parent) || report?.readOnly !== false || report.view !== 'self';
   const back = () => navigate(parent ? '/school' : '/');
   return <main className="report-page page-width" lang={language}>
     <div className="report-navigation"><button type="button" className="text-button" onClick={back}><ArrowLeft size={17} />{parent ? copy('Family workspace', 'परिवार का पेज') : copy('My library', 'मेरी लाइब्रेरी')}</button><button type="button" className="text-button" disabled={current.loading} onClick={() => setRevision(value => value + 1)}><RefreshCw size={16} />{copy('Refresh', 'फिर से देखें')}</button></div>
     {current.loading ? <section className="report-state" role="status"><span className="report-symbol"><ListChecks size={30} /></span><h1>{copy('Opening recorded learning…', 'सीखने का रिकॉर्ड खोला जा रहा है…')}</h1><p>{copy('Gathering saved activities and submitted practice sets.', 'सहेजी गई गतिविधियाँ और जमा किए गए अभ्यास सेट देखे जा रहे हैं।')}</p></section>
-      : current.error ? <section className="report-state"><span className="report-symbol"><BookOpen size={30} /></span><h1>{copy('This report couldn’t open.', 'यह रिपोर्ट नहीं खुल सकी।')}</h1><p className="form-error" role="alert">{current.error}</p><button type="button" className="button primary" onClick={() => setRevision(value => value + 1)}>{copy('Try again', 'फिर कोशिश करें')}</button></section>
+      : current.error ? <section className="report-state"><span className="report-symbol"><BookOpen size={30} /></span><h1>{copy('This report couldn’t open.', 'यह रिपोर्ट नहीं खुल सकी।')}</h1><p className="form-error" role="alert">{uiError(language, current.error, 'यह रिपोर्ट नहीं खुल सकी। अपना खाता और स्कूल से जुड़ाव जाँचें, फिर कोशिश करें।')}</p><button type="button" className="button primary" onClick={() => setRevision(value => value + 1)}>{copy('Try again', 'फिर कोशिश करें')}</button></section>
       : !report ? <section className="report-state"><span className="report-symbol"><GraduationCap size={31} /></span><h1>Your child’s learning connection is next.</h1><p>The student needs to sign in with the email recorded by their school before their saved learning can appear here. Once that connection is ready, this page will show their recorded work.</p><button type="button" className="button secondary" onClick={back}>Back to family workspace<ArrowRight size={17} /></button></section>
       : <>
         <header className="report-heading"><div><p className="eyebrow">{copy('ONE STEP AT A TIME', 'एक-एक कदम आगे')}</p><h1>{language === 'hi' ? `${report.learner.name} का रिपोर्ट कार्ड` : `${report.learner.name}’s report card`}</h1><p>{copy('Saved learning and practice from the library and school recommendations.', 'लाइब्रेरी और स्कूल के सुझावों से किए गए सीखने और अभ्यास का सहेजा रिकॉर्ड।')}</p></div><span className="report-heading-icon"><Leaf size={42} strokeWidth={1.4} /></span></header>

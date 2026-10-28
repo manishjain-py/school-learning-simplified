@@ -1,3 +1,4 @@
+import { uiText, uiError } from './uiCopy';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowRight, BookOpen, LogOut, ShieldCheck } from 'lucide-react';
 import { GlobalSignOutCommand } from '@aws-sdk/client-cognito-identity-provider';
@@ -11,11 +12,12 @@ import { PracticeView } from './PracticeView';
 import { ReviseView } from './ReviseView';
 import { ReportCardView } from './reports/ReportCardView';
 import { ApiError, clearSession, identityClient, request, session } from './api';
-import type { Catalog, Config, LearningMode, User } from './types';
+import type { Catalog, Config, Language, LearningMode, User } from './types';
 import type { Workspaces } from './school/types';
 
 /** Resolve a new account's family role before offering learner setup. */
-function LearnerEntry({ config, user, path, navigate, children }: { config: Config; user: User; path: string; navigate: (path: string) => void; children: ReactNode }) {
+function LearnerEntry({ config, user, path, navigate, children, language }: { config: Config; user: User; path: string; navigate: (path: string) => void; children: ReactNode; language: Language }) {
+  const copy = (source: string) => uiText(language, source);
   const [roles, setRoles] = useState<Workspaces | null>(null);
   const [error, setError] = useState('');
   const [retry, setRetry] = useState(0);
@@ -29,11 +31,11 @@ function LearnerEntry({ config, user, path, navigate, children }: { config: Conf
   const parentOnly = Boolean(roles?.family.parent.children.length) && roles?.family.student.status === 'missing';
   const home = path.split('?')[0] === '/';
   useEffect(() => { if (parentOnly && home) navigate('/school'); }, [parentOnly, home]);
-  if (error) return <main className="status-panel page-width"><h1>Let’s reconnect to your school.</h1><p role="alert">{error}</p><button className="button primary" onClick={() => setRetry(value => value + 1)}>Try again</button><button className="button secondary" onClick={() => navigate('/school')}>Open school workspace</button></main>;
-  if (!roles || (parentOnly && home)) return <main className="status-panel page-width" role="status">Finding your school and family connections…</main>;
+  if (error) return <main className="status-panel page-width"><h1>{copy("Let’s reconnect to your school.")}</h1><p role="alert">{uiError(language, error)}</p><button className="button primary" onClick={() => setRetry(value => value + 1)}>{copy("Try again")}</button><button className="button secondary" onClick={() => navigate('/school')}>{copy("Open school workspace")}</button></main>;
+  if (!roles || (parentOnly && home)) return <main className="status-panel page-width" role="status">{copy("Finding your school and family connections…")}</main>;
   if (parentOnly) {
     const destination = new URL(path, window.location.origin); destination.searchParams.set('learn', '1');
-    return <main className="account-entry page-width"><p className="eyebrow">YOUR OWN LEARNING SPACE</p><h1>Would you like to learn too?</h1><p>Your child’s next steps are in your family workspace. You can also set up a learning space for yourself.</p><div className="account-actions"><button className="button primary" onClick={() => navigate('/school')}>Open family workspace</button><button className="button secondary" onClick={() => navigate(destination.pathname + destination.search)}>Learn for myself</button></div></main>;
+    return <main className="account-entry page-width"><p className="eyebrow">{copy("YOUR OWN LEARNING SPACE")}</p><h1>{copy("Would you like to learn too?")}</h1><p>{copy("Your child’s next steps are in your family workspace. You can also set up a learning space for yourself.")}</p><div className="account-actions"><button className="button primary" onClick={() => navigate('/school')}>{copy("Open family workspace")}</button><button className="button secondary" onClick={() => navigate(destination.pathname + destination.search)}>{copy("Learn for myself")}</button></div></main>;
   }
   return children;
 }
@@ -118,6 +120,9 @@ export default function App() {
     if (config && token) { try { await identityClient(config).send(new GlobalSignOutCommand({ AccessToken: token })); } catch { /* Local session is already removed. */ } }
   }
   const preferences = useStudentPreferences(config, user);
+  const language: Language = preferences.profile.language || 'en';
+  const copy = (source: string) => uiText(language, source);
+  useEffect(() => { document.documentElement.lang = language; }, [language]);
   useEffect(() => {
     const heading = document.querySelector<HTMLElement>('#main h1');
     if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
@@ -128,13 +133,13 @@ export default function App() {
   const testPlanId = new URLSearchParams(path.split('?')[1] || '').get('plan') ?? undefined;
   const learningMatch = pathname.match(/^\/(learn|practice|revise)\/([a-zA-Z0-9_-]+)\/?$/);
   function learningPage() {
-    if (!config || preferences.loading) return <main className="status-panel page-width" role="status">Opening your learning space…</main>;
-    if (preferences.error) return <main className="student-area page-width student-loading"><h1>Your learner preferences couldn’t load.</h1><p className="form-error" role="alert">{preferences.error}</p><button className="button primary" onClick={preferences.reload}>Try again</button></main>;
-    if (!catalog && learningMatch![1] !== 'learn') return <main className="status-panel page-width" role="status">{catalogError || 'Opening your learning space…'}</main>;
+    if (!config || preferences.loading) return <main className="status-panel page-width" role="status">{copy("Opening your learning space…")}</main>;
+    if (preferences.error) return <main className="student-area page-width student-loading"><h1>{copy("Your learner preferences couldn’t load.")}</h1><p className="form-error" role="alert">{uiError(language, preferences.error)}</p><button className="button primary" onClick={preferences.reload}>{copy("Try again")}</button></main>;
+    if (!catalog && learningMatch![1] !== 'learn') return <main className="status-panel page-width" role="status">{catalogError ? uiError(language, catalogError) : copy('Opening your learning space…')}</main>;
     const mode = learningMatch![1] as LearningMode;
     const chapterId = learningMatch![2];
     const entry = catalog?.chapters.find((item) => item.id === chapterId);
-    if (mode !== 'learn' && !entry?.modes?.includes(mode)) return <main className="status-panel page-width"><h1>This learning mode is on its way.</h1><p>Explore the available lesson in the meantime.</p><button className="button primary" onClick={() => navigate(`/learn/${chapterId}`)}>Go to Learn<ArrowRight size={17} /></button></main>;
+    if (mode !== 'learn' && !entry?.modes?.includes(mode)) return <main className="status-panel page-width"><h1>{copy("This learning mode is on its way.")}</h1><p>{copy("Explore the available lesson in the meantime.")}</p><button className="button primary" onClick={() => navigate(`/learn/${chapterId}`)}>{copy("Go to Learn")}<ArrowRight size={17} /></button></main>;
     const props = { config, chapterId, user, recommendationId, preferredLanguage: preferences.profile.language || undefined, onSignIn: () => setAuthMode('signin'), onBack: () => navigate(`/chapters/${chapterId}${recommendationId !== undefined ? `?recommendation=${encodeURIComponent(recommendationId)}&mode=${mode}${testPlanId ? `&plan=${encodeURIComponent(testPlanId)}` : ''}` : ''}`), onMode: (next: LearningMode) => navigate(`/${next}/${chapterId}${recommendationId !== undefined && next === mode ? `?recommendation=${encodeURIComponent(recommendationId)}${testPlanId ? `&plan=${encodeURIComponent(testPlanId)}` : ''}` : ''}`) };
     if (mode === 'practice') return <PracticeView key={`${chapterId}:${recommendationId || 'library'}:${requestedSetId || 'current'}:${user?.id || 'anonymous'}`} {...props} requestedSetId={requestedSetId} registerBeforeLeave={registerBeforeLeave} onPracticeAgain={() => { void navigate(`/practice/${chapterId}`); }} onOpenDraftContext={(setId, origin) => { void navigate(`/practice/${chapterId}?${new URLSearchParams({ set: setId, ...(origin ? { recommendation: origin } : {}) })}`); }} />;
     if (mode === 'revise') return <ReviseView key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} onContinueToPractice={testPlanId && recommendationId && user ? async () => {
@@ -148,30 +153,30 @@ export default function App() {
   const isSchool = pathname === '/school' || pathname === '/school/' || Boolean(parentReportMatch);
   const isLearner = Boolean(learningMatch) || pathname === '/' || pathname === '/setup' || pathname === '/profile' || pathname === '/report' || /^\/(subjects|chapters)\/[^/]+\/?$/.test(pathname);
   function page() {
-    if (configError) return <main className="status-panel page-width"><h1>A moment to reconnect.</h1><p role="alert">{configError}</p><button className="button primary" onClick={() => setRetry(retry + 1)}>Try again</button></main>;
-    if (!config || accountStatus === 'restoring') return <main className="status-panel page-width" role="status">Opening your account…</main>;
-    if (accountStatus === 'error') return <main className="status-panel page-width"><h1>Let’s reconnect to your account.</h1><p role="alert">{accountError}</p><div className="account-actions"><button className="button primary" onClick={() => { setAccountStatus('restoring'); setAccountRetry(value => value + 1); }}>Try again</button><button className="button secondary" onClick={() => { accountGeneration.current += 1; clearSession(); setUser(null); setAccountStatus('signedout'); setAuthMode('signin'); }}>Sign in again</button></div></main>;
+    if (configError) return <main className="status-panel page-width"><h1>{copy("A moment to reconnect.")}</h1><p role="alert">{uiError(language, configError)}</p><button className="button primary" onClick={() => setRetry(retry + 1)}>{copy("Try again")}</button></main>;
+    if (!config || accountStatus === 'restoring') return <main className="status-panel page-width" role="status">{copy("Opening your account…")}</main>;
+    if (accountStatus === 'error') return <main className="status-panel page-width"><h1>{copy("Let’s reconnect to your account.")}</h1><p role="alert">{uiError(language, accountError)}</p><div className="account-actions"><button className="button primary" onClick={() => { setAccountStatus('restoring'); setAccountRetry(value => value + 1); }}>{copy("Try again")}</button><button className="button secondary" onClick={() => { accountGeneration.current += 1; clearSession(); setUser(null); setAccountStatus('signedout'); setAuthMode('signin'); }}>{copy("Sign in again")}</button></div></main>;
     if (parentReportMatch && user) return <ReportCardView key={`${user.id}:${parentReportMatch.slice(1).join(':')}`} config={config} user={user} navigate={navigate} parent={{ schoolId: parentReportMatch[1], classId: parentReportMatch[2], childId: parentReportMatch[3] }} />;
     if (isSchool) return <SchoolWorkspace key={user?.id || 'signedout'} config={config} user={user} onSignIn={() => setAuthMode('signin')} />;
     if (isLearner) {
-      if (!user) return <main className="account-entry page-width"><span className="section-symbol"><ShieldCheck size={29} /></span><p className="eyebrow">YOUR LEARNING SPACE</p><h1>A little learning<br />starts here.</h1><p>Sign up or sign in to make this space yours. Then choose your class and learning language, and pick up where you left off.</p><div className="account-actions"><button className="button primary large" onClick={() => setAuthMode('signup')}>Sign up<ArrowRight size={18} /></button><button className="button secondary large" onClick={() => setAuthMode('signin')}>Sign in</button></div><p className="account-standalone">Learn independently or connect with your school using your own account.</p><a className="account-school" href="/school" onClick={event => { event.preventDefault(); navigate('/school'); }}>School staff or parent? Open your school workspace<ArrowRight size={16} /></a></main>;
-      if (pathname === '/report' && !preferences.loading && !preferences.error && preferences.profile.completed) return <ReportCardView key={user.id} config={config} user={user} navigate={navigate} />;
-      if (learningMatch && !preferences.loading && !preferences.error && preferences.profile.completed) return <>{recommendationId !== undefined && <div className="recommendation-banner page-width">This activity was opened from classroom guidance. Its new progress is recorded for your teacher. <a href="/" onClick={event => { event.preventDefault(); navigate('/'); }}>Latest recommendations</a></div>}{learningPage()}</>;
-      const experience = <StudentExperience config={config} user={user} catalog={catalog} catalogError={catalogError} onRetryCatalog={() => setRetry(retry + 1)} path={pathname} search={path.includes('?') ? path.slice(path.indexOf('?')) : ''} navigate={navigate} onSignIn={() => setAuthMode('signin')} preferences={preferences} guidance={<GuidanceHome key={user.id} config={config} user={user} navigate={navigate} />} />;
+      if (!user) return <main className="account-entry page-width"><span className="section-symbol"><ShieldCheck size={29} /></span><p className="eyebrow">{copy("YOUR LEARNING SPACE")}</p><h1>{copy("A little learning")}<br />{copy("starts here.")}</h1><p>{copy("Sign up or sign in to make this space yours. Then choose your class and learning language, and pick up where you left off.")}</p><div className="account-actions"><button className="button primary large" onClick={() => setAuthMode('signup')}>{copy("Sign up")}<ArrowRight size={18} /></button><button className="button secondary large" onClick={() => setAuthMode('signin')}>{copy("Sign in")}</button></div><p className="account-standalone">{copy("Learn independently or connect with your school using your own account.")}</p><a className="account-school" href="/school" onClick={event => { event.preventDefault(); navigate('/school'); }}>{copy("School staff or parent? Open your school workspace")}<ArrowRight size={16} /></a></main>;
+      if (pathname === '/report' && !preferences.loading && !preferences.error && preferences.profile.completed) return <ReportCardView key={user.id} config={config} user={user} preferredLanguage={language} navigate={navigate} />;
+      if (learningMatch && !preferences.loading && !preferences.error && preferences.profile.completed) return <>{recommendationId !== undefined && <div className="recommendation-banner page-width">{copy("This activity was opened from classroom guidance. Its new progress is recorded for your teacher.")} <a href="/" onClick={event => { event.preventDefault(); navigate('/'); }}>{copy("Latest recommendations")}</a></div>}{learningPage()}</>;
+      const experience = <StudentExperience config={config} user={user} catalog={catalog} catalogError={catalogError} onRetryCatalog={() => setRetry(retry + 1)} path={pathname} search={path.includes('?') ? path.slice(path.indexOf('?')) : ''} navigate={navigate} onSignIn={() => setAuthMode('signin')} preferences={preferences} guidance={<GuidanceHome key={user.id} config={config} user={user} language={language} navigate={navigate} />} />;
       const personalLearning = new URLSearchParams(path.split('?')[1] || '').get('learn') === '1';
       return !preferences.loading && !preferences.error && !preferences.profile.completed && !personalLearning
-        ? <LearnerEntry key={user.id} config={config} user={user} path={path} navigate={navigate}>{experience}</LearnerEntry> : experience;
+        ? <LearnerEntry key={user.id} config={config} user={user} language={language} path={path} navigate={navigate}>{experience}</LearnerEntry> : experience;
     }
-    return <main className="status-panel page-width"><h1>Let’s find your way back.</h1><p>This page is not in our learning library.</p><button className="button primary" onClick={() => navigate('/')}>Go to my library<ArrowRight size={18} /></button></main>;
+    return <main className="status-panel page-width"><h1>{copy("Let’s find your way back.")}</h1><p>{copy("This page is not in our learning library.")}</p><button className="button primary" onClick={() => navigate('/')}>{copy("Go to my library")}<ArrowRight size={18} /></button></main>;
   }
   return <>
-    <a className="skip-link" href="#main">Skip to content</a>
-    <header className="site-header page-width"><a className="brand" href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }} aria-label="School Learning Simplified home"><span className="brand-mark"><BookOpen size={25} strokeWidth={1.8} /><span /></span><span>School Learning<span>Simplified</span></span></a><nav aria-label="Main navigation"><a className={!isSchool ? 'nav-link current' : 'nav-link'} href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }}>My library</a><a className={isSchool ? 'nav-link current' : 'nav-link'} href="/school" onClick={(event) => { event.preventDefault(); navigate('/school'); }}>School</a>{user ? <button className="button header-account" onClick={signOut} title={user.email}><LogOut size={16} />Sign out</button> : <button className="button header-account" onClick={() => setAuthMode('signin')} disabled={!config || accountStatus === 'restoring' || accountStatus === 'error'}>Sign in<ArrowRight size={16} /></button>}</nav></header>
-    {sessionNotice && <div className="session-notice page-width" role="status">{sessionNotice}<button className="text-button" onClick={() => setSessionNotice('')} aria-label="Dismiss account notification">Dismiss</button></div>}
+    <a className="skip-link" href="#main">{copy("Skip to content")}</a>
+    <header className="site-header page-width"><a className="brand" href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }} aria-label={copy("School Learning Simplified home")}><span className="brand-mark"><BookOpen size={25} strokeWidth={1.8} /><span /></span><span>School Learning<span>Simplified</span></span></a><nav aria-label={copy("Main navigation")}><a className={!isSchool ? 'nav-link current' : 'nav-link'} href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }}>{copy("My library")}</a><a className={isSchool ? 'nav-link current' : 'nav-link'} href="/school" onClick={(event) => { event.preventDefault(); navigate('/school'); }}>{copy("School")}</a>{user ? <button className="button header-account" onClick={signOut} title={user.email}><LogOut size={16} />{copy("Sign out")}</button> : <button className="button header-account" onClick={() => setAuthMode('signin')} disabled={!config || accountStatus === 'restoring' || accountStatus === 'error'}>{copy("Sign in")}<ArrowRight size={16} /></button>}</nav></header>
+    {sessionNotice && <div className="session-notice page-width" role="status">{uiError(language, sessionNotice)}<button className="text-button" onClick={() => setSessionNotice('')} aria-label={copy("Dismiss account notification")}>{copy("Dismiss")}</button></div>}
     <div id="main">
       {page()}
     </div>
-    <footer className="site-footer page-width"><div><span className="footer-name">School Learning Simplified</span><p>A little clearer. A little more curious.</p></div><div><span>Made for learning, together.</span><small>{catalog?.schemaVersion === 2 ? 'Existing learning content, a new learning experience.' : 'Preview · Existing learning content, a new learning experience.'}</small></div></footer>
-    {authMode && config && <AuthDialog config={config} initialMode={authMode} onClose={() => setAuthMode(null)} onSignedIn={(person) => { accountGeneration.current += 1; setUser(person); setAccountStatus('ready'); setAccountError(''); preferences.reload(); setAuthMode(null); setSessionNotice('You’re signed in to your own account.'); }} />}
+    <footer className="site-footer page-width"><div><span className="footer-name">School Learning Simplified</span><p>{copy("A little clearer. A little more curious.")}</p></div><div><span>{copy("Made for learning, together.")}</span><small>{copy(catalog?.schemaVersion === 2 ? 'Existing learning content, a new learning experience.' : 'Preview · Existing learning content, a new learning experience.')}</small></div></footer>
+    {authMode && config && <AuthDialog language={language} config={config} initialMode={authMode} onClose={() => setAuthMode(null)} onSignedIn={(person) => { accountGeneration.current += 1; setUser(person); setAccountStatus('ready'); setAccountError(''); preferences.reload(); setAuthMode(null); setSessionNotice('You’re signed in to your own account.'); }} />}
   </>;
 }

@@ -6,6 +6,7 @@ const sceneCache = new Map<string, SceneDocument>();
 
 export function NarratedScene(props: VisualStageProps) {
   const { visual, language, currentLine, currentTime, clipSha256, hasStarted, ended = false, onReady } = props;
+  const copy = (en: string, hi: string) => language === 'hi' ? hi : en;
   const [scene, setScene] = useState<SceneDocument | null>(null);
   const [error, setError] = useState('');
   const [imageError, setImageError] = useState(false);
@@ -60,14 +61,14 @@ export function NarratedScene(props: VisualStageProps) {
     }
     return result;
   }, [scene]);
-  if (error) return <div className="sls-visual-message" role="alert"><p>{error} You can keep reading.</p><button type="button" onClick={() => { sceneCache.delete(url); setAttempt(attempt + 1); }}>Retry visual</button></div>;
+  if (error) return <div className="sls-visual-message" role="alert"><p>{copy(`${error} You can keep reading.`, 'यह चित्र नहीं खुल सका। आप पढ़ना जारी रख सकते हैं।')}</p><button type="button" onClick={() => { sceneCache.delete(url); setAttempt(attempt + 1); }}>{copy('Retry visual', 'चित्र फिर से खोलें')}</button></div>;
   if (!scene) return <div className="sls-visual-message" role="status">{language === 'hi' ? 'चित्र खुल रहा है…' : 'Opening the illustration…'}</div>;
   const started = ended || (hasStarted ?? (props.playing || currentLine > 0 || currentTime > 0));
   const mismatched = !ended && started && clipSha256 && scene.beats.some(beat => {
     const cue = cueFor(beat, language);
     return cue.line === currentLine && cue.clip_sha256 && cue.clip_sha256 !== clipSha256;
   });
-  if (mismatched) return <div className="sls-visual-message" role="alert">This illustration does not match the current recording. Reload the lesson to try again.</div>;
+  if (mismatched) return <div className="sls-visual-message" role="alert">{copy('This illustration does not match the current recording. Reload the lesson to try again.', 'यह चित्र अभी चल रही रिकॉर्डिंग से मेल नहीं खाता। फिर कोशिश करने के लिए पाठ दोबारा खोलें।')}</div>;
   const progress = (beat: SceneDocument['beats'][number]) => ended ? 1 : started ? cueProgress(cueFor(beat, language), currentLine, currentTime) : 0;
   const nodeProgress = (id: string) => {
     const beats = intros.get(id);
@@ -110,6 +111,6 @@ export function NarratedScene(props: VisualStageProps) {
         </g>)}
       </svg>
     <p className="sls-visual-caption">{started ? (language === 'hi' ? 'आवाज़ के साथ चित्र बनता है।' : 'The illustration follows your narration.') : (language === 'hi' ? 'आवाज़ शुरू होने पर चित्र बनता है।' : 'The illustration begins with the narration.')}</p>
-    {imageError && <p className="sls-visual-error" role="alert">Part of this illustration could not load. <button type="button" onClick={() => { setImageError(false); setAttempt(attempt + 1); }}>Retry images</button></p>}
+    {imageError && <p className="sls-visual-error" role="alert">{copy('Part of this illustration could not load.', 'इस चित्र का कुछ हिस्सा लोड नहीं हो सका।')} <button type="button" onClick={() => { setImageError(false); setAttempt(attempt + 1); }}>{copy('Retry images', 'चित्र फिर से खोलें')}</button></p>}
   </div>;
 }

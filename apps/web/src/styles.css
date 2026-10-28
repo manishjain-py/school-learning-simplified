@@ -8,3 +8,22 @@
 /* Account entry precedes all learner setup and learning routes. */
 .account-entry{max-width:760px;padding-top:62px;padding-bottom:70px}.account-entry h1{font:400 58px/1.08 Georgia,serif;letter-spacing:-2px;margin-bottom:24px}.account-entry>p:not(.eyebrow){max-width:540px;color:var(--muted);font-size:15px}.account-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:14px}.account-entry .account-actions{justify-content:flex-start;margin:28px 0 20px}.account-entry .account-standalone{font-size:12px}.account-school{display:inline-flex;gap:10px;align-items:center;font-size:13px;line-height:1.6;color:var(--green);margin-top:12px}.account-school svg{flex-shrink:0}
 @media(max-width:760px){.account-entry{padding-top:40px;padding-bottom:44px}.account-entry h1{font-size:43px;letter-spacing:-1.4px}.account-entry>p:not(.eyebrow){font-size:14px}.account-entry .account-actions>.button{flex:1}.account-entry .account-standalone{font-size:12px}.account-school{font-size:12px}}
+
+/* Hindi app copy keeps its natural letter shapes and comfortable line height. */
+html[lang="hi"] .eyebrow, html[lang="hi"] .card-kicker,
+html[lang="hi"] h1, html[lang="hi"] h2, html[lang="hi"] h3,
+[lang="hi"] .eyebrow, [lang="hi"] .card-kicker { letter-spacing:normal; }
+html[lang="hi"] .site-header, html[lang="hi"] .site-footer,
+html[lang="hi"] .account-entry, .auth-dialog[lang="hi"] { line-height:1.65; }
+.site-header .header-account, .site-header .nav-link, .auth-dialog .icon-button,
+.auth-dialog .text-button, .auth-dialog input { min-height:44px; }
+.site-header .nav-link { display:inline-flex; align-items:center; }
+@media(max-width:760px){
+  .site-header .nav-link:first-child{display:none}
+  html[lang="hi"] .site-header{height:auto;min-height:85px;gap:10px;padding-top:12px;padding-bottom:12px}
+  html[lang="hi"] .site-header nav{gap:10px;flex-wrap:wrap;justify-content:flex-end}
+  html[lang="hi"] .brand{flex-shrink:0}
+  html[lang="hi"] .header-account{white-space:normal;font-size:11px;padding:8px}
+  html[lang="hi"] .account-entry h1{line-height:1.35}
+  .auth-dialog[lang="hi"] h2{line-height:1.45}
+}

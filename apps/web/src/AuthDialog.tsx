@@ -1,11 +1,13 @@
+import { uiText, uiError } from './uiCopy';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ConfirmForgotPasswordCommand, ConfirmSignUpCommand, ForgotPasswordCommand, InitiateAuthCommand, ResendConfirmationCodeCommand, SignUpCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { ArrowRight, Mail, ShieldCheck, X } from 'lucide-react';
 import { ApiError, identityClient, request, saveSession, clearSession } from './api';
-import type { Config, User } from './types';
+import type { Config, Language, User } from './types';
 
 type Mode = 'signin' | 'signup' | 'verify' | 'forgot' | 'reset';
-export function AuthDialog({ config, initialMode, onClose, onSignedIn }: { config: Config; initialMode: 'signin' | 'signup'; onClose: () => void; onSignedIn: (user: User) => void }) {
+export function AuthDialog({ config, initialMode, onClose, onSignedIn, language = 'en' }: { config: Config; language?: Language; initialMode: 'signin' | 'signup'; onClose: () => void; onSignedIn: (user: User) => void }) {
+  const copy = (source: string) => uiText(language, source);
   const dialog = useRef<HTMLDialogElement>(null);
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState('');
@@ -64,28 +66,28 @@ export function AuthDialog({ config, initialMode, onClose, onSignedIn }: { confi
   }
   const titles: Record<Mode, string> = { signin: 'Welcome back.', signup: 'A little learning starts here.', verify: 'Check your inbox.', forgot: 'Let’s get you back in.', reset: 'Choose a fresh password.' };
   const actions: Record<Mode, string> = { signin: 'Sign in', signup: 'Create account', verify: 'Verify email', forgot: 'Send reset code', reset: 'Reset password' };
-  return <dialog ref={dialog} className="auth-dialog" aria-labelledby="auth-title" onCancel={(event) => { event.preventDefault(); if (!busy) onClose(); }} onClick={(event) => { if (!busy && event.target === dialog.current) onClose(); }}>
+  return <dialog ref={dialog} className="auth-dialog" lang={language} aria-labelledby="auth-title" onCancel={(event) => { event.preventDefault(); if (!busy) onClose(); }} onClick={(event) => { if (!busy && event.target === dialog.current) onClose(); }}>
     <div className="auth-inner">
-      <button className="icon-button close-dialog" aria-label="Close sign-in form" disabled={busy} onClick={onClose}><X size={21} /></button>
+      <button className="icon-button close-dialog" aria-label={copy("Close sign-in form")} disabled={busy} onClick={onClose}><X size={21} /></button>
       <div className="dialog-symbol">{mode === 'verify' ? <Mail /> : <ShieldCheck />}</div>
-      <p className="eyebrow">YOUR LEARNING SPACE</p><h2 id="auth-title">{titles[mode]}</h2>
-      <p className="muted">{mode === 'signup' ? 'Save your place and pick up where curiosity left off.' : mode === 'verify' ? 'Use the code we sent to verify your email address.' : 'Your lessons and saved progress, all in one place.'}</p>
-      {!ready && <p className="notice">Account setup is not available in this preview. Open the live website to sign in.</p>}
+      <p className="eyebrow">{copy("YOUR LEARNING SPACE")}</p><h2 id="auth-title">{copy(titles[mode])}</h2>
+      <p className="muted">{copy(mode === 'signup' ? 'Save your place and pick up where curiosity left off.' : mode === 'verify' ? 'Use the code we sent to verify your email address.' : 'Your lessons and saved progress, all in one place.')}</p>
+      {!ready && <p className="notice">{copy("Account setup is not available in this preview. Open the live website to sign in.")}</p>}
       <form onSubmit={submit}>
-        <label>Email address<input type="email" name="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus placeholder="you@example.com" /></label>
-        {(mode === 'signin' || mode === 'signup' || mode === 'reset') && <label>{mode === 'reset' ? 'New password' : 'Password'}<input type="password" name="password" autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} minLength={mode === 'signin' ? undefined : 10} value={password} onChange={(e) => setPassword(e.target.value)} required />{mode !== 'signin' && <small>10+ characters with uppercase, lowercase and a number.</small>}</label>}
-        {(mode === 'verify' || mode === 'reset') && <label>Email code<input name="code" inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value)} required minLength={6} maxLength={8} placeholder="6-digit code" /></label>}
-        {error && <p className="form-error" role="alert">{error}</p>}
-        {notice && <p className="notice" role="status">{notice}</p>}
-        <button className="button primary full" disabled={busy || !ready} type="submit">{busy ? 'One moment…' : actions[mode]}<ArrowRight size={18} /></button>
+        <label>{copy("Email address")}<input type="email" name="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus placeholder="you@example.com" /></label>
+        {(mode === 'signin' || mode === 'signup' || mode === 'reset') && <label>{copy(mode === 'reset' ? 'New password' : 'Password')}<input type="password" name="password" autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} minLength={mode === 'signin' ? undefined : 10} value={password} onChange={(e) => setPassword(e.target.value)} required />{mode !== 'signin' && <small>{copy("10+ characters with uppercase, lowercase and a number.")}</small>}</label>}
+        {(mode === 'verify' || mode === 'reset') && <label>{copy("Email code")}<input name="code" inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value)} required minLength={6} maxLength={8} placeholder={copy("6-digit code")} /></label>}
+        {error && <p className="form-error" role="alert">{uiError(language, error)}</p>}
+        {notice && <p className="notice" role="status">{copy(notice)}</p>}
+        <button className="button primary full" disabled={busy || !ready} type="submit">{copy(busy ? 'One moment…' : actions[mode])}<ArrowRight size={18} /></button>
       </form>
       <div className="auth-options">
-        {mode === 'signin' && <><button className="text-button" disabled={busy} onClick={() => switchMode('forgot')}>Forgot password?</button><p>New here? <button className="text-button" disabled={busy} onClick={() => switchMode('signup')}>Create an account</button></p></>}
-        {mode === 'signup' && <p>Already have an account? <button className="text-button" disabled={busy} onClick={() => switchMode('signin')}>Sign in</button></p>}
-        {mode === 'verify' && <button className="text-button" onClick={resend} disabled={busy || !ready || !username}>Send a new code</button>}
-        {mode !== 'signin' && mode !== 'signup' && <button className="text-button" disabled={busy} onClick={() => switchMode('signin')}>Back to sign in</button>}
+        {mode === 'signin' && <><button className="text-button" disabled={busy} onClick={() => switchMode('forgot')}>{copy("Forgot password?")}</button><p>{copy("New here?")} <button className="text-button" disabled={busy} onClick={() => switchMode('signup')}>{copy("Create an account")}</button></p></>}
+        {mode === 'signup' && <p>{copy("Already have an account?")} <button className="text-button" disabled={busy} onClick={() => switchMode('signin')}>{copy("Sign in")}</button></p>}
+        {mode === 'verify' && <button className="text-button" onClick={resend} disabled={busy || !ready || !username}>{copy("Send a new code")}</button>}
+        {mode !== 'signin' && mode !== 'signup' && <button className="text-button" disabled={busy} onClick={() => switchMode('signin')}>{copy("Back to sign in")}</button>}
       </div>
-      <p className="auth-footnote">Students, parents and teachers use their own email accounts.</p>
+      <p className="auth-footnote">{copy("Students, parents and teachers use their own email accounts.")}</p>
     </div>
   </dialog>;
 }

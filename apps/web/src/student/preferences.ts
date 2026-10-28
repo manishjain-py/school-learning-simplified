@@ -46,4 +46,6 @@ export function useStudentPreferences(config: Config | null, user: User | null) 
 }
 export type PreferenceController = ReturnType<typeof useStudentPreferences>;
 export const hasLibrary = (profile: LearnerPreferences) => profile.grade === 4 && profile.curriculum === 'cbse';
-export const curriculumLabel = (curriculum: LearnerPreferences['curriculum']) => curriculum === 'cbse' ? 'CBSE' : curriculum === 'other' ? 'Other curriculum' : 'Choose curriculum';
+export const curriculumLabel = (curriculum: LearnerPreferences['curriculum'], language: Language = 'en') => language === 'hi'
+  ? curriculum === 'cbse' ? 'सीबीएसई' : curriculum === 'other' ? 'अन्य पाठ्यक्रम' : 'पाठ्यक्रम चुनें'
+  : curriculum === 'cbse' ? 'CBSE' : curriculum === 'other' ? 'Other curriculum' : 'Choose curriculum';
