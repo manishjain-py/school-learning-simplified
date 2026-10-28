@@ -1,4 +1,5 @@
 import { preparePublishedParentNoteDraft, type ParentNoteAssistance } from './parent-notes.js';
+import { dispatchPublishedParentEmail, handleParentEmail, parentEmailPublicationChecks, prepareParentEmailRecords } from './parent-email.js';
 import { createHash } from 'node:crypto';
 import { processTeacherLog } from '../recommendations/index.js';
 import type { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda';
@@ -61,11 +62,12 @@ async function requireActiveStudent(schoolId: string, classId: string, childId: 
 }
 async function updateFields(body: Record<string, any>, schoolId: string, classId: string, user: VerifiedAccount) {
   if (body.audience !== 'class' && body.audience !== 'student') return fail(400, 'AUDIENCE_REQUIRED', 'Choose the class or one student for this update.');
-  const studentId = body.audience === 'student' ? (await requireActiveStudent(schoolId, classId, body.studentId)).id : null;
+  const child = body.audience === 'student' ? await requireActiveStudent(schoolId, classId, body.studentId) : null;
+  const studentId = child?.id || null;
   const logId = body.logId ? (await getSchoolLog(schoolId, classId, body.logId)).id : null;
   if (body.draftId && !studentId) return fail(400, 'DRAFT_AUDIENCE', 'A parent-note draft can only be sent to its selected child.');
   const prepared = body.draftId ? await preparePublishedParentNoteDraft(user, schoolId, classId, studentId!, id(body.draftId), version(body.draftVersion)) : null;
-  return { fields: { audience: body.audience as 'class' | 'student', studentId, text: prose(body.text, 'a family update'), logId, assistance: prepared?.assistance || null }, checks: prepared?.checks || [] };
+  return { fields: { audience: body.audience as 'class' | 'student', studentId, text: prose(body.text, 'a family update'), logId, assistance: prepared?.assistance || null }, checks: prepared?.checks, child };
 }
 async function getUpdate(schoolId: string, classId: string, updateId: string) {
   const update = await get<Update>(commPK(schoolId, classId), `UPDATE#${id(updateId)}`);
@@ -116,6 +118,8 @@ async function threadMessages(event: APIGatewayProxyEventV2WithJWTAuthorizer, us
 }
 
 export async function handleCommunication(event: APIGatewayProxyEventV2WithJWTAuthorizer, user: VerifiedAccount): Promise<APIGatewayProxyResultV2 | null> {
+  const email = await handleParentEmail(event, user);
+  if (email) return email;
   const path = event.rawPath.replace(/\/$/, ''); const method = event.requestContext.http.method;
   const family = path.match(/^\/api\/school\/family\/(student|parent)\/([^/]+)\/([^/]+)\/([^/]+)\/(updates|threads)(?:\/([^/]+)\/messages)?$/);
   if (family) {
@@ -185,17 +189,21 @@ export async function handleCommunication(event: APIGatewayProxyEventV2WithJWTAu
     if (!recordId && method === 'GET') return json(200, { updates: newest((await query(PK, 'UPDATE#')).map((item) => cleanUpdate(item as Update, context.role === 'admin' || item.authorId === user.id))) });
     if (!recordId && method === 'POST') {
       const body = bodyOf(event); const updateId = requestId(body.clientId); const old = await get<Update>(PK, `UPDATE#${updateId}`);
-      if (old) { if (old.authorId !== user.id) return fail(409, 'REQUEST_CONFLICT', 'This update identifier is already in use.'); return json(200, { update: cleanUpdate(old) }); }
+      if (old) { if (old.authorId !== user.id) return fail(409, 'REQUEST_CONFLICT', 'This update identifier is already in use.'); await dispatchPublishedParentEmail(old); return json(200, { update: cleanUpdate(old) }); }
       const proposed = await updateFields(body, schoolId, classId, user);
       const stamp = now(); const update: Update = { id: updateId, schoolId, classId, authorId: user.id, authorEmail: user.email, authorName: await staffDisplayName(user, schoolId), ...proposed.fields, version: 1, createdAt: stamp, updatedAt: stamp };
-      await write([put(PK, `UPDATE#${update.id}`, update, 'new'), put(PK, `UPDATEREV#${update.id}#000001`, update, 'new'), ...proposed.checks]); return json(201, { update: cleanUpdate(update) });
+      await write([put(PK, `UPDATE#${update.id}`, update, 'new'), put(PK, `UPDATEREV#${update.id}#000001`, update, 'new'), ...prepareParentEmailRecords(update, user, proposed.child, context.schoolClass.subject, stamp), ...(proposed.checks || parentEmailPublicationChecks(user, context, proposed.child))]);
+      await dispatchPublishedParentEmail(update);
+      return json(201, { update: cleanUpdate(update) });
     }
     if (recordId && method === 'PUT') {
       const update = await getUpdate(schoolId, classId, recordId); editAllowed(user, update.authorId, context.role); const body = bodyOf(event);
       if (version(body.version) !== update.version) return fail(409, 'RECORD_CHANGED', 'This family update changed. Refresh before correcting it.');
       const proposed = await updateFields(body, schoolId, classId, user);
       const updated = { ...update, ...proposed.fields, updatedAt: now(), version: update.version + 1 };
-      await write([put(PK, `UPDATE#${update.id}`, updated, update.version), put(PK, `UPDATEREV#${update.id}#${String(updated.version).padStart(6, '0')}`, { ...updated, correctedBy: user.id }, 'new'), ...proposed.checks]); return json(200, { update: cleanUpdate(updated) });
+      await write([put(PK, `UPDATE#${update.id}`, updated, update.version), put(PK, `UPDATEREV#${update.id}#${String(updated.version).padStart(6, '0')}`, { ...updated, correctedBy: user.id }, 'new'), ...prepareParentEmailRecords(updated, user, proposed.child, context.schoolClass.subject, updated.updatedAt), ...(proposed.checks || parentEmailPublicationChecks(user, context, proposed.child))]);
+      await dispatchPublishedParentEmail(updated);
+      return json(200, { update: cleanUpdate(updated) });
     }
   }
   return fail(404, 'NOT_FOUND', 'This classroom action could not be found.');

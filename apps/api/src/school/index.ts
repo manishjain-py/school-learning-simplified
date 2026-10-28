@@ -60,8 +60,8 @@ export async function query(PK: string, prefix: string): Promise<RecordValue[]> 
   return items;
 }
 /** A bounded page for private lists that impose their own overall read limit. */
-export async function queryPage(PK: string, prefix: string, cursor?: RecordValue): Promise<{ items: RecordValue[]; cursor?: RecordValue }> {
-  const result = await db.send(new QueryCommand({ TableName: table(), KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)', ExpressionAttributeValues: { ':pk': PK, ':prefix': prefix }, ConsistentRead: true, ExclusiveStartKey: cursor, Limit: 100 }));
+export async function queryPage(PK: string, prefix: string, cursor?: RecordValue, options: { limit?: number; descending?: boolean } = {}): Promise<{ items: RecordValue[]; cursor?: RecordValue }> {
+  const result = await db.send(new QueryCommand({ TableName: table(), KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)', ExpressionAttributeValues: { ':pk': PK, ':prefix': prefix }, ConsistentRead: true, ExclusiveStartKey: cursor, Limit: Math.min(100, Math.max(1, options.limit || 100)), ...(options.descending ? { ScanIndexForward: false } : {}) }));
   return { items: result.Items || [], ...(result.LastEvaluatedKey ? { cursor: result.LastEvaluatedKey } : {}) };
 }
 export const put = (PK: string, SK: string, value: RecordValue, expected?: number | 'new') => ({ Put: {

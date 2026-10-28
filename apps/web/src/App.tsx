@@ -4,6 +4,7 @@ import { ArrowRight, BookOpen, LogOut, ShieldCheck } from 'lucide-react';
 import { GlobalSignOutCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthDialog } from './AuthDialog';
 import { SchoolWorkspace } from './school/SchoolWorkspace';
+import { parentUpdateLinkKey, parseParentUpdateLink } from './school/parentUpdateLink';
 import { GuidanceHome } from './guidance/GuidanceHome';
 import { StudentExperience } from './student/StudentExperience';
 import { useStudentPreferences } from './student/preferences';
@@ -116,7 +117,7 @@ export default function App() {
     catch (issue) { setSessionNotice((issue as Error).message || 'Your answers could not save. Try again before signing out.'); return; }
     beforeLeave.current = null;
     const token = session()?.accessToken; accountGeneration.current += 1; clearSession(); setUser(null); setAccountStatus('signedout'); setAccountError('');
-    await navigate(isSchool ? '/school' : '/'); setSessionNotice('You are signed out on this device.');
+    await navigate(isSchool ? (parentUpdateLink.kind !== 'none' ? path : '/school') : '/'); setSessionNotice('You are signed out on this device.');
     if (config && token) { try { await identityClient(config).send(new GlobalSignOutCommand({ AccessToken: token })); } catch { /* Local session is already removed. */ } }
   }
   const preferences = useStudentPreferences(config, user);
@@ -151,6 +152,7 @@ export default function App() {
     return <LessonView requestedCardId={requestedCardId} key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} />;
   }
   const parentReportMatch = pathname.match(/^\/school\/report\/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)\/?$/);
+  const parentUpdateLink = parseParentUpdateLink(path.split('?')[1] || '');
   const isSchool = pathname === '/school' || pathname === '/school/' || Boolean(parentReportMatch);
   const isLearner = Boolean(learningMatch) || pathname === '/' || pathname === '/setup' || pathname === '/profile' || pathname === '/report' || /^\/(subjects|chapters)\/[^/]+\/?$/.test(pathname);
   function page() {
@@ -158,7 +160,7 @@ export default function App() {
     if (!config || accountStatus === 'restoring') return <main className="status-panel page-width" role="status">{copy("Opening your account…")}</main>;
     if (accountStatus === 'error') return <main className="status-panel page-width"><h1>{copy("Let’s reconnect to your account.")}</h1><p role="alert">{uiError(language, accountError)}</p><div className="account-actions"><button className="button primary" onClick={() => { setAccountStatus('restoring'); setAccountRetry(value => value + 1); }}>{copy("Try again")}</button><button className="button secondary" onClick={() => { accountGeneration.current += 1; clearSession(); setUser(null); setAccountStatus('signedout'); setAuthMode('signin'); }}>{copy("Sign in again")}</button></div></main>;
     if (parentReportMatch && user) return <ReportCardView key={`${user.id}:${parentReportMatch.slice(1).join(':')}`} config={config} user={user} navigate={navigate} parent={{ schoolId: parentReportMatch[1], classId: parentReportMatch[2], childId: parentReportMatch[3] }} />;
-    if (isSchool) return <SchoolWorkspace key={user?.id || 'signedout'} config={config} user={user} onSignIn={() => setAuthMode('signin')} />;
+    if (isSchool) return <SchoolWorkspace key={`${user?.id || 'signedout'}:${parentUpdateLinkKey(parentUpdateLink)}`} config={config} user={user} parentUpdateLink={parentUpdateLink} onSignIn={() => setAuthMode('signin')} />;
     if (isLearner) {
       if (!user) return <main className="account-entry page-width"><span className="section-symbol"><ShieldCheck size={29} /></span><p className="eyebrow">{copy("YOUR LEARNING SPACE")}</p><h1>{copy("A little learning")}<br />{copy("starts here.")}</h1><p>{copy("Sign up or sign in to make this space yours. Then choose your class and learning language, and pick up where you left off.")}</p><div className="account-actions"><button className="button primary large" onClick={() => setAuthMode('signup')}>{copy("Sign up")}<ArrowRight size={18} /></button><button className="button secondary large" onClick={() => setAuthMode('signin')}>{copy("Sign in")}</button></div><p className="account-standalone">{copy("Learn independently or connect with your school using your own account.")}</p><a className="account-school" href="/school" onClick={event => { event.preventDefault(); navigate('/school'); }}>{copy("School staff or parent? Open your school workspace")}<ArrowRight size={16} /></a></main>;
       if (pathname === '/report' && !preferences.loading && !preferences.error && preferences.profile.completed) return <ReportCardView key={user.id} config={config} user={user} preferredLanguage={language} navigate={navigate} />;

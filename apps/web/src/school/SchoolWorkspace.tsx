@@ -7,8 +7,9 @@ import './school.css';
 import '../reports/reports.css';
 import { ClassCommunication, FamilyCommunication } from './Communication';
 import { ParentGuidance, useParentGuidance } from '../guidance/ParentGuidance';
+import { linkedUpdateChild, type ParentUpdateLink } from './parentUpdateLink';
 
-type Props = { config: Config; user: User | null; onSignIn: () => void };
+type Props = { config: Config; user: User | null; onSignIn: () => void; parentUpdateLink?: ParentUpdateLink };
 type Context = 'staff' | 'student' | 'parent';
 type Save = (path: string, body: unknown, method?: 'POST' | 'PUT') => Promise<void>;
 const base = '/school/schools';
@@ -31,7 +32,7 @@ function FormError({ error }: { error: string }) {
   return error ? <p className="form-error" role="alert">{error}</p> : null;
 }
 
-export function SchoolWorkspace({ config, user, onSignIn }: Props) {
+export function SchoolWorkspace({ config, user, onSignIn, parentUpdateLink = { kind: 'none' } }: Props) {
   const [workspaces, setWorkspaces] = useState<Workspaces | null>(null);
   const [context, setContext] = useState<Context | null>(null);
   const [schoolId, setSchoolId] = useState('');
@@ -61,7 +62,7 @@ export function SchoolWorkspace({ config, user, onSignIn }: Props) {
   }, [config, userId, revision]);
 
   const refresh = () => setRevision((value) => value + 1);
-  const activeContext = context || (workspaces && !workspaces.staff.length && workspaces.family.student.status === 'missing' && workspaces.family.parent.children.length ? 'parent' : 'staff');
+  const activeContext = context || (parentUpdateLink.kind !== 'none' || (workspaces && !workspaces.staff.length && workspaces.family.student.status === 'missing' && workspaces.family.parent.children.length) ? 'parent' : 'staff');
   return <main className="school-workspace page-width">
     <div className="school-heading"><div><p className="eyebrow">SCHOOL & HOME, TOGETHER</p><h1>A place to grow together.</h1><p>Connect your classroom and family with the right school records.</p></div><span className="school-heading-icon"><GraduationCap size={38} strokeWidth={1.4} /></span></div>
     {!user ? <section className="school-welcome">
@@ -76,7 +77,7 @@ export function SchoolWorkspace({ config, user, onSignIn }: Props) {
           <div className="school-workspace-picker"><label>School workspace<select value={schoolId} onChange={(event) => { setSchoolId(event.target.value); setNotice(''); }} disabled={workspaces.staff.length === 0}><option value="" disabled>{workspaces.staff.length ? 'Choose a school' : 'No staff membership yet'}</option>{workspaces.staff.map(({ school, role }) => <option key={school.id} value={school.id}>{school.name} · {role === 'admin' ? 'Administrator' : 'Teacher'}</option>)}</select></label><button className="button secondary" onClick={() => setCreating((value) => !value)} aria-expanded={creating}>{creating ? <X size={16} /> : <Plus size={16} />}{creating ? 'Close registration' : 'Register a school'}</button></div>
           {creating && <NewSchool config={config} onCancel={() => setCreating(false)} onCreated={(id) => { setSchoolId(id); setCreating(false); setNotice('Your school is ready. You are its administrator.'); refresh(); }} />}
           {schoolId ? <SchoolPanel key={`${user.id}:${schoolId}`} config={config} userId={user.id} schoolId={schoolId} revision={revision} onChanged={(text) => { setNotice(text); refresh(); }} /> : !creating && <section className="school-empty"><SchoolIcon size={29} /><h2>Your school can start here.</h2><p>Register a new school to become its administrator. If you are a teacher, ask your school administrator to add your verified email and assign your classes.</p><button className="button primary" onClick={() => setCreating(true)}><Plus size={16} />Register a school</button></section>}
-        </> : <FamilyPanel key={`${user.id}:${activeContext}`} config={config} userId={user.id} kind={activeContext} family={workspaces.family} revision={revision} />}
+        </> : <FamilyPanel key={`${user.id}:${activeContext}`} config={config} userId={user.id} kind={activeContext} family={workspaces.family} revision={revision} parentUpdateLink={parentUpdateLink} />}
       </>}
     </>}
     <aside className="school-next"><span>SCHOOL & HOME</span><p>Classroom notes, family updates and private replies connect school and home. Learning guidance publishes automatically when interpretation succeeds.</p></aside>
@@ -182,11 +183,28 @@ function StudentForm({ record, classPath, save, onCancel }: { record?: RosterStu
   return <form className="school-form school-inset" onSubmit={submit}><h3>{record ? 'Correct student records' : 'Add a student'}</h3><div className="school-form-grid"><label>Student name<input required maxLength={100} value={name} onChange={(event) => setName(event.target.value)} disabled={removing} autoComplete="off" /></label><label>Student school email<input required type="email" maxLength={254} value={studentEmail} onChange={(event) => setStudentEmail(event.target.value)} disabled={removing} autoComplete="off" /></label></div><label>Parent emails<textarea rows={2} value={parentEmails} onChange={(event) => setParentEmails(event.target.value)} disabled={removing} placeholder="One parent email per line" /><small>Record one to four separate parent emails, using a new line or comma between them. A parent can be linked to more than one child.</small></label><p className="school-help">{removing ? 'Removing this record ends its student and parent links.' : record ? 'Saving corrected emails removes the old account links. Check each address carefully.' : 'If a student email matches more than one roster record, student access pauses until the school corrects the duplicate.'}</p><FormError error={error} /><div className="school-form-actions"><button className={`button ${removing ? 'school-danger' : 'primary'}`} disabled={busy}>{busy ? 'Saving…' : removing ? 'Confirm removal' : record ? 'Save corrections' : 'Add student'}</button><button className="button secondary" type="button" onClick={onCancel} disabled={busy}>Cancel</button>{record && !removing && <button className="text-button school-remove" type="button" onClick={() => setRemoving(true)} disabled={busy}>Remove from roster</button>}</div></form>;
 }
 
-function FamilyPanel({ config, userId, kind, family, revision }: { config: Config; userId: string; kind: 'student' | 'parent'; family: Workspaces['family']; revision: number }) {
-  const [selectedId, setSelectedId] = useState('');
+function FamilyPanel({ config, userId, kind, family, revision, parentUpdateLink }: { config: Config; userId: string; kind: 'student' | 'parent'; family: Workspaces['family']; revision: number; parentUpdateLink: ParentUpdateLink }) {
+  const target = kind === 'parent' && parentUpdateLink.kind === 'target' ? parentUpdateLink.target : null;
+  const [selectedId, setSelectedId] = useState(() => target ? `${target.schoolId}:${target.classId}:${target.childId}` : '');
   const links = family[kind];
   const guidance = useParentGuidance(config, userId, links.children, kind === 'parent', revision);
   const ambiguous = kind === 'student' && family.student.status === 'ambiguous';
-  const selectedChild = links.children.find((child) => `${child.schoolId}:${child.classId}:${child.id}` === selectedId);
-  return <section className="school-family"><div className="school-detail-heading"><div><p className="eyebrow">{kind === 'student' ? 'YOUR SCHOOL CONNECTION' : 'YOUR FAMILY CONNECTIONS'}</p><h2>{kind === 'student' ? 'Learning with your school.' : 'Here for their next step.'}</h2></div><span className="school-role">{kind === 'student' ? 'Student workspace' : 'Parent workspace'}</span></div>{ambiguous ? <div className="school-empty school-warning" role="alert"><h3>Your student email needs a correction.</h3><p>Your verified email matches more than one student record. Ask your school administrator to correct the duplicate before you can access a student workspace.</p><p>You can keep using the learning library while your school resolves the records.</p></div> : links.children.length ? <div className={`school-family-grid${kind === 'parent' ? ' parent-family-grid' : ''}`}>{links.children.map((child: LinkedChild) => <article className="school-card school-child" key={`${child.schoolId}:${child.classId}:${child.id}`}><span className="school-child-icon">{kind === 'student' ? <BookOpen size={23} /> : <HeartHandshake size={23} />}</span><span className="school-link-status"><Check size={13} />Connected</span><h3>{child.name}</h3><p>{child.className}<br />{child.schoolName}</p><span className="school-help">{kind === 'student' ? 'Your verified student email matches this school record.' : 'Your verified parent email is recorded for this child.'}</span><button className="button secondary family-open-updates" onClick={() => setSelectedId(`${child.schoolId}:${child.classId}:${child.id}`)}>Open classroom updates</button>{kind === 'parent' && <><a className="button secondary family-report-link" href={`/school/report/${encoded(child.schoolId)}/${encoded(child.classId)}/${encoded(child.id)}`}><ListChecks size={16} />View report card<ArrowRight size={16} /></a><ParentGuidance child={child} state={guidance} /></>}</article>)}</div> : <div className="school-empty"><HeartHandshake size={30} /><h3>{kind === 'student' ? 'Your school connection starts with your email.' : 'Your family links will appear here.'}</h3><p>{kind === 'student' ? 'Ask your school to record this account’s email as your student school email. Once it is recorded, refresh this page.' : 'Ask your school to record this account’s email as the parent email for each child. Each student needs a separate account. Once the records are saved, refresh this page.'}</p></div>}{selectedChild && <FamilyCommunication key={`${kind}:${selectedId}`} config={config} userId={userId} child={selectedChild} role={kind} />}<a className="button secondary" href={kind === 'parent' ? '/?learn=1' : '/'}>{kind === 'parent' ? 'Learn for myself' : 'Explore the learning library'}<ArrowRight size={16} /></a></section>;
+  const requestedChild = target ? linkedUpdateChild(target, links.children) : undefined;
+  const unavailable = kind === 'parent' && (parentUpdateLink.kind === 'invalid' || (Boolean(target) && !requestedChild));
+  const selectedChild = links.children.find(child => `${child.schoolId}:${child.classId}:${child.id}` === selectedId);
+  const requestedUpdateId = target && selectedChild === requestedChild ? target.updateId : undefined;
+  return <section className="school-family">
+    <div className="school-detail-heading"><div><p className="eyebrow">{kind === 'student' ? 'YOUR SCHOOL CONNECTION' : 'YOUR FAMILY CONNECTIONS'}</p><h2>{kind === 'student' ? 'Learning with your school.' : 'Here for their next step.'}</h2></div><span className="school-role">{kind === 'student' ? 'Student workspace' : 'Parent workspace'}</span></div>
+    {unavailable && <div className="school-empty school-warning" role="alert"><h3>This family update is unavailable.</h3><p>Sign in with the verified parent account recorded by the school. This link does not provide access to another child’s records.</p></div>}
+    {ambiguous ? <div className="school-empty school-warning" role="alert"><h3>Your student email needs a correction.</h3><p>Your verified email matches more than one student record. Ask your school administrator to correct the duplicate before you can access a student workspace.</p><p>You can keep using the learning library while your school resolves the records.</p></div> : links.children.length ? <>
+      {selectedChild && requestedUpdateId && <FamilyCommunication key={`${kind}:${selectedId}:${requestedUpdateId}`} config={config} userId={userId} child={selectedChild} role={kind} requestedUpdateId={requestedUpdateId} />}
+      <div className={`school-family-grid${kind === 'parent' ? ' parent-family-grid' : ''}`}>{links.children.map((child: LinkedChild) => <article className="school-card school-child" key={`${child.schoolId}:${child.classId}:${child.id}`}>
+        <span className="school-child-icon">{kind === 'student' ? <BookOpen size={23} /> : <HeartHandshake size={23} />}</span><span className="school-link-status"><Check size={13} />Connected</span><h3>{child.name}</h3><p>{child.className}<br />{child.schoolName}</p><span className="school-help">{kind === 'student' ? 'Your verified student email matches this school record.' : 'Your verified parent email is recorded for this child.'}</span>
+        <button className="button secondary family-open-updates" onClick={() => setSelectedId(`${child.schoolId}:${child.classId}:${child.id}`)}>Open classroom updates</button>
+        {kind === 'parent' && <><a className="button secondary family-report-link" href={`/school/report/${encoded(child.schoolId)}/${encoded(child.classId)}/${encoded(child.id)}`}><ListChecks size={16} />View report card<ArrowRight size={16} /></a><ParentGuidance child={child} state={guidance} /></>}
+      </article>)}</div>
+      {selectedChild && !requestedUpdateId && <FamilyCommunication key={`${kind}:${selectedId}`} config={config} userId={userId} child={selectedChild} role={kind} />}
+    </> : !unavailable && <div className="school-empty"><HeartHandshake size={30} /><h3>{kind === 'student' ? 'Your school connection starts with your email.' : 'Your family links will appear here.'}</h3><p>{kind === 'student' ? 'Ask your school to record this account’s email as your student school email. Once it is recorded, refresh this page.' : 'Ask your school to record this account’s email as the parent email for each child. Each student needs a separate account. Once the records are saved, refresh this page.'}</p></div>}
+    <a className="button secondary" href={kind === 'parent' ? '/?learn=1' : '/'}>{kind === 'parent' ? 'Learn for myself' : 'Explore the learning library'}<ArrowRight size={16} /></a>
+  </section>;
 }
