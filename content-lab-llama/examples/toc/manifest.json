@@ -1,0 +1,26 @@
+{
+  "factory": "toc",
+  "metadata": {
+    "grade": 6,
+    "subject": "SYNTHETIC PLUMBING — NO CURRICULUM",
+    "title": "SYNTHETIC CONTENTS INPUT ONLY"
+  },
+  "pages": [
+    {
+      "printed_page": "xix",
+      "path": "../guideline/sentinel.png"
+    },
+    {
+      "printed_page": 19,
+      "path": "../guideline/sentinel.png"
+    },
+    {
+      "printed_page": "xx",
+      "path": "../guideline/sentinel.png"
+    },
+    {
+      "printed_page": 20,
+      "path": "../guideline/sentinel.png"
+    }
+  ]
+}

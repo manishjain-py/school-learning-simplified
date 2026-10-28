@@ -69,7 +69,7 @@ def load_manifest(path, factory):
     if value.get('factory') != factory.NAME:
         raise ValueError('Manifest factory mismatch')
     metadata = value.get('metadata', {})
-    if not isinstance(metadata, dict) or set(metadata) - METADATA:
+    if not isinstance(metadata, dict) or set(metadata) - getattr(factory, 'METADATA', METADATA):
         raise ValueError('Metadata must use the documented allowlist')
     for key, item in metadata.items():
         if key == 'other_chapter_titles':

@@ -51,6 +51,18 @@ class Fixture:
         marker = 'SYNTHETIC PLUMBING ONLY — NOT MODEL OR CURRICULUM OUTPUT'
         if notes_pages:
             value = {'page_notes': [{'printed_page': p, 'observations': marker} for p in notes_pages]}
+        elif role == 'toc_review':
+            value = {'ok': False, 'findings': [{'chapter_number': None, 'issue': marker,
+                'evidence': 'One-pixel synthetic images contain no printed chapter map.',
+                'fix': 'Synthetic exercise only; no factual content correction claimed.'}], 'note': marker}
+        elif role in ('toc_draft', 'toc_revision'):
+            value = {'artifact': {'chapters': [
+                {'chapter_number': 1, 'chapter_title': marker+' A', 'start_page': 7,
+                 'end_page': 10, 'notes': None},
+                {'chapter_number': 2, 'chapter_title': marker+' B', 'start_page': 11,
+                 'end_page': 14, 'notes': marker}],
+                'source_note': marker+'; start-only sentinel: first end = next start minus one; final end is a disclosed synthetic estimate.'},
+                'note': marker}
         elif role == 'selection':
             value = {'winner_index': 1, 'concerns': [marker], 'note': marker}
         elif role in ('coverage', 'accuracy', 'structure'):

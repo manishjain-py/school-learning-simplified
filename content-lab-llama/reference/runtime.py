@@ -200,6 +200,8 @@ def report(workspace, factory):
         result = results.get(role, {})
         chunks.append('<details open><summary>'+html.escape(role)+' — '+html.escape(result.get('status', 'unavailable'))+'</summary><pre>'+
             esc(result.get('output', {'technical_failure': 'See private checkpoints/responses; details omitted here.'}))+'</pre></details>')
+    for path in sorted((workspace/'diagnostics').glob('*.json')):
+        chunks.append('<h2>Advisory pre-revision diagnostics</h2><pre>'+esc(read(path))+'</pre>')
     chunks.append('<h2>Per-request usage and reservations</h2><pre>'+esc([{k: c[k] for k in ('key', 'role', 'status', 'usage', 'reserved_usd', 'actual_usd', 'request_sha256') if k in c} for c in ledger['calls']])+'</pre>')
     for key, result in results.items():
         if '__batch_' in key:
