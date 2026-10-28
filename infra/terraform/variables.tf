@@ -39,6 +39,25 @@ variable "school_ai_enabled" {
   default     = false
 }
 
+variable "parent_email_enabled" {
+  description = "Explicit activation only after controlled sandbox recipient verification."
+  type        = bool
+  default     = false
+}
+
+variable "parent_email_allowed_recipients" {
+  description = "Privately supplied controlled demo recipients; empty disables sending."
+  type        = list(string)
+  sensitive   = true
+  default     = []
+  validation {
+    condition = length(var.parent_email_allowed_recipients) <= 4 && alltrue([
+      for email in var.parent_email_allowed_recipients : email == lower(trimspace(email)) && can(regex("^[^@[:space:]]+@[^@[:space:]]+\\.[^@[:space:]]+$", email))
+    ])
+    error_message = "Supply at most four normalized, owner-controlled email addresses privately."
+  }
+}
+
 variable "github_oidc_subject" {
   description = "Exact current main-branch subject from the repository OIDC configuration; set privately."
   type        = string

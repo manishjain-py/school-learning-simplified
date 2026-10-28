@@ -67,7 +67,9 @@ resource "aws_lambda_function" "api" {
   reserved_concurrent_executions = 5
   environment {
     variables = {
-      TABLE_NAME = aws_dynamodb_table.application.name, CONTENT_BUCKET = aws_s3_bucket.content.id, RELEASE_SHA = "bootstrap", CONTENT_RELEASE = var.content_release, SCHOOL_AI_ENABLED = tostring(var.school_ai_enabled)
+      TABLE_NAME           = aws_dynamodb_table.application.name, CONTENT_BUCKET = aws_s3_bucket.content.id, RELEASE_SHA = "bootstrap", CONTENT_RELEASE = var.content_release, SCHOOL_AI_ENABLED = tostring(var.school_ai_enabled)
+      USER_POOL_ID         = aws_cognito_user_pool.users.id, SITE_URL = "https://${var.domain}"
+      PARENT_EMAIL_ENABLED = tostring(var.parent_email_enabled), PARENT_EMAIL_FROM = "updates@${var.domain}", PARENT_EMAIL_ALLOWED_RECIPIENTS = join(",", var.parent_email_allowed_recipients)
     }
   }
   depends_on = [aws_iam_role_policy.api, aws_cloudwatch_log_group.api]
