@@ -7,6 +7,7 @@ import { schoolLocalDate } from '../ai/dates.js';
 import { SchoolError, linkedFamily, requireClassStaff, requireFamilyChild, listClassRosterForGuidance, type VerifiedAccount, type ChildLink } from '../school/index.js';
 import { getSchoolLog, saveLogGuidance, type SchoolLog } from '../school/communication.js';
 import { recommendationCatalog, recommendationContent } from './content.js';
+import { pairTestGuidance } from './test-plans.js';
 
 type Row = Record<string, any>;
 type Mode = 'learn' | 'practice' | 'revise';
@@ -108,14 +109,17 @@ export async function requireOrigin(user: VerifiedAccount, id: string, chapterId
   if (started && !activity) return fail(409, 'ORIGIN_NOT_STARTED', 'Open this recommendation from your homepage first.');
   return { record, child, key, activity };
 }
-export async function startOrigin(user: VerifiedAccount, id: string) {
+export async function startOrigin(user: VerifiedAccount, id: string, guards: NonNullable<TransactWriteCommandInput['TransactItems']> = []) {
   const record = await recommendation(id); const context = await requireOrigin(user, id, record.chapterId, record.mode, false);
   if (!context.activity) {
     const timestamp = now();
     const activity: Omit<OriginActivity, 'completedCards'> = { recommendationId: id, studentId: context.child.id, accountId: user.id, studentEmailHash: hash(user.email.trim().toLowerCase()), startedAt: timestamp, updatedAt: timestamp, currentCardId: null, language: 'en' };
-    const writes: NonNullable<TransactWriteCommandInput['TransactItems']> = [currentLogCondition({ ...record, id: record.logId }), { Put: { TableName: table(), Item: { ...context.key, ...activity }, ConditionExpression: 'attribute_not_exists(PK)' } }];
-    try { await transaction(writes); } catch (error) { if (!(error instanceof SchoolError && error.status === 409) || !await get<OriginActivity>(context.key)) throw error; }
-  }
+    const writes: NonNullable<TransactWriteCommandInput['TransactItems']> = [currentLogCondition({ ...record, id: record.logId }), ...guards, { Put: { TableName: table(), Item: { ...context.key, ...activity }, ConditionExpression: 'attribute_not_exists(PK)' } }];
+    try { await transaction(writes); } catch (error) {
+      if (!(error instanceof SchoolError && error.status === 409) || !await get<OriginActivity>(context.key)) throw error;
+      if (guards.length) await transaction([currentLogCondition({ ...record, id: record.logId }), ...guards]);
+    }
+  } else if (guards.length) await transaction([currentLogCondition({ ...record, id: record.logId }), ...guards]);
   return { recommendation: safeRecommendation(record), activity: await get<OriginActivity>(context.key) };
 }
 export async function originProgress(user: VerifiedAccount, id: string, chapterId: string, mode: 'learn' | 'revise', body?: Row) {
@@ -139,19 +143,52 @@ export async function originPractice(user: VerifiedAccount, id: string, chapterI
 }
 export function originCondition(record: Recommendation) { return currentLogCondition({ ...record, id: record.logId }); }
 
-async function familyRecommendations(child: ChildLink, role: 'student' | 'parent', user: VerifiedAccount) {
+async function currentFamilyGuidance(child: ChildLink, role: 'student' | 'parent', user: VerifiedAccount) {
   child = await requireFamilyChild(user, child.schoolId, child.classId, child.id, role);
   const localToday = schoolLocalDate(new Date(), child.timeZone);
-  const snapshots = await query(`GUIDANCE#${child.schoolId}#${child.classId}`, 'LOG#'); const recommendations = [];
-  for (const snapshot of snapshots) for (const id of snapshot.recommendationIds || []) {
+  const snapshots = await query(`GUIDANCE#${child.schoolId}#${child.classId}`, 'LOG#'); const records: Recommendation[] = [];
+  for (const id of new Set<string>(snapshots.flatMap(snapshot => snapshot.recommendationIds || []))) {
     const record = await recommendation(id);
     // Expiry changes the family's current next steps only. Keep origin access and
     // teacher history governed by revision/membership, without deleting old work.
-    if ((record.date && record.date < localToday) || (record.audience.type === 'student' && record.audience.studentId !== child.id) || !await active(record)) continue;
-    recommendations.push(safeRecommendation(record));
+    if (record.schoolId !== child.schoolId || record.classId !== child.classId || (record.date && record.date < localToday) || (record.audience.type === 'student' && record.audience.studentId !== child.id) || !await active(record)) continue;
+    records.push(record);
   }
+  return { child, localToday, records, snapshots };
+}
+async function familyRecommendations(child: ChildLink, role: 'student' | 'parent', user: VerifiedAccount) {
+  const context = await currentFamilyGuidance(child, role, user); child = context.child;
+  const recommendations = context.records.map(safeRecommendation);
   recommendations.sort((a,b)=>(a.date || '9999').localeCompare(b.date || '9999') || a.title.localeCompare(b.title));
-  return { child: { id: child.id, name: child.name, className: child.className, schoolName: child.schoolName }, timeZone: child.timeZone, localToday, recommendations };
+  const testPlans = pairTestGuidance(context.records, await recommendationCatalog(), context.localToday).map(pair => pair.plan);
+  return { child: { id: child.id, name: child.name, className: child.className, schoolName: child.schoolName }, timeZone: child.timeZone, localToday: context.localToday, recommendations, testPlans };
+}
+async function startTestPlan(user: VerifiedAccount, id: string, input: Row) {
+  if (!['revise', 'practice'].includes(input.step) || Object.keys(input).some(field => !['step', 'recommendationId'].includes(field))) return fail(400, 'INVALID_REQUEST', 'Choose a step from this test plan.');
+  const links = await linkedFamily(user);
+  if (links.student.status !== 'linked') return fail(403, 'STUDENT_LINK_REQUIRED', 'Use the verified student account linked to this test plan.');
+  const context = await currentFamilyGuidance(links.student.children[0], 'student', user);
+  const pair = pairTestGuidance(context.records, await recommendationCatalog(), schoolLocalDate(new Date(), context.child.timeZone)).find(pair => pair.plan.id === id);
+  if (!pair) return fail(409, 'TEST_PLAN_CHANGED', 'This test plan changed or its date passed. Open your latest school guidance.');
+  if ((input.step === 'practice' || input.recommendationId !== undefined) && input.recommendationId !== pair.plan.reviseId) return fail(409, 'ORIGIN_MISMATCH', 'Continue from the revision activity in this test plan.');
+  const snapshot = context.snapshots.find(snapshot => snapshot.SK === snapshotKey({ ...pair.revise, id: pair.revise.logId }).SK);
+  if (!snapshot) return fail(409, 'TEST_PLAN_CHANGED', 'Refresh your latest school guidance.');
+  const guards: NonNullable<TransactWriteCommandInput['TransactItems']> = [
+    { ConditionCheck: { TableName: table(), Key: snapshotKey({ ...pair.revise, id: pair.revise.logId }), ConditionExpression: 'recommendationIds = :ids', ExpressionAttributeValues: { ':ids': snapshot.recommendationIds } } },
+    { ConditionCheck: { TableName: table(), Key: { PK: `CLASS#${context.child.schoolId}#${context.child.classId}`, SK: `STUDENT#${context.child.id}` }, ConditionExpression: '#active = :active AND studentEmail = :email', ExpressionAttributeNames: { '#active': 'active' }, ExpressionAttributeValues: { ':active': true, ':email': user.email.trim().toLowerCase() } } },
+  ];
+  if (input.step === 'practice') {
+    const revision = await requireOrigin(user, pair.plan.reviseId, pair.plan.chapterId, 'revise');
+    const activity = revision.activity!;
+    const content = await recommendationContent<{ cards: { id: string }[] }>(`revise/${pair.plan.chapterId}/en.json`);
+    const cards = new Set(content.cards.map(card => card.id));
+    if (!cards.size) return fail(503, 'REVISION_UNAVAILABLE', 'Revision cards are temporarily unavailable.');
+    if (activity.accountId !== user.id || activity.studentId !== context.child.id || activity.recommendationId !== pair.plan.reviseId || activity.studentEmailHash !== hash(user.email.trim().toLowerCase()) || !(activity.completedCards instanceof Set) || [...cards].some(card => !activity.completedCards.has(card))) return fail(409, 'REVISION_INCOMPLETE', 'Review every revision card and wait for your progress to save before continuing.');
+    guards.push({ ConditionCheck: { TableName: table(), Key: revision.key, ConditionExpression: 'accountId = :owner AND studentEmailHash = :email AND completedCards = :completed', ExpressionAttributeValues: { ':owner': user.id, ':email': activity.studentEmailHash, ':completed': activity.completedCards } } });
+  }
+  if (pair.plan.date < schoolLocalDate(new Date(), context.child.timeZone)) return fail(409, 'TEST_PLAN_CHANGED', 'The test date passed. Open your latest school guidance.');
+  const opened = await startOrigin(user, input.step === 'revise' ? pair.plan.reviseId : pair.plan.practiceId, guards);
+  return { recommendation: opened.recommendation };
 }
 async function activitySummary(record: Recommendation, row: Row) {
   if (record.mode === 'practice') {
@@ -198,6 +235,8 @@ export async function handleRecommendations(event: APIGatewayProxyEventV2WithJWT
     const links = await linkedFamily(user);
     return { studentStatus: links.student.status, student: await Promise.all(links.student.children.map(child => familyRecommendations(child,'student',user))), parent: await Promise.all(links.parent.children.map(child=>familyRecommendations(child,'parent',user))) };
   }
+  const testPlan = path.match(/^\/api\/school\/recommendations\/test-plans\/([a-f0-9]{64})\/start$/);
+  if (testPlan && method === 'POST') return startTestPlan(user, testPlan[1], body(event));
   const start = path.match(/^\/api\/school\/recommendations\/([a-f0-9]{64})\/start$/);
   if (start && method === 'POST') { const opened = await startOrigin(user,start[1]); return { recommendation: opened.recommendation }; }
   const staff = path.match(/^\/api\/school\/recommendations\/([^/]+)\/([^/]+)\/logs\/([^/]+)\/(results|retry)$/);

@@ -100,8 +100,12 @@ function ChapterWorkspace({ config, user, chapter, profile, search, navigate }: 
     })).then((entries) => setProgress(Object.fromEntries(entries))).catch((issue) => { if (issue.name !== 'AbortError') setError('Saved progress could not load. You can still open an activity to retry.'); });
     return () => abort.abort();
   }, [config, chapter.id, user?.id]);
-  const query = new URLSearchParams(search); const originId = query.get('recommendation'); const originMode = query.get('mode');
+  const query = new URLSearchParams(search); const originId = query.get('recommendation'); const originMode = query.get('mode'); const planId = query.get('plan');
   const hasOrigin = !!originId && /^[a-f0-9]{64}$/.test(originId) && modes.includes(originMode as LearningMode);
-  function openMode(mode: LearningMode) { navigate(`/${mode}/${chapter.id}${hasOrigin && originMode === mode ? `?recommendation=${originId}` : ''}`); }
+  function openMode(mode: LearningMode) {
+    const continuation = new URLSearchParams();
+    if (hasOrigin && originMode === mode) { continuation.set('recommendation', originId!); if (mode === 'revise' && planId) continuation.set('plan', planId); }
+    navigate(`/${mode}/${chapter.id}${continuation.size ? `?${continuation}` : ''}`);
+  }
   return <main className="student-area page-width chapter-workspace"><button className="student-back" onClick={() => navigate(subjectPath(chapter.subject))}><ArrowLeft size={18} />{subjectLabel(chapter.subject)}</button><div className="chapter-workspace-heading"><div><p className="student-kicker">CLASS {chapter.grade} · {chapter.subject}</p><h1>{chapter.title}</h1><p>{chapter.description}</p><span className="chapter-language"><Globe2 size={16} />{profile.language === 'hi' ? 'Your preferred language: हिन्दी' : 'Your preferred language: English'}</span></div><span className="chapter-workspace-art"><Leaf size={68} strokeWidth={1.1} /></span></div>{hasOrigin && <p className="notice">Your teacher recommended {modeLabel(originMode as LearningMode)}. Return to that activity below to keep its recorded progress together.</p>}<h2 className="mode-heading">How would you like to study?</h2><div className="student-mode-grid">{modes.filter((mode) => chapter.modes?.includes(mode) ?? mode === 'learn').map((mode) => <button className={`student-mode ${mode}`} key={mode} onClick={() => openMode(mode)}><span className="student-mode-icon"><ModeIcon mode={mode} /></span><span className="student-mode-copy"><strong>{modeLabel(mode)}{hasOrigin && originMode === mode && <small className="recommended-mode">FROM YOUR TEACHER</small>}</strong><span>{modeDetail[mode]}</span><small>{hasOrigin && originMode === mode ? 'Continue your recommended activity' : progress[mode] || 'Opening saved progress…'}</small></span><ArrowRight size={20} /></button>)}</div><ErrorText text={error} /></main>;
 }

@@ -124,6 +124,7 @@ export default function App() {
   const pathname = path.split('?')[0];
   const recommendationId = new URLSearchParams(path.split('?')[1] || '').get('recommendation') ?? undefined;
   const requestedSetId = new URLSearchParams(path.split('?')[1] || '').get('set') ?? undefined;
+  const testPlanId = new URLSearchParams(path.split('?')[1] || '').get('plan') ?? undefined;
   const learningMatch = pathname.match(/^\/(learn|practice|revise)\/([a-zA-Z0-9_-]+)\/?$/);
   function learningPage() {
     if (!config || preferences.loading) return <main className="status-panel page-width" role="status">Opening your learning space…</main>;
@@ -133,9 +134,13 @@ export default function App() {
     const chapterId = learningMatch![2];
     const entry = catalog?.chapters.find((item) => item.id === chapterId);
     if (mode !== 'learn' && !entry?.modes?.includes(mode)) return <main className="status-panel page-width"><h1>This learning mode is on its way.</h1><p>Explore the available lesson in the meantime.</p><button className="button primary" onClick={() => navigate(`/learn/${chapterId}`)}>Go to Learn<ArrowRight size={17} /></button></main>;
-    const props = { config, chapterId, user, recommendationId, preferredLanguage: preferences.profile.language || undefined, onSignIn: () => setAuthMode('signin'), onBack: () => navigate(`/chapters/${chapterId}${recommendationId !== undefined ? `?recommendation=${encodeURIComponent(recommendationId)}&mode=${mode}` : ''}`), onMode: (next: LearningMode) => navigate(`/${next}/${chapterId}${recommendationId !== undefined && next === mode ? `?recommendation=${encodeURIComponent(recommendationId)}` : ''}`) };
+    const props = { config, chapterId, user, recommendationId, preferredLanguage: preferences.profile.language || undefined, onSignIn: () => setAuthMode('signin'), onBack: () => navigate(`/chapters/${chapterId}${recommendationId !== undefined ? `?recommendation=${encodeURIComponent(recommendationId)}&mode=${mode}${testPlanId ? `&plan=${encodeURIComponent(testPlanId)}` : ''}` : ''}`), onMode: (next: LearningMode) => navigate(`/${next}/${chapterId}${recommendationId !== undefined && next === mode ? `?recommendation=${encodeURIComponent(recommendationId)}${testPlanId ? `&plan=${encodeURIComponent(testPlanId)}` : ''}` : ''}`) };
     if (mode === 'practice') return <PracticeView key={`${chapterId}:${recommendationId || 'library'}:${requestedSetId || 'current'}:${user?.id || 'anonymous'}`} {...props} requestedSetId={requestedSetId} registerBeforeLeave={registerBeforeLeave} onPracticeAgain={() => { void navigate(`/practice/${chapterId}`); }} onOpenDraftContext={(setId, origin) => { void navigate(`/practice/${chapterId}?${new URLSearchParams({ set: setId, ...(origin ? { recommendation: origin } : {}) })}`); }} />;
-    if (mode === 'revise') return <ReviseView key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} />;
+    if (mode === 'revise') return <ReviseView key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} onContinueToPractice={testPlanId && recommendationId && user ? async () => {
+      const { recommendation } = await request<{ recommendation: { id: string; chapterId: string; mode: string } }>(config, `/school/recommendations/test-plans/${encodeURIComponent(testPlanId)}/start`, { authenticated: true, expectedUserId: user.id, method: 'POST', body: { step: 'practice', recommendationId } });
+      if (recommendation.mode !== 'practice' || recommendation.chapterId !== chapterId) throw new Error('This test guidance changed. Open your latest school next steps.');
+      await navigate(`/practice/${chapterId}?${new URLSearchParams({ recommendation: recommendation.id, plan: testPlanId })}`);
+    } : undefined} />;
     return <LessonView key={`${chapterId}:${recommendationId || 'library'}:${user?.id || 'anonymous'}`} {...props} />;
   }
   const isSchool = pathname === '/school' || pathname === '/school/';
