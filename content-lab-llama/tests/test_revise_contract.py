@@ -53,9 +53,9 @@ def capture(workspace, *, appended):
 
 def test_exact_pre_edit_requests_projections_exports_and_sources(tmp_path):
     baseline = read(ROOT/'tests/fixtures/revise-request-baseline.json')
-    # T14 changes only Translate request(); retain the immutable T13 fixture and full tree check.
+    # T14 changes Translate request(); T15 changes runtime.py. Retain the immutable T13 fixture.
     expected = {**baseline['snapshot'], 'other_reference_tree_sha256':
-                'eb8a8ebe826b725b7652d84864ce27fd4facf15c41f3424ead0e7db1d990070a'}
+                'f013945ef45d8112aaa50c954fcda96ff61d57874a13b1bf93c6b8accb246c84'}
     assert capture(tmp_path, appended=True) == expected
 
 

@@ -12,11 +12,14 @@ from .providers import Bedrock, Fixture, validate_config
 
 
 def model_response_json(text):
-    """Remove whole fences or an exact JSON opener through EOF; never repair content."""
+    """Remove supported whole-response JSON framing; never repair content."""
     match = re.fullmatch(r'```(json)?[ \t]*\r?\n(.*?)\r?\n```', text.strip(), re.DOTALL)
     if match:
         body = match[2]
         framing = 'markdown_json_fence' if match[1] else 'markdown_fence'
+    elif text.startswith('```json\n') and text.endswith('}```'):
+        body = text[len('```json\n'):-3]
+        framing = 'markdown_json_fence_inline_close'
     elif text.startswith('```json\n'):
         body = text[len('```json\n'):]
         framing = 'markdown_json_fence_eof'

@@ -42,6 +42,7 @@ BODY = '{"artifact":{"text":"  Hindi: नमस्ते\\n```literal```  ","ext
     ('```json\n'+BODY+'\n```', 'markdown_json_fence'),
     (' \n```\n'+BODY+'\n```\t ', 'markdown_fence'),
     ('\t```json \t\r\n'+BODY+'\r\n```\r\n', 'markdown_json_fence'),
+    ('```json\n'+BODY+'```', 'markdown_json_fence_inline_close'),
 ])
 def test_complete_object_framing_preserves_exact_body_and_values(text, framing):
     body, observed = model_response_json(text)
@@ -70,7 +71,8 @@ def test_no_prose_extraction_repair_nonfinite_or_nonobject(text):
 
 
 @pytest.mark.parametrize('factory', [toc, guideline])
-@pytest.mark.parametrize('framing', ['markdown_json_fence', 'markdown_json_fence_eof'])
+@pytest.mark.parametrize('framing', ['markdown_json_fence', 'markdown_json_fence_eof',
+                                   'markdown_json_fence_inline_close'])
 def test_whole_graph_fences_raw_responses_author_exports_and_resume(tmp_path, monkeypatch, factory, framing):
     original = Fixture.invoke
     responses = {}
@@ -81,8 +83,9 @@ def test_whole_graph_fences_raw_responses_author_exports_and_resume(tmp_path, mo
         if isinstance(value.get('artifact'), dict):
             value['artifact']['synthetic_exact_text'] = '  Keep ```json\n{}\n``` and नमस्ते.  '
         body = json.dumps(value, ensure_ascii=False)
-        text = (' \n```json\n'+body+'\n```\t ' if framing == 'markdown_json_fence'
-                else '```json\n'+body+'\n \t\r\n')
+        text = {'markdown_json_fence': ' \n```json\n'+body+'\n```\t ',
+                'markdown_json_fence_eof': '```json\n'+body+'\n \t\r\n',
+                'markdown_json_fence_inline_close': '```json\n'+body+'```'}[framing]
         # Match the shared boundary's existing text-block joining behavior.
         response['output']['message']['content'] = [{'text': text[:9]}, {'text': text[9:]}]
         responses[role] = response
@@ -127,6 +130,13 @@ def test_whole_graph_fences_raw_responses_author_exports_and_resume(tmp_path, mo
     ('```json\n{"artifact":{}}', 'max_tokens', None),
     ('```json\n{"artifact":{}}', 'stop_sequence', None),
     ('```json\n{"artifact":{}}', None, None),
+    ('```json\n{"artifact":"wrong type"}```', 'end_turn', 'markdown_json_fence_inline_close'),
+    ('```json\n{"wrong_envelope":{}}```', 'end_turn', 'markdown_json_fence_inline_close'),
+    ('```json\n{"artifact":{```', 'end_turn', None),
+    ('```json\n{"artifact":{"x":NaN}}```', 'end_turn', None),
+    ('```json\n{"artifact":{}}```', 'max_tokens', None),
+    ('```json\n{"artifact":{}}```', 'stop_sequence', None),
+    ('```json\n{"artifact":{}}```', None, None),
 ])
 def test_failure_preserves_raw_no_repeat_and_stop_precedes_parsing(tmp_path, monkeypatch, text, stop, expected_framing):
     response = {'output': {'message': {'content': [{'text': text}]}}, 'stopReason': stop}
@@ -168,11 +178,13 @@ def test_runtime_change_refused_before_any_new_or_resumed_request(tmp_path, monk
     assert not run.ledger['calls']
 
 
-@pytest.mark.parametrize('framing', ['plain_json', 'markdown_fence', 'markdown_json_fence_eof'])
+@pytest.mark.parametrize('framing', ['plain_json', 'markdown_fence', 'markdown_json_fence_eof',
+                                   'markdown_json_fence_inline_close'])
 def test_mocked_bedrock_usage_settlement_unchanged(tmp_path, monkeypatch, framing):
     body = '{"artifact":{"synthetic":"SENTINEL"}}'
     text = {'plain_json': body, 'markdown_fence': '```\n'+body+'\n```',
-            'markdown_json_fence_eof': '```json\n'+body}[framing]
+            'markdown_json_fence_eof': '```json\n'+body,
+            'markdown_json_fence_inline_close': '```json\n'+body+'```'}[framing]
     response = {'output': {'message': {'content': [{'text': text}]}},
                 'stopReason': 'end_turn', 'usage': {'inputTokens': 1000, 'outputTokens': 100}}
     calls = []
@@ -202,7 +214,7 @@ def test_mocked_bedrock_usage_settlement_unchanged(tmp_path, monkeypatch, framin
     assert len(calls) == 1
 
 
-@pytest.mark.parametrize('ending', ['\n```', ''])
+@pytest.mark.parametrize('ending', ['\n```', '', '```'])
 def test_file_manifest_declared_json_and_config_stay_strict(tmp_path, ending):
     text = '```json\n{"provider":"fixture","image_limit":3}'+ending
     path = tmp_path/'config.json'

@@ -90,13 +90,15 @@ def test_preexisting_eof_failure_never_reclassified_or_repeated(tmp_path, monkey
 
 
 @pytest.mark.parametrize('provider', [PipelineFixture, Attempt4Fixture])
-def test_guarded_eof_connected_graph_native_reviews_exports_and_completion(tmp_path, monkeypatch, provider):
+@pytest.mark.parametrize('framing,ending', [('markdown_json_fence_eof', '\r\n \t'),
+    ('markdown_json_fence_inline_close', '```')])
+def test_guarded_framed_connected_graph_native_reviews_exports_and_completion(tmp_path, monkeypatch, provider, framing, ending):
     responses = []
     class EofFixture(provider):
         def invoke(self, request, *, role, notes_pages):
             response = super().invoke(request, role=role, notes_pages=notes_pages)
             text = ''.join(block['text'] for block in response['output']['message']['content'])
-            framed = '```json\n'+text+'\r\n \t'
+            framed = '```json\n'+text+ending
             response['output']['message']['content'] = [{'text': framed[:5]}, {'text': framed[5:]}]
             responses.append((role, response))
             return response
@@ -110,7 +112,7 @@ def test_guarded_eof_connected_graph_native_reviews_exports_and_completion(tmp_p
         root = workspace/'stages'/stage
         summary = read(root/'summary.json')
         assert summary['status'] == 'complete'
-        assert set(summary['response_framing'].values()) == {'markdown_json_fence_eof'}
+        assert set(summary['response_framing'].values()) == {framing}
         ledger = read(root/'synthetic-ledger.json')
         for call in ledger['calls']:
             checkpoint = read(root/'checkpoints'/f'{call["key"]}.json')
@@ -118,9 +120,10 @@ def test_guarded_eof_connected_graph_native_reviews_exports_and_completion(tmp_p
             response = read(root/'responses'/f'{call["key"]}.json')
             assert any(response == sent for _, sent in responses)
             raw = ''.join(block['text'] for block in response['output']['message']['content'])
-            assert raw.startswith('```json\n') and raw.endswith('\r\n \t')
+            assert raw.startswith('```json\n') and raw.endswith(ending)
             if checkpoint['status'] == 'ok':
-                assert checkpoint['output'] == strict_json(raw[len('```json\n'):])
+                body = raw[len('```json\n'):-3] if ending == '```' else raw[len('```json\n'):]
+                assert checkpoint['output'] == strict_json(body)
     g = workspace/'stages/guideline'
     assert read(g/'checkpoints/accuracy.json')['output']['ok'] is False
     for role, name in guideline.FINAL_EXPORTS.items():
