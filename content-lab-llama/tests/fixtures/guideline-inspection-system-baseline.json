@@ -1,0 +1,69 @@
+{
+  "base": "3ba9b4b60a71d1b70cdc8bb721048564b01fae20",
+  "requests": {
+    "draft_1": {
+      "first_three": "201699b5e575b9c5fb206e4a68d9b71ad78d6082e9ac5e895d757c992123da3b",
+      "later_three": "0d5acafcb74b81eae4ec600806fcfd5c7cfda4d8277a189f9d20f391cd71ad5a",
+      "single": "e7d77ba994b4746372851aa8da42ec065656a917acc057ce02ee444269e078e0",
+      "pair": "4e632cdac140f0037b4d4a4cf8c9d429554eb29bba5a5e076613abad1d9596c1",
+      "final_two": "c5ad2deaba9173549dd43bcc50646eb3f6856311ac69d1c5a48017498756f355",
+      "final_empty": "4a5ec09dd82f4c2d9799499b17bdc50734542267ec9ed071daf5490633138b09"
+    },
+    "draft_2": {
+      "first_three": "0f010ae27759de3ccb58e0cceaee1e4af559ba6b898c2734c2fe10269232ee98",
+      "later_three": "1a9bece059ed5e744472f6de842a55890d04257b9ca5b46c4509c62b3c8cc4f7",
+      "single": "2a7f1173e8ebc54b9abafb3032132d5382df84a8c4712196fada68b2d48b84a0",
+      "pair": "469665cd6d1b830c1526da62536e8293aa4a0c8910260c0ff4334a4015d1eee2",
+      "final_two": "3a0cdf802617454af333fc26f1e68c12dd9d56c8af85a310e8d5c7b21a4a22c0",
+      "final_empty": "123116b435d3a71f6ef6dc5f2627be2f4670ff5e8a8d7e2c4b9f96f3c158d414"
+    },
+    "selection": {
+      "first_three": "eec985e75242246a5ec37acdcfe1e4d96d9cae30c7f69974aab5af30b29f6741",
+      "later_three": "5a24e4fb71f703f2ae012bf6fac72745a128e87cda60d58d63eff83b8c042e24",
+      "single": "b1452d40aeaf02368caf72e1981332bba114381105cefb120c90ab22b6be49c7",
+      "pair": "527440dcd3a140b79ea8278ecefe0b104168d8be243f90dea778a1b55ccddfda",
+      "final_two": "0371c24b54e8a524e0badaf7dcae7f17f81a8f4469a7ec597c91ccf4b9a9d44c",
+      "final_empty": "47238b3d201485765bd96f80e18bfde4a2e916d31b157172bb4e8a46936f2043"
+    },
+    "coverage": {
+      "first_three": "e8a98d3331e3e8f774482b845c0a89aaf8f5675b21ee008793ebcfd8fc5be425",
+      "later_three": "403d88682de89b8c1cb995e8cfb0053da8ec78e81638693397209dd06974b74a",
+      "single": "b0ee8babe3e0e1785ea8e2a3194a001cb757414116f3a4cc2be9422076c2b273",
+      "pair": "ef73b9ab862062b6d6b16e39fa596aa328a1d798caea0ad9190e95ce3d6f204c",
+      "final_two": "a8bd1289b2c4f0db3828a81b742181e594bb5b75ea1527ff9fe13583fededafb",
+      "final_empty": "586e6be52ac7041e5343fd72956d596d3f2942bcb7e9f8cdf8b0fa0c76a2fa8e"
+    },
+    "accuracy": {
+      "first_three": "642b120b75e5b36fd84c53a1a8bb9036566d85b863255319f5f67dee840964c6",
+      "later_three": "9ce3a675ba00d7b763d012cf6df43f44da4b204cf721fda751a031c98996e589",
+      "single": "2e348a94ec107f79902cdd5bb8fdb01301dc41a9b12dccd81b3f2b4d75428d14",
+      "pair": "49228a82b4992af7b39f9f0b023a697c46e56b499ed37d862a619074ebfa419e",
+      "final_two": "f29bd8d7949f1877cd475b03dae631d74dc369b833e801143609f5f7b7780bb8",
+      "final_empty": "458dd13882ba8cf1daedd26cc310665c3f34cd48e07c102dc9e46c37fec66224"
+    },
+    "structure": {
+      "first_three": "330da878ee39a736c991cb2ab9dd98f0141081d2642e3d04305db2f7d3509a6a",
+      "later_three": "a94cbd4cc8301b5580e184f0e7ee6a58f4c9dfc42729a3cfefad3a0209716da0",
+      "single": "4d1b6bc81571c45b1f96e300f267e87b321169562e0dd37b362a5b2a444b252f",
+      "pair": "ed6f8cf313b83620832a7c1cab4813d184cf928d093192bf7b727b92105bcb81",
+      "final_two": "1882320694df04bf5f01a2f0f6ab6c3f210fe1293bb04a8f91cc90ef7010ef53",
+      "final_empty": "a0515bd26b77d893291cbb677edf986c47b7db594711ef7bf959f1ea40cb852f"
+    },
+    "revision": {
+      "first_three": "a5709fa8295bb77b5a60770e7720c3e40f6e3398aa0546dab2a26c353327d5ed",
+      "later_three": "9a067341c880d229ba9d7ca27c50ef88d12f40d3713cc6b68899a558e63a28e3",
+      "single": "1396cb634ca9bb0405e64e0f44ad75b39e2325b4de0c992c2930ddff1cfc135f",
+      "pair": "c674322131ba47d4065f65d44f5e98aaf135339f702332504d5fc59da3b42029",
+      "final_two": "b6e89dda2a077f831a32f3c0420569f8388b136dc0e0e4d9916369a0c6ed72e1",
+      "final_empty": "8ccd08961d6f8b80827134dc4db9c13674ed1750e0b2a277277aee36bf0d09ae"
+    },
+    "refresher": {
+      "first_three": "4beb1655d029e1740b4e706bee1f24208a88fd6ac55ad6d8c09f272579055fc9",
+      "later_three": "8f59db534e16709500cc4b8dbc925d1b3f29120dc3098a4f348abb6ebbea69da",
+      "single": "577d70dffca7fbfd16c9e563faf3eb48b0a3a2373e18ff4856c4ef4389247336",
+      "pair": "25179b4384e8fbc42f0c5e07bce393dc2fada731bc9696cfc042644fe1516f21",
+      "final_two": "2d550bc2bf82bc41d6309d69f58652723a6d56d2bc0e123cd0047ef969c01885",
+      "final_empty": "6a63f1b1e043b523f596a39b5b9ec3d6ce023a20f4b244d430dc9ba2c0300d83"
+    }
+  }
+}

@@ -87,11 +87,11 @@ def capture(workspace, *, appended):
 
 def test_exact_pre_edit_requests_projections_exports_and_versioned_sources(tmp_path):
     baseline = read(ROOT/'tests/fixtures/practice-request-baseline.json')
-    # T11–T16 version the non-Practice tree; T16 changes only Explain request()
-    # and optional system forwarding. Keep the immutable T10 fixture and all
+    # T11–T17 version the non-Practice tree; T17 changes only Guideline request().
+    # Keep the immutable T10 fixture and all
     # request/export/prompt/lock comparisons exact.
     expected = {**baseline['snapshot'], 'other_reference_tree_sha256':
-                '6e5fc61388f98419b3ca13a7378982deb5426f8abaa593f5d22a57098200f01f'}
+                '676a54cf4dbe533feeacb5c2d61f33185a9a81039f5099e84fcdc8df42efa506'}
     assert capture(tmp_path, appended=True) == expected
 
 

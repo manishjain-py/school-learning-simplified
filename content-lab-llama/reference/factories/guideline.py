@@ -25,13 +25,14 @@ def request(run, role, declared, batch, notes, final):
         'current_batch_printed_pages lists only the originals attached to this request, in attachment order. '
         'Page labels retain their supplied JSON integer or string types.')
     if not final:
-        prompt += ('\nThis is an inspection batch within this same role. Inspect only the attached original pages. '
+        inspection_contract = ('\nThis is an inspection batch within this same role. Inspect only the attached original pages. '
             'Return ONLY {"page_notes":[{"printed_page": <supplied integer or string label>, "observations": "your bounded observations and uncertainties"}]} '
             'with exactly one entry per current_batch_printed_pages label in this exact order: '
             +json.dumps(current_pages, ensure_ascii=False)+'. Copy each label and its JSON type exactly. '
             'Do not include absent, not-yet-attached or previously noted pages in page_notes. '
             'Use at most 1200 words total. Do not produce final role output yet. '
             'Earlier role-local notes are your own observations, not original images. This turn contract overrides the usual output contract.')
+        prompt += inspection_contract
     else:
         prompt += ('\nPrior role-local page notes, if present, are YOUR OWN direct observations from this same role. '
             'You now see the remaining originals; use the full sequential context. Do not claim simultaneous access. '
@@ -66,7 +67,10 @@ def request(run, role, declared, batch, notes, final):
                 'source role\'s shape and meaning. Do not use an artifact envelope. '
                 'Feedback remains advisory for the final author; it does not veto the final revision.')
         content.append({'text': contract})
-    return {'messages': [{'role': 'user', 'content': content}]}
+    result = {'messages': [{'role': 'user', 'content': content}]}
+    if not final:
+        result['system'] = [{'text': inspection_contract}]
+    return result
 
 
 def parse(role, text, notes_pages=None):
