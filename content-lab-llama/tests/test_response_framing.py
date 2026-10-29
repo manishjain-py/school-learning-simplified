@@ -5,6 +5,7 @@ import socket
 import sys
 
 import pytest
+import boto3
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import run_factory as cli
@@ -20,6 +21,7 @@ def offline(monkeypatch):
     def forbidden(*args, **kwargs):
         raise AssertionError('No live transport/network permitted')
     monkeypatch.setattr(Bedrock, 'invoke', forbidden)
+    monkeypatch.setattr(boto3, 'client', forbidden)
     monkeypatch.setattr(socket.socket, 'connect', forbidden)
     monkeypatch.setattr(socket.socket, 'sendto', forbidden)
 
@@ -52,7 +54,7 @@ def test_complete_object_framing_preserves_exact_body_and_values(text, framing):
     'Here is JSON:\n```json\n{}\n```', '```json\n{}\n```\nExplanation',
     '```json\n{}\n```\n```json\n{}\n```',
     '```python\n{}\n```', '```JSON\n{}\n```',
-    '```json\n{}', '```json\n{', '```json {} ```',
+    '```json\n{', '```json {} ```',
     '```json\n{"artifact":}\n```', '```json\n{"artifact":{\n```',
     '```json\n{"artifact":{"x":NaN}}\n```',
     '```json\n{"artifact":{"x":Infinity}}\n```',
@@ -68,7 +70,8 @@ def test_no_prose_extraction_repair_nonfinite_or_nonobject(text):
 
 
 @pytest.mark.parametrize('factory', [toc, guideline])
-def test_whole_graph_fences_raw_responses_author_exports_and_resume(tmp_path, monkeypatch, factory):
+@pytest.mark.parametrize('framing', ['markdown_json_fence', 'markdown_json_fence_eof'])
+def test_whole_graph_fences_raw_responses_author_exports_and_resume(tmp_path, monkeypatch, factory, framing):
     original = Fixture.invoke
     responses = {}
     def fenced(self, request, *, role, notes_pages):
@@ -77,7 +80,9 @@ def test_whole_graph_fences_raw_responses_author_exports_and_resume(tmp_path, mo
         value = strict_json(response['output']['message']['content'][0]['text'])
         if isinstance(value.get('artifact'), dict):
             value['artifact']['synthetic_exact_text'] = '  Keep ```json\n{}\n``` and नमस्ते.  '
-        text = ' \n```json\n'+json.dumps(value, ensure_ascii=False)+'\n```\t '
+        body = json.dumps(value, ensure_ascii=False)
+        text = (' \n```json\n'+body+'\n```\t ' if framing == 'markdown_json_fence'
+                else '```json\n'+body+'\n \t\r\n')
         # Match the shared boundary's existing text-block joining behavior.
         response['output']['message']['content'] = [{'text': text[:9]}, {'text': text[9:]}]
         responses[role] = response
@@ -88,14 +93,14 @@ def test_whole_graph_fences_raw_responses_author_exports_and_resume(tmp_path, mo
     summary = report(tmp_path, factory)
     assert summary['status'] == 'complete'
     assert summary['exposure_usd'] == 0
-    assert set(summary['response_framing'].values()) == {'markdown_json_fence'}
+    assert set(summary['response_framing'].values()) == {framing}
     final_role, filename = ('toc_revision', 'chapter-map.json') if factory is toc else ('revision', 'guideline.json')
     expected = strict_json(model_response_json(''.join(
         p['text'] for p in responses[final_role]['output']['message']['content']))[0])
     assert run.output(final_role) == expected
     assert canonical(read(tmp_path/'artifacts'/filename)) == canonical(expected['artifact'])
     assert read(tmp_path/'responses'/f'{final_role}.json') == responses[final_role]
-    assert run.result(final_role)['response_framing'] == 'markdown_json_fence'
+    assert run.result(final_role)['response_framing'] == framing
     before = {p: p.read_bytes() for folder in ('responses', 'checkpoints', 'artifacts')
               for p in (tmp_path/folder).glob('*')}
     ledger = run.ledger_path.read_bytes()
@@ -105,7 +110,7 @@ def test_whole_graph_fences_raw_responses_author_exports_and_resume(tmp_path, mo
     factory.graph(Runner(tmp_path, factory, resume=True)).invoke({'last_role': 'start'})
     assert run.ledger_path.read_bytes() == ledger
     assert all(p.read_bytes() == data for p, data in before.items())
-    assert 'markdown_json_fence' in (tmp_path/'report.html').read_text()
+    assert framing in (tmp_path/'report.html').read_text()
 
 
 @pytest.mark.parametrize('text,stop,expected_framing', [
@@ -115,12 +120,25 @@ def test_whole_graph_fences_raw_responses_author_exports_and_resume(tmp_path, mo
     ('```json\n{"artifact":{', 'end_turn', None),
     ('```json\n{"artifact":{"x":NaN}}\n```', 'end_turn', None),
     ('```json\n{"artifact":{}}\n```', 'max_tokens', None),
+    ('```json\n{"artifact":"wrong type"}', 'end_turn', 'markdown_json_fence_eof'),
+    ('```json\n{"wrong_envelope":{}}', 'end_turn', 'markdown_json_fence_eof'),
+    ('```json\n{"artifact":{', 'end_turn', None),
+    ('```json\n{"artifact":{"x":NaN}}', 'end_turn', None),
+    ('```json\n{"artifact":{}}', 'max_tokens', None),
+    ('```json\n{"artifact":{}}', 'stop_sequence', None),
+    ('```json\n{"artifact":{}}', None, None),
 ])
 def test_failure_preserves_raw_no_repeat_and_stop_precedes_parsing(tmp_path, monkeypatch, text, stop, expected_framing):
     response = {'output': {'message': {'content': [{'text': text}]}}, 'stopReason': stop}
     monkeypatch.setattr(Fixture, 'invoke', lambda *args, **kwargs: response)
     run = runner(tmp_path)
     parse_calls = []
+    framing_calls = []
+    original_framing = runtime.model_response_json
+    def frame(text):
+        framing_calls.append(text)
+        return original_framing(text)
+    monkeypatch.setattr(runtime, 'model_response_json', frame)
     def parse(body):
         parse_calls.append(body)
         return toc.parse('toc_revision', body)
@@ -128,6 +146,7 @@ def test_failure_preserves_raw_no_repeat_and_stop_precedes_parsing(tmp_path, mon
     assert result['status'] == 'failed'
     assert result.get('response_framing') == expected_framing
     assert bool(parse_calls) == (expected_framing is not None)
+    assert bool(framing_calls) == (stop == 'end_turn')
     assert read(tmp_path/'responses/toc_revision.json') == response
     before = run.ledger_path.read_bytes()
     monkeypatch.setattr(Fixture, 'invoke', lambda *args, **kwargs: pytest.fail('Failed request repeated'))
@@ -149,10 +168,11 @@ def test_runtime_change_refused_before_any_new_or_resumed_request(tmp_path, monk
     assert not run.ledger['calls']
 
 
-@pytest.mark.parametrize('fenced', [False, True])
-def test_mocked_bedrock_usage_settlement_unchanged(tmp_path, monkeypatch, fenced):
+@pytest.mark.parametrize('framing', ['plain_json', 'markdown_fence', 'markdown_json_fence_eof'])
+def test_mocked_bedrock_usage_settlement_unchanged(tmp_path, monkeypatch, framing):
     body = '{"artifact":{"synthetic":"SENTINEL"}}'
-    text = '```\n'+body+'\n```' if fenced else body
+    text = {'plain_json': body, 'markdown_fence': '```\n'+body+'\n```',
+            'markdown_json_fence_eof': '```json\n'+body}[framing]
     response = {'output': {'message': {'content': [{'text': text}]}},
                 'stopReason': 'end_turn', 'usage': {'inputTokens': 1000, 'outputTokens': 100}}
     calls = []
@@ -167,7 +187,7 @@ def test_mocked_bedrock_usage_settlement_unchanged(tmp_path, monkeypatch, fenced
     run = Runner(tmp_path, toc, bundle=bundle, blobs=blobs, config=config)
     result = run.invoke('toc_revision', 'toc_revision', {}, lambda t: toc.parse('toc_revision', t))
     assert result['status'] == 'ok'
-    assert result['response_framing'] == ('markdown_fence' if fenced else 'plain_json')
+    assert result['response_framing'] == framing
     call = run.ledger['calls'][0]
     assert call['reserved_usd'] == pytest.approx(.24794624)
     assert call['actual_usd'] == pytest.approx(.000337)
@@ -182,8 +202,9 @@ def test_mocked_bedrock_usage_settlement_unchanged(tmp_path, monkeypatch, fenced
     assert len(calls) == 1
 
 
-def test_file_manifest_declared_json_and_config_stay_strict(tmp_path):
-    text = '```json\n{"provider":"fixture","image_limit":3}\n```'
+@pytest.mark.parametrize('ending', ['\n```', ''])
+def test_file_manifest_declared_json_and_config_stay_strict(tmp_path, ending):
+    text = '```json\n{"provider":"fixture","image_limit":3}'+ending
     path = tmp_path/'config.json'
     path.write_text(text)
     with pytest.raises(ValueError):
@@ -191,7 +212,7 @@ def test_file_manifest_declared_json_and_config_stay_strict(tmp_path):
     with pytest.raises(ValueError):
         read(path)
     manifest = tmp_path/'manifest.json'
-    manifest.write_text('```json\n'+(ROOT/'examples/toc/manifest.json').read_text()+'\n```')
+    manifest.write_text('```json\n'+(ROOT/'examples/toc/manifest.json').read_text()+ending)
     with pytest.raises(ValueError):
         load_manifest(manifest, toc)
     value = read(ROOT/'examples/guideline/manifest.json')

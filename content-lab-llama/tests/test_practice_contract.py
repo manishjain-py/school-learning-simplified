@@ -85,9 +85,14 @@ def capture(workspace, *, appended):
             'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
-def test_exact_pre_edit_requests_projections_exports_and_untouched_sources(tmp_path):
+def test_exact_pre_edit_requests_projections_exports_and_versioned_sources(tmp_path):
     baseline = read(ROOT/'tests/fixtures/practice-request-baseline.json')
-    assert capture(tmp_path, appended=True) == baseline['snapshot']
+    # T11 intentionally changes shared runtime.py only. Keep the original T10
+    # fixture immutable and all request/export/prompt/lock comparisons exact;
+    # continue enforcing the entire non-Practice reference tree at T11.
+    expected = {**baseline['snapshot'], 'other_reference_tree_sha256':
+                '471b8620ba413f8abae63e2a9d3b072a71038c6bcc0ee54b0c3e209498f8ec7e'}
+    assert capture(tmp_path, appended=True) == expected
 
 
 def test_all_dynamic_slots_native_contracts_reach_provider_after_data(tmp_path):

@@ -12,12 +12,18 @@ from .providers import Bedrock, Fixture, validate_config
 
 
 def model_response_json(text):
-    """Remove only a whole JSON/untagged transport fence; never repair content."""
+    """Remove whole fences or an exact JSON opener through EOF; never repair content."""
     match = re.fullmatch(r'```(json)?[ \t]*\r?\n(.*?)\r?\n```', text.strip(), re.DOTALL)
-    body = match[2] if match else text
+    if match:
+        body = match[2]
+        framing = 'markdown_json_fence' if match[1] else 'markdown_fence'
+    elif text.startswith('```json\n'):
+        body = text[len('```json\n'):]
+        framing = 'markdown_json_fence_eof'
+    else:
+        body, framing = text, 'plain_json'
     if not isinstance(strict_json(body), dict):
         raise ValueError('Role response must be a JSON object')
-    framing = ('markdown_json_fence' if match[1] else 'markdown_fence') if match else 'plain_json'
     return body, framing
 
 
