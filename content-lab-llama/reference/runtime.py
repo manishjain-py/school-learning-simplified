@@ -61,6 +61,8 @@ class Runner:
             self.identity = {'factory': factory.NAME, 'input_sha256': sha(canonical(bundle)),
                 'runtime': runtime_identity(), 'config': config, 'created_at': time.time(),
                 'policy': 'final-author; technical failures visible; no quality veto'}
+            if hasattr(factory, 'COMPLETION_CONTRACT'):
+                self.identity['completion_contract'] = factory.COMPLETION_CONTRACT
             if hasattr(factory, 'execution_identity'):
                 self.identity['execution'] = factory.execution_identity()
             for name, data in blobs.items():
@@ -218,6 +220,8 @@ def report(workspace, factory):
         'response_framing': {key: result['response_framing'] for key, result in results.items()
                              if 'response_framing' in result},
         'report_renderer_sha256': sha(canonical(runtime_identity()))}
+    if hasattr(factory, 'report_completion'):
+        summary.update(factory.report_completion(workspace, identity, ledger, results))
     if stages:
         summary['operational_stages'] = stages
     save(workspace/'summary.json', summary)
@@ -232,6 +236,10 @@ def report(workspace, factory):
         '<h2>Run summary</h2><pre>'+esc(summary)+'</pre>',
         '<h2>Identity</h2><pre>'+esc({k: identity[k] for k in ('factory', 'input_sha256', 'config', 'policy')})+'</pre>',
         '<h2>Workflow and feedback</h2>']
+    if 'completion_contract' in summary:
+        chunks.insert(-1, '<p>Operational status: '+html.escape(summary['status'])+
+            '. Role execution status: '+html.escape(summary['role_execution_status'])+
+            '. Operational completion does not mean every role succeeded or certify content quality/downstream compatibility.</p>')
     for role in roles:
         result = results.get(role, {})
         chunks.append('<details open><summary>'+html.escape(role)+' — '+html.escape(result.get('status', 'unavailable'))+'</summary><pre>'+
@@ -246,7 +254,10 @@ def report(workspace, factory):
             chunks.append('<details><summary>'+html.escape(key)+' — role-local inspection</summary><pre>'+esc(result.get('output', {'technical_failure': 'Private evidence retained'}))+'</pre></details>')
     chunks.append('<h2>Authoritative exports</h2>')
     for path in sorted((workspace/'artifacts').glob('*.json')):
-        chunks.append('<h3>'+html.escape(path.name)+'</h3><pre>'+esc(read(path))+'</pre>')
+        invalid = any(row['file'] == path.name and row['status'] != 'intact'
+                      for row in summary.get('final_outputs', {}).values())
+        value = {'technical_failure': 'Export unavailable or changed; see completion evidence.'} if invalid else read(path)
+        chunks.append('<h3>'+html.escape(path.name)+'</h3><pre>'+esc(value)+'</pre>')
     for path in sorted((workspace/'artifacts').glob('*.md')):
         chunks.append('<h3>'+html.escape(path.name)+'</h3><pre>'+html.escape(path.read_text())+'</pre>')
     if hasattr(factory, 'report_media'):

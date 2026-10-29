@@ -279,7 +279,7 @@ def pipeline_report(workspace):
         'budget': identity['budget'], 'stages': summaries, 'changed_evidence': integrity,
         'lineage': lineage,
         'limits': ['Synthetic responses are engineering sentinels, never Llama/curriculum quality evidence.',
-            'Only historical G1 has live Llama evidence; its ledger and allowance are separate and untouched.',
+            'This report records its own workspace/provider evidence; historical G1 ledger and allowance remain separate.',
             'Actual local speech/rendering; measured durations, estimated word timing; no ASR or phoneme claim.',
             'Final author artifacts retained; technical assembly/render/apply failure cannot claim complete.',
             'Fixed disjoint stage caps; their sum is the declared total, not a shared refillable allowance.',
@@ -291,7 +291,8 @@ def pipeline_report(workspace):
         'pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f5f6;padding:16px}a{color:#175b60}</style>'
         '<h1>Connected local reference pipeline</h1><p>Built with Llama. Synthetic graph evidence and actual local media are distinct.</p>'
         + ''.join('<p>'+html.escape(line)+'</p>' for line in result['limits'])
-        + '<h2>Stages</h2>' + ''.join('<p><a href="stages/'+s+'/report.html">'+s+'</a>: '+html.escape(r['status'])+'</p>'
+        + '<h2>Stages</h2>' + ''.join('<p><a href="stages/'+s+'/report.html">'+s+'</a>: '+html.escape(r['status'])+
+            (' (operational); role execution: '+html.escape(r['role_execution_status']) if 'completion_contract' in r else '')+'</p>'
             for s, r in summaries.items() if not s.startswith('audio_'))
         + '<h2>Summary, budgets and hashed predecessor edges</h2><pre>'+esc(result)+'</pre></html>')
     return result

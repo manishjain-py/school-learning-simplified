@@ -1,13 +1,16 @@
 """Generalized new LangGraph path using the attributed, frozen G1 prompts."""
 import json
+from types import SimpleNamespace
 from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
-from ..inputs import ROOT, strict_json
+from ..inputs import ROOT, canonical, frozen_inputs, read, sha, strict_json
 
 NAME = 'guideline'
 REQUIRED_METADATA = ('grade', 'subject', 'chapter_title')
 FILE_INPUTS = ('context',)  # Optional explicitly supplied educational JSON or text.
 ROLES = ('draft_1', 'draft_2', 'selection', 'coverage', 'accuracy', 'structure', 'revision', 'refresher')
+COMPLETION_CONTRACT = 'guideline-final-outputs-v1'
+FINAL_EXPORTS = {'revision': 'guideline.json', 'refresher': 'refresher-guideline.json'}
 PROMPTS = {'draft_1': 'chapter_extractor', 'draft_2': 'chapter_extractor', 'selection': 'chapter_judge',
            'coverage': 'lens_coverage', 'accuracy': 'lens_accuracy', 'structure': 'lens_structure',
            'revision': 'chapter_refiner', 'refresher': 'refresher_extractor'}
@@ -134,6 +137,123 @@ def graph(run):
         previous = role
     flow.add_edge(previous, END)
     return flow.compile()
+
+
+def export_evidence(workspace, role, result):
+    artifact = result['output']['artifact']
+    if result['status'] != 'ok' or not isinstance(artifact, dict):
+        raise ValueError('Final author object unavailable')
+    path = workspace/'artifacts'/FINAL_EXPORTS[role]
+    if canonical(read(path)) != canonical(artifact):
+        raise ValueError('Final author export differs from checkpoint')
+    return {'status': 'intact', 'checkpoint': role, 'file': FINAL_EXPORTS[role],
+            'artifact_sha256': sha(canonical(artifact)), 'file_sha256': sha(path.read_bytes())}
+
+
+def report_completion(workspace, identity, ledger, results):
+    """Guideline-only operational rule, opted into by NEW frozen identities.
+
+    Reconstruct requests offline to check image/selection/review dependencies. Never
+    create a provider, reinterpret failed replies, repair exports or mutate evidence.
+    Legacy identities keep the report's original all-final-roles rule.
+    """
+    if 'completion_contract' not in identity:
+        return {}
+    blocked, checkpoints, outputs = [], {}, {}
+    def block(reason):
+        blocked.append(reason)
+    if identity['completion_contract'] != COMPLETION_CONTRACT:
+        block('unsupported_completion_contract')
+    try:
+        bundle, blobs = frozen_inputs(workspace)
+        if identity['factory'] != NAME or bundle['factory'] != NAME:
+            block('factory_identity')
+        if sha(canonical(bundle)) != identity['input_sha256']:
+            block('frozen_input_identity')
+        if ledger['config'] != identity['config']:
+            block('ledger_config_identity')
+        limit = identity['config']['image_limit']
+        batches = [bundle['pages'][i:i+limit] for i in range(0, len(bundle['pages']), limit)] or [[]]
+        def output(role):
+            result = results.get(role, {})
+            return (result['output'] if result.get('status') == 'ok' else
+                    {'technical_failure': {'role': role, 'status': 'unavailable'}})
+        view = SimpleNamespace(bundle=bundle, blobs=blobs, output=output)
+        calls = ledger['calls']
+        expected = set()
+        for role in ROLES:
+            notes, stopped = [], False
+            for index, batch in enumerate(batches):
+                final = index == len(batches)-1
+                key = role if final else f'{role}__batch_{index+1}'
+                expected.add(key)
+                matches = [c for c in calls if c['key'] == key]
+                result = results.get(key)
+                if not matches and result is None:
+                    checkpoints[key] = 'not_executed_after_failure' if stopped else 'unavailable'
+                    if not stopped:
+                        block('unexplained_missing_request:'+key)
+                    continue
+                checkpoints[key] = result.get('status', 'invalid') if result else 'interrupted_without_checkpoint'
+                try:
+                    if stopped or len(matches) != 1 or result is None:
+                        raise ValueError('Unexpected or interrupted request')
+                    call = matches[0]
+                    if (call['role'] != role or call.get('checkpoint_sha256') != sha(canonical(result)) or
+                            result['status'] not in ('ok', 'failed') or
+                            call['status'] not in ('response', 'ambiguous_or_rejected') or
+                            result['status'] == 'ok' and call['status'] != 'response'):
+                        raise ValueError('Checkpoint/ledger identity')
+                    saved_request = read(workspace/'requests'/f'{key}.json')
+                    if call['request_sha256'] != sha(canonical(saved_request)):
+                        raise ValueError('Saved request identity')
+                    request_value = request(view, role, declared(view, role), batch, notes, final)
+                    evidence = json.loads(json.dumps(request_value, default=lambda data: {'sha256': sha(data), 'bytes': len(data)}))
+                    if canonical(evidence) != canonical(saved_request):
+                        raise ValueError('Request/dependency identity')
+                    if result['status'] == 'ok':
+                        parsed = parse(role, json.dumps(result['output'], ensure_ascii=False, allow_nan=False),
+                                       None if final else [p['printed_page'] for p in batch])
+                        if not final:
+                            notes.extend(parsed['page_notes'])
+                    else:
+                        stopped = True
+                except (ValueError, RuntimeError, OSError, KeyError, TypeError):
+                    if result is not None:
+                        checkpoints[key] = 'evidence_mismatch'
+                    block('request_checkpoint_identity:'+key)
+        unexpected = (set(results) | {c['key'] for c in calls}) - expected
+        if unexpected:
+            for key in unexpected:
+                checkpoints[key] = results.get(key, {}).get('status', 'interrupted_without_checkpoint')
+            block('unexpected_request_or_checkpoint')
+        selection = output('selection').get('winner_index')
+        if type(selection) is not int or selection not in (1, 2):
+            block('usable_selection_required')
+        else:
+            required = (f'draft_{selection}', 'selection', 'revision', 'refresher')
+            for role in required:
+                for index in range(len(batches)):
+                    key = role if index == len(batches)-1 else f'{role}__batch_{index+1}'
+                    if checkpoints.get(key) != 'ok':
+                        block('required_author_dependency:'+key)
+            if not isinstance(output(f'draft_{selection}').get('artifact'), dict):
+                block('usable_selected_draft_required')
+    except (ValueError, RuntimeError, OSError, KeyError, TypeError):
+        block('frozen_evidence_unavailable')
+    execution_complete = not blocked and checkpoints and all(s == 'ok' for s in checkpoints.values())
+    for role in FINAL_EXPORTS:
+        try:
+            outputs[role] = export_evidence(workspace, role, results[role])
+        except (ValueError, OSError, KeyError, TypeError):
+            outputs[role] = {'status': 'unavailable_or_changed', 'checkpoint': role, 'file': FINAL_EXPORTS[role]}
+            block('final_export_required:'+role)
+    return {'completion_contract': identity['completion_contract'],
+            'status': 'partial_or_failed' if blocked else 'complete',
+            'role_execution_status': 'complete' if execution_complete else 'partial_or_failed',
+            'checkpoint_statuses': checkpoints, 'final_outputs': outputs,
+            'completion_basis': 'Intact selected draft, selection, required image inspections and final author exports; other durable technical failures disclosed. No content-quality or downstream-compatibility guarantee.',
+            'completion_blockers': sorted(set(blocked))}
 
 
 def observations(results):
