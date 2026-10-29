@@ -60,9 +60,9 @@ def capture(workspace, *, appended):
 
 def test_exact_pre_edit_requests_dynamic_batches_projections_and_exports(tmp_path):
     baseline = read(ROOT/'tests/fixtures/translate-request-baseline.json')
-    # T15 changes runtime.py only; retain the immutable T14 fixture and full tree check.
+    # T15/T16 version the other-reference tree; retain the immutable T14 fixture and full check.
     expected = {**baseline['snapshot'], 'other_reference_tree_sha256':
-                '9b5aa7bc90b9000918231d6effd4c8d0a9da65539d72c3df8d392149b45e9b50'}
+                '09316b8f313de35a154efd78cf244786313d07040a1a192d5fc2d6167f258e7c'}
     assert capture(tmp_path, appended=True) == expected
 
 

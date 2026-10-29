@@ -41,8 +41,11 @@ class Bedrock:
             from botocore.config import Config
             self.client = boto3.client('bedrock-runtime', region_name=self.config['region'],
                 config=Config(retries={'total_max_attempts': 1}, connect_timeout=20, read_timeout=360))
-        return self.client.converse(modelId=self.config['model'], messages=request['messages'],
-            inferenceConfig={'maxTokens': self.config['max_output_tokens'], 'temperature': .1})
+        kwargs = {'modelId': self.config['model'], 'messages': request['messages'],
+                  'inferenceConfig': {'maxTokens': self.config['max_output_tokens'], 'temperature': .1}}
+        if 'system' in request:
+            kwargs['system'] = request['system']
+        return self.client.converse(**kwargs)
 
 
 class Fixture:

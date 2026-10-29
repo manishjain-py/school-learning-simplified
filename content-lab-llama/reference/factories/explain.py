@@ -232,7 +232,10 @@ def request(run, role, declared, batch, notes, final):
             'JSON comments, trailing commas or file-write receipts. Put notes only in fields '
             'allowed by this role\'s existing instructions; preserve all native schema and content '
             'instructions above.'})
-    return {'messages': [{'role': 'user', 'content': content}]}
+    request = {'messages': [{'role': 'user', 'content': content}]}
+    if role == 'explain_research':
+        request['system'] = [{'text': content[-1]['text']}]
+    return request
 
 
 def parse(role, text, notes_pages=None):

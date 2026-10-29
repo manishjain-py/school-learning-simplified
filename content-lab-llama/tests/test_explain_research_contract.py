@@ -24,7 +24,10 @@ def test_historical_first_blocks_match_after_removing_only_appended_blocks(tmp_p
         content = request['messages'][0]['content']
         assert len(content) == 2
         if role == 'explain_research':
+            assert request.pop('system') == [{'text': content[-1]['text']}]
             assert sha(content[0]['text'].encode()) == baseline['research_first_block_sha256']
+        else:
+            assert 'system' not in request
         request['messages'][0]['content'] = content[:1]
         assert sha(canonical(request)) == baseline['request_sha256'][role]
     definitions = {node.name: sha(ast.dump(node).encode())

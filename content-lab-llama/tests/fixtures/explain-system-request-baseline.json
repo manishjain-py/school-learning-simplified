@@ -1,0 +1,39 @@
+{
+  "base_commit": "99d0db57a406f41db57f77c08cdcabc563bfa053",
+  "request_sha256": {
+    "explain_research": "bbfde1ff06d70d66bbde12222242dbf9f946cc61b776e98b2512e21793898af6",
+    "explain_arc": "6f7dbe30f2e9b40b737505cdbe280463e1c6e2625ce66cb5cc895442889588ac",
+    "explain_writer_1": "0ac85d132161210e46cfdb2d85591aab246c4c0292544206804edb834f60dcf3",
+    "explain_writer_2": "d896e680f523a41447885d13e5ad96d80fb733dd0f2f48e6acca1702d095656a",
+    "explain_selection": "afed668eeb4f908495ac845e6ea15d287c976be1aa5765fe5dd2cd5dcb7fcb60",
+    "explain_winner_revision": "4c9e55e2c72a859b9965335a3a943e9eedad7075be6e5bf0700418b85ce46e82",
+    "explain_clarity_flow": "268cc211672f3b52d338b14cde4c158450161aa9f6c87e497848f05cba9371ed",
+    "explain_accuracy": "3c44c23c0740f8347358f32a14fecc6bced5a637c360580868ac1c679455b6f3",
+    "explain_language_economy": "91f6ed91063722d39cdda1b64b97e11fbb07d0d32798ccab5e1e78d034b64d34",
+    "explain_prose_final": "5e59959028bcb1b368fbe8c334da10caf9805dbd5ddf3a030f3f59dd9acd9fb8",
+    "explain_split": "00c56f89b1bf7ace4ab2aee228fa09eee5b2f705dbf0b111cc6f41262658afee",
+    "explain_split_review": "77f34fb1532f706f838ff9077e9529e854167f3eec77a7cb2b22c22e99c39934",
+    "explain_split_final": "36d18979563ff05c3d6794b51acc756ad5cad1d46f1483bec853bbc55a6a348c",
+    "explain_checkins": "bcb9d3adba0353497ce1aff35d3c209359f96110b7aeabaa531f077f5895868a",
+    "explain_checkin_review": "f59c229d038f1c46bc2a483cdd103fc4d6890adaf38d10e60ef9fc6975b0e588",
+    "explain_checkins_final": "b854f0ccd0e60c6e494fe649e36d188d8ce307f757beaa4e2ce9788ec00670ba"
+  },
+  "declared_sha256": {
+    "explain_research": "2a9f871d18f3ad0aff2e4a9c928f4e9535b41f242d74abecf8be6858d12d14ce",
+    "explain_arc": "6281d9675857e0f2fd356ba5c226f0cf8d7f83dbb21663206f013334156a4e76",
+    "explain_writer_1": "32f7073412e0c2f3da42762de11956586694ca8c518537d3b8b41a9b0ec47c9b",
+    "explain_writer_2": "32f7073412e0c2f3da42762de11956586694ca8c518537d3b8b41a9b0ec47c9b",
+    "explain_selection": "00e329d7b7fc6d723389eb0f5f89e9c41272742bb062c4a6bfe8f4fc68378938",
+    "explain_winner_revision": "dec0fd0db36812657662df1bfa0af522ae08d575a86509bc6b142c7673ce14eb",
+    "explain_clarity_flow": "9685884f26abc00159a0b888f75cc609dfbaf1a76c726db0ba9de8df1a20a32f",
+    "explain_accuracy": "9685884f26abc00159a0b888f75cc609dfbaf1a76c726db0ba9de8df1a20a32f",
+    "explain_language_economy": "9685884f26abc00159a0b888f75cc609dfbaf1a76c726db0ba9de8df1a20a32f",
+    "explain_prose_final": "2c9e36a46046dcb7dd80775b21b6fed53366c1d815e5e98e29878aa6a1170a39",
+    "explain_split": "3b9a36706e7960ef64ff82cb36292da98621e3c60a37f324232a61137914dc0c",
+    "explain_split_review": "50e6e12bbce8b1d7476f251c95bd53ae25821213ea20d97ded26c80338b5619c",
+    "explain_split_final": "33074cd5fd6b5cf231717858624208d45f2b353c9ddfd5ccc8a7f5ccb0cae53a",
+    "explain_checkins": "5ac14afbd312905e2724bd474ea0b764a2ca6a9ee2cc2ead9acfdab9fdd863c2",
+    "explain_checkin_review": "2acc5e8551f12b5a151547d78b643431016d42ea297aae4630c2e103f52f6112",
+    "explain_checkins_final": "d62cc480be55c134eb00e89e1861ec7ca08fb0af31d22554b82a5655ab2d5b0d"
+  }
+}
