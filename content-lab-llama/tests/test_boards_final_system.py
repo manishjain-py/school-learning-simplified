@@ -103,7 +103,7 @@ def test_frames_sources_historical_fixtures_and_nonrequest_definitions_unchanged
     for key in ('frames', 'outside_request_ast_sha256', 'prompt_sha256',
                 'historical_fixtures_sha256', 'requirements_sha256'):
         assert current[key] == baseline[key]
-    # T21/T22/T23/T24/T25/T26/T26 version Translate/Guideline/Explain request bytes; the T20 fixture stays
+    # T21/T22/T23/T24/T25/T26 version Translate/Guideline/Explain request bytes; the T20 fixture stays
     # unchanged, and all other reference files retain their exact assertions.
     before = {**baseline['reference_sha256'], 'reference/factories/translate.py':
               'ad6138e850f73b13673be3d1d5f75c1bc6faa73df1c0a13eb1da465a4360a3b5',
