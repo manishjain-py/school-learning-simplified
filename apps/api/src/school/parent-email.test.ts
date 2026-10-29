@@ -198,6 +198,51 @@ test('definite SES rejection requires explicit retry and never exceeds three att
   await assert.rejects(f.retry(), rejects('EMAIL_NOT_RETRYABLE'));
 });
 
+test('SES AccessDeniedException preserves its reservation and retries only on an explicit staff request', async () => {
+  const f = fixture();
+  f.state.send = async () => { throw Object.assign(new Error('private IAM diagnostic'), { name: 'AccessDeniedException', $metadata: { httpStatusCode: 403 } }); };
+  await f.dispatch();
+  assert.equal(f.stored().status, 'not_sent'); assert.equal(f.stored().code, 'SERVICE_REJECTED');
+  assert.equal(f.stored().attempts, 1); assert.equal(f.state.budget, 1); assert.equal(f.state.sends.length, 1);
+  const rejected = structuredClone(f.stored());
+  await f.dispatch(); const [summary] = await f.list();
+  assert.equal(summary.canRetry, true); assert.equal(summary.hasPreview, false);
+  assert.deepEqual(f.stored(), rejected); assert.equal(f.state.budget, 1); assert.equal(f.state.sends.length, 1);
+  f.state.send = async () => ({ MessageId: 'explicit-retry-accepted' });
+  const retried = await f.retry();
+  assert.equal(retried.status, 'accepted'); assert.equal(retried.canRetry, false);
+  assert.equal(f.stored().attempts, 2); assert.equal(f.state.budget, 2); assert.equal(f.state.sends.length, 2);
+  await f.dispatch(); await assert.rejects(f.retry(), rejects('EMAIL_NOT_RETRYABLE'));
+  assert.equal(f.state.budget, 2); assert.equal(f.state.sends.length, 2);
+});
+
+test('existing unknown notifications stay unchanged and nonretryable after SES rejection classification changes', async () => {
+  const f = fixture();
+  Object.assign(f.stored(), { status: 'unknown', code: 'SEND_UNKNOWN', retryable: false, attempts: 1, version: 4, startedAt: f.state.now.toISOString(), dispatchedAt: f.state.now.toISOString() });
+  f.state.budget = 1; const original = structuredClone(f.stored());
+  await f.dispatch(); const [summary] = await f.list();
+  assert.equal(summary.status, 'unknown'); assert.equal(summary.canRetry, false); assert.equal(summary.hasPreview, false);
+  await assert.rejects(f.retry(), rejects('EMAIL_NOT_RETRYABLE'));
+  await assert.rejects(f.preview(), rejects('EMAIL_PREVIEW_UNAVAILABLE'));
+  assert.deepEqual(f.stored(), original); assert.equal(f.state.budget, 1);
+  assert.equal(f.state.accountCalls.length, 0); assert.equal(f.state.sends.length, 0);
+});
+
+test('send-failure diagnostics contain only an allowlisted error name and bounded HTTP status', async t => {
+  const warnings = t.mock.method(console, 'warn', () => {});
+  const cases = [
+    Object.assign(new Error('private IAM diagnostic for parent@example.test'), { name: 'AccessDeniedException', $metadata: { httpStatusCode: 403, requestId: 'private-request-id' }, account: 'private-account', token: 'private-token' }),
+    Object.assign(new Error('private transport diagnostic'), { name: 'parent@example.test\nprivate-data', $metadata: { httpStatusCode: 999, requestId: 'private-request-id' } }),
+  ];
+  for (const issue of cases) {
+    const f = fixture(); f.state.send = async () => { throw issue; }; await f.dispatch();
+  }
+  assert.deepEqual(warnings.mock.calls.map(call => call.arguments), [
+    ['parent_email_send_failed', { name: 'AccessDeniedException', httpStatus: 403 }],
+    ['parent_email_send_failed', { name: 'UnknownError', httpStatus: null }],
+  ]);
+});
+
 test('cumulative reservation cap is separate from AI and blocks the hundred-and-first attempt', async () => {
   const f = fixture(); f.state.budget = EMAIL_PROJECT_LIMIT; await f.dispatch();
   assert.equal(f.state.sends.length, 0); assert.equal(f.state.accountCalls.length, 0); assert.equal(f.stored().code, 'EMAIL_LIMIT');

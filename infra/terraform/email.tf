@@ -53,6 +53,16 @@ resource "aws_iam_role_policy" "parent_email" {
           "ForAllValues:StringEquals" = { "ses:Recipients" = var.parent_email_allowed_recipients }
         }
       }
+      ] : [], var.parent_email_enabled && length(var.parent_email_allowed_recipients) > 0 ? [
+      {
+        Effect = "Allow", Action = ["ses:ApplyTrackingConfigurationOverrides"], Resource = "*"
+        Condition = {
+          StringEquals = {
+            "ses:OpenTrackingEnabled"  = "DISABLED"
+            "ses:ClickTrackingEnabled" = "DISABLED"
+          }
+        }
+      }
     ] : [])
   })
 }

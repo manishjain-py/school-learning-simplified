@@ -140,7 +140,19 @@ const defaults: ParentEmailDependencies = {
   settings, now: () => new Date(), token: randomUUID,
 };
 
-const definiteSesRejection = (issue: unknown) => ['MessageRejected', 'MessageRejectedException', 'MailFromDomainNotVerifiedException', 'NotFoundException', 'BadRequestException', 'AccountSuspendedException', 'SendingPausedException', 'TooManyRequestsException', 'LimitExceededException', 'ForbiddenException'].includes((issue as Error)?.name);
+// SES documents AccessDeniedException from tracking-override authorization as a
+// rejection without sending: https://docs.aws.amazon.com/ses/latest/dg/configuration-overrides.html
+const rejectionNames = new Set(['MessageRejected', 'MessageRejectedException', 'MailFromDomainNotVerifiedException', 'NotFoundException', 'BadRequestException', 'AccountSuspendedException', 'SendingPausedException', 'TooManyRequestsException', 'LimitExceededException', 'ForbiddenException', 'AccessDeniedException']);
+const definiteSesRejection = (issue: unknown) => rejectionNames.has((issue as Error)?.name);
+const diagnosticNames = new Set([...rejectionNames, 'AbortError', 'TimeoutError', 'InternalServerErrorException', 'ServiceUnavailableException', 'CredentialsProviderError', 'Error']);
+function reportSendFailure(issue: unknown) {
+  const error = issue as { name?: unknown; $metadata?: { httpStatusCode?: unknown } } | null;
+  const name = typeof error?.name === 'string' && diagnosticNames.has(error.name) ? error.name : 'UnknownError';
+  const status = error?.$metadata?.httpStatusCode;
+  const httpStatus = typeof status === 'number' && Number.isInteger(status) && status >= 100 && status <= 599 ? status : null;
+  // Never log provider messages, request metadata, account/recipient IDs or content.
+  console.warn('parent_email_send_failed', { name, httpStatus });
+}
 function notificationId(value: string) { return /^[a-f0-9]{64}$/.test(value) ? value : fail(404, 'EMAIL_NOT_FOUND', 'This email notification could not be found.'); }
 function configIssue(config: Settings, recipient: string, at: Date): string | null {
   if (!config.enabled) return 'EMAIL_DISABLED';
@@ -239,7 +251,10 @@ export function createParentEmailService(overrides: Partial<ParentEmailDependenc
       const sent = await deps.send({ from: config.from, to: dispatch.recipient, subject: dispatch.subject, html: dispatch.html, text: dispatch.text });
       if (!sent.MessageId) return finish(dispatch, 'unknown', 'SEND_UNKNOWN', false);
       return finish(dispatch, 'accepted', 'ACCEPTED', false, { messageId: sent.MessageId, acceptedAt: deps.now().toISOString() });
-    } catch (issue) { return definiteSesRejection(issue) ? finish(dispatch, 'not_sent', 'SERVICE_REJECTED', true) : finish(dispatch, 'unknown', 'SEND_UNKNOWN', false); }
+    } catch (issue) {
+      reportSendFailure(issue);
+      return definiteSesRejection(issue) ? finish(dispatch, 'not_sent', 'SERVICE_REJECTED', true) : finish(dispatch, 'unknown', 'SEND_UNKNOWN', false);
+    }
   }
   async function dispatchPublished(update: ParentEmailUpdate) {
     if (update.audience !== 'student') return;
