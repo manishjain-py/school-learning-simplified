@@ -70,7 +70,18 @@ def report_stages(workspace):
 
 
 def request(run, role, declared, batch, notes, final):
-    return c.request(run, role, declared, batch, notes, final, prompt_for(role, declared['mode']))
+    result = c.request(run, role, declared, batch, notes, final, prompt_for(role, declared['mode']))
+    if declared['mode'] == 'pixi' and role.endswith(('_author', '_final')):
+        result['system'] = [{'text': (
+            'pixi_code is the executable body of an already-invoked async function, '
+            'with initialized app and PIXI supplied by the host. Execute scene setup in that body. '
+            'Merely defining a helper function does not execute it; explicitly invoke any helper needed for setup. '
+            'Assign globalThis.renderAt to a function accepting t_ms before the body completes. '
+            'duration_ms belongs in the returned visual_explanation JSON metadata, not in pixi_code. '
+            'The host does not inject a JavaScript variable named visual_explanation. '
+            'Preserve the native artifact envelope and the pixi_code string field; '
+            'all existing authoring and final-revision instructions remain in force.')}]
+    return result
 
 
 def prompt_for(role, mode):
