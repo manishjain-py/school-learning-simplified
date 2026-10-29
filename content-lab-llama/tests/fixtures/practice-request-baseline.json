@@ -1,0 +1,226 @@
+{
+  "base_commit": "765742a1c444779578e3a458e319e8a227e4dbde",
+  "original_practice_sha256": "bde2ea87c1ed2ef19f51ef3c6d404c117ff66df4f36f92b095d898f86b5d43a7",
+  "snapshot": {
+    "scenarios": {
+      "seed": {
+        "roles": [
+          "practice_blueprint",
+          "practice_slot_1",
+          "practice_slot_2",
+          "practice_slot_3",
+          "practice_slot_4",
+          "practice_slot_5",
+          "practice_review",
+          "practice_final"
+        ],
+        "requests": {
+          "practice_blueprint": {
+            "request_sha256": "cbf06b7a41c5f582b7ce44a84081f44fdc96dba69ef7a03352ba4f1ee5028597",
+            "first_block_sha256": "593583f1b20ee6509f3bca244e47b6280dd7cb7bbee84b1779751b8a68a927ff",
+            "declared_sha256": "28d9801c53ae36f59374ad18bd761f032f52c7c09146605acfb739239d4e5b49"
+          },
+          "practice_slot_1": {
+            "request_sha256": "a756d2d011200f238ee5665083910259a29d8f27ff04acab63cb039a742fd16a",
+            "first_block_sha256": "71ef18122f494c69ebf01831efa7e87e293737375ca019d6fbdc5a9da86d019b",
+            "declared_sha256": "91bed3ad2d374535549f80aecbaa103d938c7b620ccad26fcdd1aaa408af2fea"
+          },
+          "practice_slot_2": {
+            "request_sha256": "900f81c7b03861bd91a54235b1fc965bb1678e8eb4f8a085e454a8eb12645e3a",
+            "first_block_sha256": "8bd43fb9abf5ca765e81d43c1da8fe06d7750bba92056f74b06e0d5f51fd6b17",
+            "declared_sha256": "113cc4d990c1bb90a544e653d9b013d4c3e74049f5739353bd68ec7aeb405645"
+          },
+          "practice_slot_3": {
+            "request_sha256": "13dc7060fab86c8507107b6b58a0bc2ba807f2980ddea30e9fa9abea2173e309",
+            "first_block_sha256": "fa776d93f21a56fac46ad552e5c67703291a92b5c4be885cce9c674a26fe5ffe",
+            "declared_sha256": "d481a37f8ca904697f77f0a1131f123f2d228f9c21c2b1fe79f5c7a7f19e802d"
+          },
+          "practice_slot_4": {
+            "request_sha256": "d2cdc97a99218f6fb437c770c8a7fd300440e88f0b644312da27728e1c97aa85",
+            "first_block_sha256": "ce5177ea41c17ac567cf9e1b354d0263b3778beac2342082f5290b14b9ada980",
+            "declared_sha256": "ca20344abd8f418301ba8fb7a562fb1a3938c31763798e066cfb9b0e6549d7c8"
+          },
+          "practice_slot_5": {
+            "request_sha256": "40ed4630ba288ed8601a2ef544d77910040670e157f601c5f77d1bb4d417bbbe",
+            "first_block_sha256": "74b0016e349eacf4f2f6ae9270e1c4b7abeccec67a16935560fd2dd526f0d6c7",
+            "declared_sha256": "01dbb6a756c3baac6f6352acdd62033fdb308d7104ede843d00e0ad31f1f6f76"
+          },
+          "practice_review": {
+            "request_sha256": "b51624cc1d2e8bdaa937fb97d535628bf35b1590acefec188d7547f6d72ea643",
+            "first_block_sha256": "0c26951e6ee49c62ba14255ef65e43cfe782dbf42e48f79769d9d206062116e9",
+            "declared_sha256": "52057c3f9a1535aaf9cea650c92527787d3cae553449b709d9030477c2267d37"
+          },
+          "practice_final": {
+            "request_sha256": "a454f45b95380083558f2ad4f0f868a050b1a4aa6eb4280efe6250799a46cbdb",
+            "first_block_sha256": "a3e3af6376aafa747f43a810355b1bcb0cc8ad81b0c5c41eeeac70dd08803758",
+            "declared_sha256": "a390e96ee956025b160c6a6e344a61b5bca4cfde3ea8989674a7d9fe7489ed27"
+          }
+        },
+        "artifacts": {
+          "bank-snapshot.json": "83934c02e74fe12377345f63ef178af64b644994740d34d856720be3891236c2",
+          "blueprint-cache.json": "f6719d15d3cebad7439165320b0424ef815b68e86a61c1a12c711cc23008b90d",
+          "blueprint.json": "a19d1849faae381b8c01460f3cf78fa4ba545d25484a45033cd7859f33ecf8ac",
+          "questions.json": "83934c02e74fe12377345f63ef178af64b644994740d34d856720be3891236c2"
+        },
+        "diagnostics": {
+          "allocation.json": "b1ecd3d7e3aca4d57648ab7f9c86324a3c637888223788398521a2fd9bd279a7",
+          "census.json": "1695a28d9ab546f700eda17898afc40e8434418733c6e2dc4c4ec03f2badfcaf",
+          "dedupe.json": "a86dab394c3f091e7092e9ca8da342b796b1252b0debb70b251ab5a047c74bbe",
+          "review-locators.json": "b9860cf74306110917ff3cf74b24c4023fa04ff3a16d0f75d90d9049305dda46"
+        },
+        "metrics": {
+          "status": "final_author_exported",
+          "requested_addition": 30,
+          "existing_count": 0,
+          "final_count": 29,
+          "shortfall": 1,
+          "count_note": "Bookkeeping only; no post-final review/filter/reversion/repair/exact-count hold. Native malformed content remains author output."
+        }
+      },
+      "growth": {
+        "roles": [
+          "practice_blueprint",
+          "practice_slot_1",
+          "practice_slot_2",
+          "practice_review",
+          "practice_final"
+        ],
+        "requests": {
+          "practice_blueprint": {
+            "request_sha256": "cbf06b7a41c5f582b7ce44a84081f44fdc96dba69ef7a03352ba4f1ee5028597",
+            "first_block_sha256": "593583f1b20ee6509f3bca244e47b6280dd7cb7bbee84b1779751b8a68a927ff",
+            "declared_sha256": "28d9801c53ae36f59374ad18bd761f032f52c7c09146605acfb739239d4e5b49"
+          },
+          "practice_slot_1": {
+            "request_sha256": "b3e97c12e0096b83431e4da962d2362d5799be595f5e6dbc87a64d017c5c1e5a",
+            "first_block_sha256": "990767b81b9dbf2324e74d507e505b166e2ccb4e1fd92ba616b4478dc811daa4",
+            "declared_sha256": "10852e5dd4692108fe753cfd2c40f181f1e8f6fea3397ead934af638266abffd"
+          },
+          "practice_slot_2": {
+            "request_sha256": "ff0fbb336923a2e3fb8d4096be1840a152d700a63a8ae8cd0c490b6a6e654e3a",
+            "first_block_sha256": "4d49122ee7afa5353b2c5e70fdd062bec8ee6a3a2ac22ae56403e78e7235eac5",
+            "declared_sha256": "2345036317d91db26021692744127ed38c542342a6548041e3fb10c9d82623b0"
+          },
+          "practice_review": {
+            "request_sha256": "2858938a9bad8b074e1dd27560c950057a6ab20a6b73efe872b1851260bc0840",
+            "first_block_sha256": "8d94069bd402453eff8b5e4c4e7a2edce852af309c4746423ecc44159bd3e3f1",
+            "declared_sha256": "865bf0f3e64fe9b118e275f37867cd54713a4a6f004176c6e7c87950902b1ea4"
+          },
+          "practice_final": {
+            "request_sha256": "d1bb6c33e74a18df5fbe2f46bcf131e792b6ac70ded92c58154c53ff29524b76",
+            "first_block_sha256": "04ef1ac197ea91a27ac57416d0e0f01100462bbb423e0a285de312a96103c97b",
+            "declared_sha256": "bae8b745bf8e0cd6193e08471899755f8d29a592592d53b1631124ba19ec76da"
+          }
+        },
+        "artifacts": {
+          "bank-snapshot.json": "e75d86249b1d24b7fdfd1059215f64da1cc583b2a21089ba78d92dc94d535319",
+          "blueprint-cache.json": "f6719d15d3cebad7439165320b0424ef815b68e86a61c1a12c711cc23008b90d",
+          "blueprint.json": "a19d1849faae381b8c01460f3cf78fa4ba545d25484a45033cd7859f33ecf8ac",
+          "questions.json": "88dd37cd1c00d243cf8e5d9994f3191d7818317dbbad312c678e35104c3ed741"
+        },
+        "diagnostics": {
+          "allocation.json": "ca522610334879518af329c326148ec63332e86722fd5160c7eccf7abb6ad9af",
+          "census.json": "5300e4105538614e4509ec38ffb1de4389355f2b89b7f54bd2fc47ab41aed580",
+          "dedupe.json": "30a61f6228feb892f958567d892a8b133ce9ab97cfed2bfdd1709e743b6476b6",
+          "review-locators.json": "c3eb1bf899702ae6094d551b6ba45400a067e0164db73e9d36f4fae14bef2173"
+        },
+        "metrics": {
+          "status": "final_author_exported",
+          "requested_addition": 10,
+          "existing_count": 1,
+          "final_count": 8,
+          "shortfall": 2,
+          "count_note": "Bookkeeping only; no post-final review/filter/reversion/repair/exact-count hold. Native malformed content remains author output."
+        }
+      },
+      "cached_growth": {
+        "roles": [
+          "practice_slot_1",
+          "practice_slot_2",
+          "practice_review",
+          "practice_final"
+        ],
+        "requests": {
+          "practice_slot_1": {
+            "request_sha256": "b3e97c12e0096b83431e4da962d2362d5799be595f5e6dbc87a64d017c5c1e5a",
+            "first_block_sha256": "990767b81b9dbf2324e74d507e505b166e2ccb4e1fd92ba616b4478dc811daa4",
+            "declared_sha256": "10852e5dd4692108fe753cfd2c40f181f1e8f6fea3397ead934af638266abffd"
+          },
+          "practice_slot_2": {
+            "request_sha256": "ff0fbb336923a2e3fb8d4096be1840a152d700a63a8ae8cd0c490b6a6e654e3a",
+            "first_block_sha256": "4d49122ee7afa5353b2c5e70fdd062bec8ee6a3a2ac22ae56403e78e7235eac5",
+            "declared_sha256": "2345036317d91db26021692744127ed38c542342a6548041e3fb10c9d82623b0"
+          },
+          "practice_review": {
+            "request_sha256": "2858938a9bad8b074e1dd27560c950057a6ab20a6b73efe872b1851260bc0840",
+            "first_block_sha256": "8d94069bd402453eff8b5e4c4e7a2edce852af309c4746423ecc44159bd3e3f1",
+            "declared_sha256": "865bf0f3e64fe9b118e275f37867cd54713a4a6f004176c6e7c87950902b1ea4"
+          },
+          "practice_final": {
+            "request_sha256": "d1bb6c33e74a18df5fbe2f46bcf131e792b6ac70ded92c58154c53ff29524b76",
+            "first_block_sha256": "04ef1ac197ea91a27ac57416d0e0f01100462bbb423e0a285de312a96103c97b",
+            "declared_sha256": "bae8b745bf8e0cd6193e08471899755f8d29a592592d53b1631124ba19ec76da"
+          }
+        },
+        "artifacts": {
+          "bank-snapshot.json": "e75d86249b1d24b7fdfd1059215f64da1cc583b2a21089ba78d92dc94d535319",
+          "blueprint-cache.json": "f6719d15d3cebad7439165320b0424ef815b68e86a61c1a12c711cc23008b90d",
+          "blueprint.json": "a19d1849faae381b8c01460f3cf78fa4ba545d25484a45033cd7859f33ecf8ac",
+          "questions.json": "88dd37cd1c00d243cf8e5d9994f3191d7818317dbbad312c678e35104c3ed741"
+        },
+        "diagnostics": {
+          "allocation.json": "ca522610334879518af329c326148ec63332e86722fd5160c7eccf7abb6ad9af",
+          "census.json": "5300e4105538614e4509ec38ffb1de4389355f2b89b7f54bd2fc47ab41aed580",
+          "dedupe.json": "30a61f6228feb892f958567d892a8b133ce9ab97cfed2bfdd1709e743b6476b6",
+          "review-locators.json": "c3eb1bf899702ae6094d551b6ba45400a067e0164db73e9d36f4fae14bef2173"
+        },
+        "metrics": {
+          "status": "final_author_exported",
+          "requested_addition": 10,
+          "existing_count": 1,
+          "final_count": 8,
+          "shortfall": 2,
+          "count_note": "Bookkeeping only; no post-final review/filter/reversion/repair/exact-count hold. Native malformed content remains author output."
+        }
+      },
+      "reached_target": {
+        "roles": [],
+        "requests": {},
+        "artifacts": {
+          "bank-snapshot.json": "0b94913a70a85c0b7ec22ceec2704ceaa863112ff926c5046d03631b24dbde84",
+          "questions.json": "193654cd531f5b655f314145f3ae8ce1962e1e6e58b007ee9817342cbf5653bd"
+        },
+        "diagnostics": {
+          "census.json": "5300e4105538614e4509ec38ffb1de4389355f2b89b7f54bd2fc47ab41aed580"
+        },
+        "metrics": {
+          "status": "no_op",
+          "existing_count": 1,
+          "requested_addition": 0,
+          "reason": "Target already reached or explicit add zero; no content roles invoked."
+        }
+      },
+      "add_zero": {
+        "roles": [],
+        "requests": {},
+        "artifacts": {
+          "bank-snapshot.json": "0b94913a70a85c0b7ec22ceec2704ceaa863112ff926c5046d03631b24dbde84",
+          "questions.json": "193654cd531f5b655f314145f3ae8ce1962e1e6e58b007ee9817342cbf5653bd"
+        },
+        "diagnostics": {
+          "census.json": "5300e4105538614e4509ec38ffb1de4389355f2b89b7f54bd2fc47ab41aed580"
+        },
+        "metrics": {
+          "status": "no_op",
+          "existing_count": 1,
+          "requested_addition": 0,
+          "reason": "Target already reached or explicit add zero; no content roles invoked."
+        }
+      }
+    },
+    "outside_request_ast_sha256": "a5c279a8d970bced2733b39dd866af6580f512f002fed7cdd4f5d86dc657ad0e",
+    "prompt_tree_sha256": "25dde46ffb09e7f3c5032cea0d7ea2d6c3389ebb8ffffa94ced424766a914cb3",
+    "other_reference_tree_sha256": "adac7b70d548e6708a7e1532c46986482c0496d78df27900ee9bdd027a651db0",
+    "requirements_sha256": "8e4221a16d4720f86978bc905de127277035c2156a8ad9836eff58676d9aecea"
+  }
+}

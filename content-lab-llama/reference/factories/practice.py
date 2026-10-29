@@ -252,8 +252,29 @@ def request(run, role, declared, batch, notes, final):
         'Questions include format, difficulty easy/medium, concept_tag, question_text, explanation_why, answer-free '
         'audio_text, skill_key, signature, params. Signature: four nonempty lowercase pipe-separated parts, <=120 '
         'characters; numeric params {numbers:[...]}, otherwise {}. Spoken scripts are not synthesized audio.')
+    result_type = ('Return an object-valued artifact with questions, and the existing note.'
+        if role.startswith('practice_slot_') else {
+        'practice_blueprint': 'Return an object-valued artifact containing the complete native skills, digest and theme_wheel, '
+            'and the existing note. Preserve skill_key, section_key, title, objective, what_to_test, formats, '
+            'difficulty_notes, misconceptions, parameter_space, weight and optional taught_method. Preserve digest '
+            'vocabulary, step_labels, methods_conventions, contexts_used and board_titles.',
+        'practice_review': 'Return the native unenveloped JSON root with wrong array, boolean holistic_pass, '
+            'holistic_issues array and optional comment. Do not wrap the review in artifact. Copy each finding\'s '
+            'ORIGINAL signature verbatim as its locator; question_text and format remain evidence, never replacement locators. '
+            'Empty findings and negative advisory feedback remain valid.',
+        'practice_final': 'Return the complete object-valued artifact with questions, and the existing dispositions and note. '
+            'Preserve fixes, declines with reasons and unresolved locator mismatches against ORIGINAL signatures. '
+            'The final author remains authoritative, including shortfalls and disagreements.'}[role])
+    final_contract = ('Final response contract for '+role+':\n'+result_type+
+        '\nReturn one complete strict JSON object. The first non-whitespace character must be { and the last must be }. '
+        'No response-level preamble or postscript, headings, Markdown fences, extra objects, comments, trailing commas '
+        'or file receipts. Text and Markdown inside JSON strings remain valid; escape newlines, quotes and backslashes '
+        'as JSON requires. Put notes only in fields allowed by this role\'s existing instructions. Preserve the existing '
+        'native schema. Questions retain pick_one, true_false, fill_blank and multi_select; true_false uses Practice '
+        'correct_answer_bool, never Explain correct_answer; correct_index and correct_indices are zero-based, '
+        'and multi_select uses exact-set answers. Return the content itself, not a description of producing it.')
     return {'messages': [{'role': 'user', 'content': [{'text': prompt+'\n\nLOCAL TRANSPORT CONTRACT:\n'+contract+
-        '\nDeclared task data:\n'+json.dumps({'task_inputs': declared}, ensure_ascii=False)}]}]}
+        '\nDeclared task data:\n'+json.dumps({'task_inputs': declared}, ensure_ascii=False)}, {'text': final_contract}]}]}
 
 
 def parse(role, text, notes_pages=None):
