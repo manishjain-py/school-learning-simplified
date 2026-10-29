@@ -1,9 +1,9 @@
-import { preparePublishedParentNoteDraft, type ParentNoteAssistance } from './parent-notes.js';
+import { handleFamilyConversations, staffUpdateAcknowledgements, type FamilyUpdate } from './family-conversations.js';
+import { preparePublishedParentNoteDraft } from './parent-notes.js';
 import { dispatchPublishedParentEmail, handleParentEmail, parentEmailPublicationChecks, prepareParentEmailRecords } from './parent-email.js';
-import { createHash } from 'node:crypto';
 import { processTeacherLog } from '../recommendations/index.js';
 import type { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { SchoolError, bodyOf, classPK, fail, get, id, json, now, put, query, requireClassStaff, requireFamilyChild, staffDisplayName, version, write, type Student, type VerifiedAccount } from './index.js';
+import { bodyOf, classPK, fail, get, id, json, now, put, query, requireClassStaff, requireFamilyChild, staffDisplayName, version, write, type Student, type VerifiedAccount } from './index.js';
 
 type GuidanceState = { status: string; message?: string; [key: string]: unknown };
 export type SchoolLog = {
@@ -11,12 +11,9 @@ export type SchoolLog = {
   subject: string; note: string; localDate: string; timeZone: string; version: number;
   createdAt: string; updatedAt: string; guidance: GuidanceState;
 };
-type Update = { assistance?: ParentNoteAssistance | null; id: string; schoolId: string; classId: string; authorId: string; authorEmail: string; authorName: string; audience: 'class' | 'student'; studentId: string | null; text: string; logId: string | null; version: number; createdAt: string; updatedAt: string };
-type Thread = { id: string; schoolId: string; classId: string; childId: string; parentId: string; parentEmail: string; teacherId: string; teacherEmail: string; teacherName: string; updateId: string; createdAt: string };
+type Update = FamilyUpdate;
 type Message = { id: string; text: string; authorId: string; authorRole: 'parent' | 'teacher'; authorName: string; createdAt: string };
 const commPK = (schoolId: string, classId: string) => `COMM#${schoolId}#${classId}`;
-const threadPK = (schoolId: string, classId: string, threadId: string) => `THREAD#${schoolId}#${classId}#${threadId}`;
-const sha = (value: string) => createHash('sha256').update(value).digest('hex');
 const noGuidance = (): GuidanceState => ({ status: 'not_run', message: 'Learning guidance is not connected yet.' });
 function prose(value: unknown, label: string, max = 3000): string {
   if (typeof value !== 'string' || !value.trim() || [...value.trim()].length > max || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value)) return fail(400, 'INVALID_FIELD', `Enter ${label} (up to ${max} characters).`);
@@ -74,50 +71,10 @@ async function getUpdate(schoolId: string, classId: string, updateId: string) {
   if (!update) return fail(404, 'UPDATE_NOT_FOUND', 'This family update could not be found.');
   return update;
 }
-async function threadContext(thread: Thread) {
-  // Both participants must still have their canonical link; a discovery/index row is never authority.
-  const child = await requireFamilyChild({ id: thread.parentId, email: thread.parentEmail, emailVerified: true }, thread.schoolId, thread.classId, thread.childId, 'parent');
-  await requireClassStaff({ id: thread.teacherId, email: thread.teacherEmail, emailVerified: true }, thread.schoolId, thread.classId);
-  const update = await getUpdate(thread.schoolId, thread.classId, thread.updateId);
-  if (!relevant(update, thread.childId) || update.authorId !== thread.teacherId) return fail(403, 'THREAD_ACCESS_DENIED', 'This conversation is no longer available for this child and teacher.');
-  return { child, update };
-}
-async function authorizedThread(user: VerifiedAccount, schoolId: string, classId: string, threadId: string, role: 'parent' | 'teacher', childId?: string) {
-  if (!/^[a-f0-9]{64}$/.test(threadId)) return fail(404, 'THREAD_NOT_FOUND', 'This conversation could not be found.');
-  const thread = await get<Thread>(commPK(schoolId, classId), `THREAD#${threadId}`);
-  if (!thread || (role === 'parent' ? thread.parentId !== user.id || thread.childId !== childId : thread.teacherId !== user.id)) return fail(403, 'THREAD_ACCESS_DENIED', 'This private conversation is not available to your account.');
-  if (role === 'parent') await requireFamilyChild(user, schoolId, classId, thread.childId, 'parent');
-  else await requireClassStaff(user, schoolId, classId);
-  return { thread, ...await threadContext(thread) };
-}
-function cleanThread(thread: Thread, child: { id: string; name: string }, update: Update) { return { id: thread.id, childId: child.id, childName: child.name, teacherName: thread.teacherName, update: cleanUpdate(update), createdAt: thread.createdAt }; }
-async function listThreads(user: VerifiedAccount, schoolId: string, classId: string, role: 'parent' | 'teacher', childId?: string) {
-  const rows = await query(commPK(schoolId, classId), 'THREAD#'); const result = [];
-  for (const row of rows) {
-    const thread = row as Thread;
-    if (role === 'parent' ? thread.parentId !== user.id || thread.childId !== childId : thread.teacherId !== user.id) continue;
-    try { const { child, update } = await authorizedThread(user, schoolId, classId, thread.id, role, childId); result.push(cleanThread(thread, child, update)); }
-    catch (issue) { if (!(issue instanceof SchoolError && [400, 403, 404, 409].includes(issue.status))) throw issue; }
-  }
-  return newest(result);
-}
-async function threadMessages(event: APIGatewayProxyEventV2WithJWTAuthorizer, user: VerifiedAccount, schoolId: string, classId: string, threadId: string, role: 'parent' | 'teacher', childId?: string) {
-  const { thread, child, update } = await authorizedThread(user, schoolId, classId, threadId, role, childId);
-  const PK = threadPK(schoolId, classId, thread.id);
-  if (event.requestContext.http.method === 'GET') return json(200, { thread: cleanThread(thread, child, update), messages: (await query(PK, 'MESSAGE#')).map((item) => cleanMessage(item as Message)).sort((a, b) => a.createdAt.localeCompare(b.createdAt)) });
-  if (event.requestContext.http.method !== 'POST') return null;
-  const body = bodyOf(event); const messageId = requestId(body.clientId);
-  const old = await get<Message>(PK, `MESSAGE#${messageId}`);
-  if (old) {
-    if (old.authorId !== user.id) return fail(409, 'REQUEST_CONFLICT', 'This message identifier is already in use.');
-    return json(200, { message: cleanMessage(old) });
-  }
-  const message: Message = { id: messageId, text: prose(body.text, 'a private reply', 2000), authorId: user.id, authorRole: role, authorName: role === 'teacher' ? thread.teacherName : 'Parent', createdAt: now() };
-  await write([put(PK, `MESSAGE#${messageId}`, message, 'new')]);
-  return json(201, { message: cleanMessage(message) });
-}
 
 export async function handleCommunication(event: APIGatewayProxyEventV2WithJWTAuthorizer, user: VerifiedAccount): Promise<APIGatewayProxyResultV2 | null> {
+  const conversation = await handleFamilyConversations(event, user);
+  if (conversation) return conversation;
   const email = await handleParentEmail(event, user);
   if (email) return email;
   const path = event.rawPath.replace(/\/$/, ''); const method = event.requestContext.http.method;
@@ -130,31 +87,12 @@ export async function handleCommunication(event: APIGatewayProxyEventV2WithJWTAu
       const updates = (await query(commPK(schoolId, classId), 'UPDATE#')).filter((item) => relevant(item as Update, childId)).map((item) => cleanUpdate(item as Update));
       return json(200, { child, updates: newest(updates) });
     }
-    if (action !== 'threads' || role !== 'parent') return fail(403, 'PARENT_REQUIRED', 'Private teacher replies are available only to the linked parent account.');
-    if (threadId) return threadMessages(event, user, schoolId, classId, threadId, 'parent', childId);
-    if (method === 'GET') return json(200, { threads: await listThreads(user, schoolId, classId, 'parent', childId) });
-    if (method === 'POST') {
-      const body = bodyOf(event); const update = await getUpdate(schoolId, classId, body.updateId);
-      if (!relevant(update, childId)) return fail(403, 'UPDATE_ACCESS_DENIED', 'This update is not available for this child.');
-      await requireClassStaff({ id: update.authorId, email: update.authorEmail, emailVerified: true }, schoolId, classId);
-      const threadId = sha([schoolId, classId, childId, user.id, update.authorId, update.id].join(':'));
-      const existing = await get<Thread>(commPK(schoolId, classId), `THREAD#${threadId}`);
-      const thread: Thread = existing || { id: threadId, schoolId, classId, childId, parentId: user.id, parentEmail: user.email, teacherId: update.authorId, teacherEmail: update.authorEmail, teacherName: update.authorName, updateId: update.id, createdAt: now() };
-      if (existing) return threadMessages(event, user, schoolId, classId, threadId, 'parent', childId);
-      const message: Message = { id: requestId(body.clientId), text: prose(body.text, 'a private reply', 2000), authorId: user.id, authorRole: 'parent', authorName: 'Parent', createdAt: now() };
-      await write([put(commPK(schoolId, classId), `THREAD#${threadId}`, thread, 'new'), put(threadPK(schoolId, classId, threadId), `MESSAGE#${message.id}`, message, 'new')]);
-      return json(201, { thread: cleanThread(thread, child, update), message: cleanMessage(message) });
-    }
     return fail(404, 'NOT_FOUND', 'This family action could not be found.');
   }
   const staff = path.match(/^\/api\/school\/schools\/([^/]+)\/classes\/([^/]+)\/(logs|updates|threads)(?:\/([^/]+))?(?:\/(comments|messages))?$/);
   if (!staff) return null;
   const [, rawSchool, rawClass, action, recordId, subaction] = staff; const schoolId = id(rawSchool); const classId = id(rawClass);
   const context = await requireClassStaff(user, schoolId, classId); const PK = commPK(schoolId, classId);
-  if (action === 'threads') {
-    if (!recordId && method === 'GET') return json(200, { threads: await listThreads(user, schoolId, classId, 'teacher') });
-    if (recordId && subaction === 'messages') return threadMessages(event, user, schoolId, classId, recordId, 'teacher');
-  }
   if (action === 'logs') {
     if (!recordId && method === 'GET') return json(200, { logs: newest((await query(PK, 'LOG#')).map((item) => cleanLog(item as SchoolLog))) });
     if (!recordId && method === 'POST') {
@@ -186,7 +124,11 @@ export async function handleCommunication(event: APIGatewayProxyEventV2WithJWTAu
     }
   }
   if (action === 'updates' && !subaction) {
-    if (!recordId && method === 'GET') return json(200, { updates: newest((await query(PK, 'UPDATE#')).map((item) => cleanUpdate(item as Update, context.role === 'admin' || item.authorId === user.id))) });
+    if (!recordId && method === 'GET') {
+      const records = (await query(PK, 'UPDATE#')) as Update[];
+      const updates = await staffUpdateAcknowledgements(user, schoolId, classId, records);
+      return json(200, { updates: newest(updates.map(update => ({ ...update, canEdit: context.role === 'admin' || records.find(record => record.id === update.id)?.authorId === user.id }))) });
+    }
     if (!recordId && method === 'POST') {
       const body = bodyOf(event); const updateId = requestId(body.clientId); const old = await get<Update>(PK, `UPDATE#${updateId}`);
       if (old) { if (old.authorId !== user.id) return fail(409, 'REQUEST_CONFLICT', 'This update identifier is already in use.'); await dispatchPublishedParentEmail(old); return json(200, { update: cleanUpdate(old) }); }

@@ -13,3 +13,7 @@ export type Workspaces = {
 };
 export type SchoolDetail = { school: School; role: SchoolRole; classes: SchoolClass[]; teachers: Teacher[] };
 export type MutationResult = { warning?: string };
+export type FamilyProfile = { displayName: string; version: number; updatedAt: string };
+export type Acknowledgement = { parentName: string; acknowledgedAt: string; sequence: number; updateVersion: number };
+export type UpdateAcknowledgement = Acknowledgement & { threadId: string; childId: string; childName: string };
+export type UnreadSummary = { unreadCount: number; unreadUpdates?: number; unreadActivities?: number };

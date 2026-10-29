@@ -2,12 +2,13 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { ArrowRight, BookOpen, Check, GraduationCap, HeartHandshake, ListChecks, Plus, RefreshCw, School as SchoolIcon, Users, X } from 'lucide-react';
 import { ApiError, request } from '../api';
 import type { Config, User } from '../types';
-import type { LinkedChild, MutationResult, RosterStudent, SchoolClass, SchoolDetail, Teacher, Workspaces } from './types';
+import type { FamilyProfile, LinkedChild, MutationResult, RosterStudent, SchoolClass, SchoolDetail, Teacher, Workspaces } from './types';
 import './school.css';
 import '../reports/reports.css';
 import { ClassCommunication, FamilyCommunication } from './Communication';
 import { ParentGuidance, useParentGuidance } from '../guidance/ParentGuidance';
 import { linkedUpdateChild, type ParentUpdateLink } from './parentUpdateLink';
+import { NewActivity, ParentNameForm, useSchoolRead, useUnreadCounts } from './familyActivity';
 
 type Props = { config: Config; user: User | null; onSignIn: () => void; parentUpdateLink?: ParentUpdateLink };
 type Context = 'staff' | 'student' | 'parent';
@@ -102,17 +103,21 @@ function SchoolPanel({ config, userId, schoolId, revision, onChanged }: { config
   const [editClass, setEditClass] = useState(false);
   const [teacherForm, setTeacherForm] = useState<Teacher | 'new' | null>(null);
   const [retry, setRetry] = useState(0);
+  const [activityRevision, setActivityRevision] = useState(0);
   const schoolPath = `${base}/${encoded(schoolId)}`;
+  const unread = useUnreadCounts({ config, userId }, (detail?.classes || []).map(item => `${schoolPath}/classes/${encoded(item.id)}`), activityRevision + revision);
+  const activityChanged = () => setActivityRevision(value => value + 1);
   useEffect(() => {
     const abort = new AbortController(); setError('');
-    request<SchoolDetail>(config, schoolPath, { authenticated: true, signal: abort.signal }).then((data) => {
+    request<SchoolDetail>(config, schoolPath, { authenticated: true, expectedUserId: userId, signal: abort.signal }).then((data) => {
+      if (abort.signal.aborted) return;
       setDetail(data);
       setClassId((current) => data.classes.some((item) => item.id === current) ? current : data.classes[0]?.id || '');
     }).catch((issue) => { if (issue.name !== 'AbortError') { setDetail(null); setError(message(issue)); } });
     return () => abort.abort();
-  }, [config, schoolPath, revision, retry]);
+  }, [config, userId, schoolPath, revision, retry]);
   async function save(path: string, body: unknown, method: 'POST' | 'PUT' = 'PUT') {
-    const result = await request<MutationResult>(config, path, { authenticated: true, method, body });
+    const result = await request<MutationResult>(config, path, { authenticated: true, expectedUserId: userId, method, body });
     setNewClass(false); setEditClass(false); setTeacherForm(null);
     onChanged(result.warning || 'School records updated. Account links now use the saved records.');
   }
@@ -123,13 +128,13 @@ function SchoolPanel({ config, userId, schoolId, revision, onChanged }: { config
   return <section className="school-detail">
     <div className="school-detail-heading"><div><h2>{detail.school.name}</h2><p>{detail.school.timeZone}</p></div><span className="school-role">{admin ? 'Administrator workspace' : 'Assigned teacher workspace'}</span></div>
     <div className="school-columns">
-      <aside className="school-class-list"><div className="school-list-heading"><h3>{admin ? 'Classes' : 'Your classes'}</h3><span>{detail.classes.length}</span></div>{detail.classes.length === 0 ? <p className="school-help">{admin ? 'Add the first class to start your roster.' : 'Your administrator has not assigned a class yet.'}</p> : <nav aria-label="School classes">{detail.classes.map((item) => <button key={item.id} aria-current={classId === item.id ? 'true' : undefined} onClick={() => { setClassId(item.id); setEditClass(false); setNewClass(false); }}><span>{item.name}<small>{item.subject}</small></span><ArrowRight size={16} /></button>)}</nav>}{admin && <button className="button secondary full" onClick={() => { setNewClass(true); setEditClass(false); }}><Plus size={15} />Add class</button>}</aside>
+      <aside className="school-class-list"><div className="school-list-heading"><h3>{admin ? 'Classes' : 'Your classes'}</h3><span>{detail.classes.length}</span></div>{detail.classes.length === 0 ? <p className="school-help">{admin ? 'Add the first class to start your roster.' : 'Your administrator has not assigned a class yet.'}</p> : <nav aria-label="School classes">{detail.classes.map((item) => <button key={item.id} aria-current={classId === item.id ? 'true' : undefined} onClick={() => { setClassId(item.id); setEditClass(false); setNewClass(false); }}><span>{item.name}<small>{item.subject}</small><NewActivity count={unread[`${schoolPath}/classes/${encoded(item.id)}`]} /></span><ArrowRight size={16} /></button>)}</nav>}{admin && <button className="button secondary full" onClick={() => { setNewClass(true); setEditClass(false); }}><Plus size={15} />Add class</button>}</aside>
       <div className="school-class-content">
         {newClass && admin ? <ClassForm teachers={detail.teachers} schoolPath={schoolPath} save={save} onCancel={() => setNewClass(false)} /> : selected ? <>
           <div className="school-class-heading"><div><p className="eyebrow">{selected.subject}</p><h3>{selected.name}</h3></div>{admin && <button className="text-button" onClick={() => setEditClass((value) => !value)}>{editClass ? 'Close class settings' : 'Edit class & teachers'}</button>}</div>
           {editClass && admin && <ClassForm key={selected.id + ':' + selected.version} record={selected} teachers={detail.teachers} schoolPath={schoolPath} save={save} onCancel={() => setEditClass(false)} />}
           <p className="school-help school-assigned">Assigned teachers: {selected.teacherEmails.length ? selected.teacherEmails.map((email) => detail.teachers.find((item) => item.email === email)?.name || email).join(', ') : 'No teacher assigned yet'}</p>
-          <ClassCommunication timeZone={detail.school.timeZone} key={`communication:${selected.id}`} config={config} userId={userId} classPath={`${schoolPath}/classes/${encoded(selected.id)}`} subject={selected.subject} admin={admin} />
+          <ClassCommunication timeZone={detail.school.timeZone} key={`communication:${selected.id}`} config={config} userId={userId} classPath={`${schoolPath}/classes/${encoded(selected.id)}`} subject={selected.subject} admin={admin} unreadCount={unread[`${schoolPath}/classes/${encoded(selected.id)}`]} onActivity={activityChanged} />
           <Roster key={selected.id} config={config} classPath={`${schoolPath}/classes/${encoded(selected.id)}`} admin={admin} revision={revision} save={save} />
         </> : <div className="school-empty school-empty-small"><GraduationCap size={31} /><h3>A classroom belongs here.</h3><p>{admin ? 'Add a class, assign its teachers and record each student’s own email.' : 'Your assigned classes will appear here.'}</p></div>}
       </div>
@@ -187,6 +192,15 @@ function FamilyPanel({ config, userId, kind, family, revision, parentUpdateLink 
   const target = kind === 'parent' && parentUpdateLink.kind === 'target' ? parentUpdateLink.target : null;
   const [selectedId, setSelectedId] = useState(() => target ? `${target.schoolId}:${target.classId}:${target.childId}` : '');
   const links = family[kind];
+  const [activityRevision, setActivityRevision] = useState(0);
+  const [profileRevision, setProfileRevision] = useState(0);
+  const [savedProfile, setSavedProfile] = useState<FamilyProfile | null>(null);
+  const [editingName, setEditingName] = useState(false);
+  const activityChanged = () => setActivityRevision(value => value + 1);
+  const childPath = (child: LinkedChild) => `/school/family/parent/${child.schoolId}/${child.classId}/${child.id}`;
+  const unread = useUnreadCounts({ config, userId }, kind === 'parent' ? links.children.map(childPath) : [], activityRevision + revision);
+  const profileRead = useSchoolRead<{ profile: FamilyProfile | null }>({ config, userId }, kind === 'parent' && links.children.length ? '/school/family/profile' : null, profileRevision + revision);
+  const profile = savedProfile || profileRead.data?.profile || null;
   const guidance = useParentGuidance(config, userId, links.children, kind === 'parent', revision);
   const ambiguous = kind === 'student' && family.student.status === 'ambiguous';
   const requestedChild = target ? linkedUpdateChild(target, links.children) : undefined;
@@ -195,15 +209,20 @@ function FamilyPanel({ config, userId, kind, family, revision, parentUpdateLink 
   const requestedUpdateId = target && selectedChild === requestedChild ? target.updateId : undefined;
   return <section className="school-family">
     <div className="school-detail-heading"><div><p className="eyebrow">{kind === 'student' ? 'YOUR SCHOOL CONNECTION' : 'YOUR FAMILY CONNECTIONS'}</p><h2>{kind === 'student' ? 'Learning with your school.' : 'Here for their next step.'}</h2></div><span className="school-role">{kind === 'student' ? 'Student workspace' : 'Parent workspace'}</span></div>
+    {kind === 'parent' && links.children.length > 0 && <section className="family-profile" aria-label="Your name in family conversations">
+      {profileRead.error && <div className="family-profile-error"><FormError error={profileRead.error} /><button className="button secondary" onClick={() => setProfileRevision(value => value + 1)}>Reload your name</button></div>}
+      {!profile && !profileRead.data && !profileRead.error && <p className="school-help" role="status">Loading your conversation name…</p>}
+      {(profileRead.data || profile) && (!profile || editingName) ? <ParentNameForm config={config} userId={userId} profile={profile} onSaved={value => { setSavedProfile(value); setEditingName(false); activityChanged(); }} onCancel={profile ? () => setEditingName(false) : undefined} onConflict={() => { setSavedProfile(null); setEditingName(true); setProfileRevision(value => value + 1); }} /> : profile && <p className="family-profile-name"><strong>{profile.displayName}</strong><span>Your name in private conversations</span><button className="text-button" onClick={() => setEditingName(true)}>Edit name</button></p>}
+    </section>}
     {unavailable && <div className="school-empty school-warning" role="alert"><h3>This family update is unavailable.</h3><p>Sign in with the verified parent account recorded by the school. This link does not provide access to another child’s records.</p></div>}
     {ambiguous ? <div className="school-empty school-warning" role="alert"><h3>Your student email needs a correction.</h3><p>Your verified email matches more than one student record. Ask your school administrator to correct the duplicate before you can access a student workspace.</p><p>You can keep using the learning library while your school resolves the records.</p></div> : links.children.length ? <>
-      {selectedChild && requestedUpdateId && <FamilyCommunication key={`${kind}:${selectedId}:${requestedUpdateId}`} config={config} userId={userId} child={selectedChild} role={kind} requestedUpdateId={requestedUpdateId} />}
+      {selectedChild && requestedUpdateId && <FamilyCommunication key={`${kind}:${selectedId}:${requestedUpdateId}`} config={config} userId={userId} child={selectedChild} role={kind} requestedUpdateId={requestedUpdateId} canReply={Boolean(profile)} onActivity={activityChanged} />}
       <div className={`school-family-grid${kind === 'parent' ? ' parent-family-grid' : ''}`}>{links.children.map((child: LinkedChild) => <article className="school-card school-child" key={`${child.schoolId}:${child.classId}:${child.id}`}>
         <span className="school-child-icon">{kind === 'student' ? <BookOpen size={23} /> : <HeartHandshake size={23} />}</span><span className="school-link-status"><Check size={13} />Connected</span><h3>{child.name}</h3><p>{child.className}<br />{child.schoolName}</p><span className="school-help">{kind === 'student' ? 'Your verified student email matches this school record.' : 'Your verified parent email is recorded for this child.'}</span>
-        <button className="button secondary family-open-updates" onClick={() => setSelectedId(`${child.schoolId}:${child.classId}:${child.id}`)}>Open classroom updates</button>
+        <button className="button secondary family-open-updates" onClick={() => setSelectedId(`${child.schoolId}:${child.classId}:${child.id}`)}>Open classroom updates{kind === 'parent' && <NewActivity count={unread[childPath(child)]} />}</button>
         {kind === 'parent' && <><a className="button secondary family-report-link" href={`/school/report/${encoded(child.schoolId)}/${encoded(child.classId)}/${encoded(child.id)}`}><ListChecks size={16} />View report card<ArrowRight size={16} /></a><ParentGuidance child={child} state={guidance} /></>}
       </article>)}</div>
-      {selectedChild && !requestedUpdateId && <FamilyCommunication key={`${kind}:${selectedId}`} config={config} userId={userId} child={selectedChild} role={kind} />}
+      {selectedChild && !requestedUpdateId && <FamilyCommunication key={`${kind}:${selectedId}`} config={config} userId={userId} child={selectedChild} role={kind} canReply={Boolean(profile)} onActivity={activityChanged} />}
     </> : !unavailable && <div className="school-empty"><HeartHandshake size={30} /><h3>{kind === 'student' ? 'Your school connection starts with your email.' : 'Your family links will appear here.'}</h3><p>{kind === 'student' ? 'Ask your school to record this account’s email as your student school email. Once it is recorded, refresh this page.' : 'Ask your school to record this account’s email as the parent email for each child. Each student needs a separate account. Once the records are saved, refresh this page.'}</p></div>}
     <a className="button secondary" href={kind === 'parent' ? '/?learn=1' : '/'}>{kind === 'parent' ? 'Learn for myself' : 'Explore the learning library'}<ArrowRight size={16} /></a>
   </section>;
