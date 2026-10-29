@@ -5,9 +5,20 @@ import html
 import json
 import os
 from pathlib import Path
+import re
 import time
-from .inputs import canonical, frozen_inputs, read, runtime_identity, save, sha
+from .inputs import canonical, frozen_inputs, read, runtime_identity, save, sha, strict_json
 from .providers import Bedrock, Fixture, validate_config
+
+
+def model_response_json(text):
+    """Remove only a whole JSON/untagged transport fence; never repair content."""
+    match = re.fullmatch(r'```(json)?[ \t]*\r?\n(.*?)\r?\n```', text.strip(), re.DOTALL)
+    body = match[2] if match else text
+    if not isinstance(strict_json(body), dict):
+        raise ValueError('Role response must be a JSON object')
+    framing = ('markdown_json_fence' if match[1] else 'markdown_fence') if match else 'plain_json'
+    return body, framing
 
 
 @contextmanager
@@ -140,14 +151,16 @@ class Runner:
             call['actual_usd'] = (usage['inputTokens']*self.config['input_per_million'] +
                                   usage['outputTokens']*self.config['output_per_million'])/1_000_000
         save(self.ledger_path, self.ledger)
+        result = {}
         try:
             if response.get('stopReason') != 'end_turn':
                 raise ValueError('Non-final provider stop; raw response retained, no automatic retry')
             text = ''.join(x.get('text', '') for x in response['output']['message']['content'])
+            text, result['response_framing'] = model_response_json(text)
             value = parse(text)
-            result = {'status': 'ok', 'output': value}
+            result.update(status='ok', output=value)
         except Exception as error:
-            result = {'status': 'failed', 'error': str(error)}
+            result.update(status='failed', error=str(error))
         return self.checkpoint(key, result, call)
 
     def role(self, role, declared):
@@ -202,6 +215,8 @@ def report(workspace, factory):
         'requests': len(ledger['calls']), 'actual_estimate_usd': actual,
         'unreconciled_reserved_usd': unknown, 'exposure_usd': actual+unknown,
         'observations': observations, 'roles': {role: results.get(role, {}).get('status', 'unavailable') for role in roles},
+        'response_framing': {key: result['response_framing'] for key, result in results.items()
+                             if 'response_framing' in result},
         'report_renderer_sha256': sha(canonical(runtime_identity()))}
     if stages:
         summary['operational_stages'] = stages
