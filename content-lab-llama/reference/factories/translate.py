@@ -165,6 +165,8 @@ def request(run, role, declared, batch, notes, final):
             'the same supplied descriptor. These identity values remain unchanged while title_display and '
             'line display/audio carry the translated text. Preserve every required item, line and the complete '
             'envelope.'}]
+    if stream == 'practice' and phase == 'review':
+        request['system'] = [{'text': final_contract}]
     return request
 
 

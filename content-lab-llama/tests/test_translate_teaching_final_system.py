@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from translate_practice_review_support import strip_practice_review_system
+
 from test_translate import runner, invoke, offline, PACKS, EXAMPLE
 from reference.factories import translate
 from reference.factories.translate_fixture import payload
@@ -85,7 +87,7 @@ def capture(workspace):
                                                             'explain-splitter-system-baseline.json',
                                                             'translate-teaching-final-nesting-baseline.json',
                                                             'translate-teaching-title-scalar-baseline.json',
-                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json')),
+                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -122,6 +124,7 @@ def test_system_is_existing_contract_plus_fixed_scope_without_task_data(monkeypa
     monkeypatch.setenv('PRIVATE_OPERATOR_HISTORY', 'OPERATOR_SENTINEL')
     for role, data in request_cases():
         request = translate.request(None, role, data, [], [], True)
+        strip_practice_review_system(request, data['stream'], role.rsplit('_', 1)[1])
         if data['stream'] != 'teaching' or not role.endswith('_final'):
             assert 'system' not in request
             continue
@@ -168,7 +171,7 @@ def capture_sources():
                                                             'explain-splitter-system-baseline.json',
                                                             'translate-teaching-final-nesting-baseline.json',
                                                             'translate-teaching-title-scalar-baseline.json',
-                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json')),
+                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -188,7 +191,8 @@ def test_actual_converse_full_graph_native_exports_hashes_and_zero_request_resum
             assert kwargs['modelId'] == 'synthetic-no-service'
             assert kwargs['inferenceConfig'] == {'maxTokens': 8192, 'temperature': .1}
             assert set(kwargs) == {'modelId', 'messages', 'inferenceConfig',
-                *({'system'} if role.startswith('translate_teaching_') and role.endswith('_final') else set())}
+                *({'system'} if (role.startswith('translate_teaching_') and role.endswith('_final')) or
+                   (role.startswith('translate_practice_') and role.endswith('_review')) else set())}
             return Fixture().invoke(request, role=role, notes_pages=None)
     provider = Bedrock({'model': 'synthetic-no-service', 'max_output_tokens': 8192})
     provider.client = Client()

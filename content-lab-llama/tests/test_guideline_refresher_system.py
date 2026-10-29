@@ -29,7 +29,7 @@ def source_snapshot():
                                               if p.name not in (FIXTURE, 'explain-splitter-system-baseline.json',
                                                                 'translate-teaching-final-nesting-baseline.json',
                                                                 'translate-teaching-title-scalar-baseline.json',
-                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json')),
+                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json')),
             'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -97,7 +97,7 @@ def test_only_request_delta_preserves_sources_and_reconstructs_prior_trees():
         'ce0a5fdc0d4fe2076d8275c8475a3533cba2ae324782486d3bec4807ebee97c6')
     # T24/T25/T26 change only Translate request(); restore that exact base hash for prior trees.
     assert current['reference_sha256']['reference/factories/translate.py'] == (
-        'f8655d02268b1c73522a76da428a815002ce55883603bdc8408ce6d9a1a4dba1')
+        '2a01a44d6e4b3b2d5f227c65c3e058aefdb20f8c9bc33fcc0eff3900159764ef')
     restored = {**current['reference_sha256'], GUIDELINE: old['reference_sha256'][GUIDELINE],
                 'reference/factories/explain.py': old['reference_sha256']['reference/factories/explain.py'],
                 'reference/factories/translate.py': old['reference_sha256']['reference/factories/translate.py']}

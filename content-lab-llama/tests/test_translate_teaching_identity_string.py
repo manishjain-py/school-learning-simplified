@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from translate_practice_review_support import strip_practice_review_ast, strip_practice_review_system
+
 from test_translate import runner, invoke, offline, PACKS, intercept
 from test_translate_teaching_final_system import request_cases, scenario_bundle
 from reference.factories import translate
@@ -30,6 +32,7 @@ def baseline():
 
 def strip_identity(request, stream, phase):
     """Remove only T27, retaining the full T21/T24/T25/T26 prefix."""
+    strip_practice_review_system(request, stream, phase)
     if stream == 'teaching' and phase == 'final':
         assert len(request['system']) == 1 and set(request['system'][0]) == {'text'}
         text = request['system'][0]['text']
@@ -72,6 +75,7 @@ def test_only_request_changes_and_actual_base_bytes_reconstruct_prior_trees():
     assert restored == old['reference_sha256']
     current_source = Path(translate.__file__).read_text()
     before_ast, after_ast = ast.parse(old['translate_source']), ast.parse(current_source)
+    strip_practice_review_ast(after_ast)
     constants = [n for n in ast.walk(after_ast) if isinstance(n, ast.Constant)
                  and isinstance(n.value, str) and n.value.endswith(IDENTITY)]
     assert len(constants) == 1
@@ -86,7 +90,7 @@ def test_only_request_changes_and_actual_base_bytes_reconstruct_prior_trees():
     module.body = [n for n in module.body if not (isinstance(n, ast.FunctionDef) and n.name == 'request')]
     assert sha(ast.dump(module).encode()) == old['outside_request_ast_sha256']
     assert files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()) == old['prompt_sha256']
-    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE) == old['all_historical_fixtures_sha256']
+    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE and p.name != 'translate-practice-review-system-baseline.json') == old['all_historical_fixtures_sha256']
     assert sha((ROOT/'requirements.lock').read_bytes()) == old['requirements_sha256']
     for excluded, expected in old['prior_tree_sha256'].items():
         assert sha(canonical({k:v for k,v in restored.items() if k != f'reference/factories/{excluded}.py'})) == expected
@@ -111,7 +115,8 @@ def test_native_converse_graph_exports_hashes_and_byte_stable_zero_call_resume(t
             assert kwargs['inferenceConfig'] == {'maxTokens':8192, 'temperature':.1}
             if 'system' in kwargs:
                 request['system'] = kwargs['system']
-                assert kwargs['system'][0]['text'].endswith(IDENTITY)
+                if role.startswith('translate_teaching_') and role.endswith('_final'):
+                    assert kwargs['system'][0]['text'].endswith(IDENTITY)
             assert set(kwargs) == {'modelId', 'messages', 'inferenceConfig', *({'system'} if 'system' in request else set())}
             return Fixture().invoke(request, role=role, notes_pages=None)
     provider = Bedrock({'model':'synthetic-no-service', 'max_output_tokens':8192})

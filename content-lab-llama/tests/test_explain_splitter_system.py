@@ -35,7 +35,7 @@ def capture(run):
         'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
                                           if p != BASELINE and p.name not in ('translate-teaching-final-nesting-baseline.json',
                                                                           'translate-teaching-title-scalar-baseline.json',
-                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json')),
+                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -71,7 +71,7 @@ def test_nonrequest_definitions_sources_prompts_lock_and_historical_fixture_byte
     assert current['reference_sha256'][changed] != baseline['reference_sha256'][changed]
     # T24/T25/T26 version only Translate request bytes; keep the full other-file comparison.
     expected = {**baseline['reference_sha256'], 'reference/factories/translate.py':
-                'f8655d02268b1c73522a76da428a815002ce55883603bdc8408ce6d9a1a4dba1'}
+                '2a01a44d6e4b3b2d5f227c65c3e058aefdb20f8c9bc33fcc0eff3900159764ef'}
     assert {k:v for k,v in current['reference_sha256'].items() if k != changed} == {
         k:v for k,v in expected.items() if k != changed}
 

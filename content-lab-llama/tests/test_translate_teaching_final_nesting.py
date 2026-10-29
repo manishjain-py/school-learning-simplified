@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from translate_practice_review_support import strip_practice_review_ast
+
 from test_translate import runner, invoke, offline, PACKS, intercept
 from test_translate_teaching_final_system import request_cases, scenario_bundle
 from reference.factories import translate
@@ -76,6 +78,7 @@ def test_only_request_changed_and_exact_source_restoration_reconstructs_prior_tr
     assert restored == old['reference_sha256']
     current_source = Path(translate.__file__).read_text()
     original_ast, current_ast = ast.parse(old['translate_source']), ast.parse(current_source)
+    strip_practice_review_ast(current_ast)
     constants = [n for n in ast.walk(current_ast) if isinstance(n, ast.Constant)
                  and isinstance(n.value, str) and n.value.endswith(NESTING+SCALAR+LINE+IDENTITY)]
     assert len(constants) == 1
@@ -90,7 +93,7 @@ def test_only_request_changed_and_exact_source_restoration_reconstructs_prior_tr
     module.body = [n for n in module.body if not (isinstance(n, ast.FunctionDef) and n.name == 'request')]
     assert sha(ast.dump(module).encode()) == old['outside_request_ast_sha256']
     assert files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()) == old['prompt_sha256']
-    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE and p.name not in ('translate-teaching-title-scalar-baseline.json', 'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json')) == old['all_historical_fixtures_sha256']
+    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE and p.name not in ('translate-teaching-title-scalar-baseline.json', 'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json')) == old['all_historical_fixtures_sha256']
     assert sha((ROOT/'requirements.lock').read_bytes()) == old['requirements_sha256']
     prior = {'practice': 'c09def3c7971e5a12c7379d47bafe413052262022ad34a35c81de533410a940a',
              'revise': '71ca33469e8a381b1e563f02c7494a248285b4a1fd646b50623254718d112b39',
@@ -118,7 +121,8 @@ def test_inert_converse_exact_graph_outputs_hashes_exports_and_zero_call_byte_st
             assert kwargs['inferenceConfig'] == {'maxTokens':8192, 'temperature':.1}
             if 'system' in kwargs:
                 request['system'] = kwargs['system']
-                assert kwargs['system'][0]['text'].endswith(NESTING+SCALAR+LINE+IDENTITY)
+                if role.startswith('translate_teaching_') and role.endswith('_final'):
+                    assert kwargs['system'][0]['text'].endswith(NESTING+SCALAR+LINE+IDENTITY)
             assert set(kwargs) == {'modelId', 'messages', 'inferenceConfig', *({'system'} if 'system' in request else set())}
             return Fixture().invoke(request, role=role, notes_pages=None)
     provider = Bedrock({'model':'synthetic-no-service', 'max_output_tokens':8192})

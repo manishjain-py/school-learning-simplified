@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from translate_practice_review_support import strip_practice_review_system
+
 from test_translate import offline, runner, invoke, EXAMPLE, PACKS, intercept
 from reference.factories import translate
 from reference.factories.translate_fixture import payload
@@ -29,6 +31,7 @@ def capture(workspace, *, appended):
         requests = {}
         for role in roles:
             request = read(target/'requests'/f'{role}.json')
+            strip_practice_review_system(request, payload(request)['stream'], role.rsplit('_', 1)[1])
             # T21 adds only teaching-final system; the original T14 user-block
             # baseline and every other request/projection/export remain exact.
             if role.startswith('translate_teaching_') and role.endswith('_final'):
