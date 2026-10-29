@@ -79,7 +79,7 @@ def capture():
                                                            'explain-splitter-system-baseline.json',
                                                            'translate-teaching-final-nesting-baseline.json',
                                                            'translate-teaching-title-scalar-baseline.json',
-                                                            'translate-teaching-line-string-baseline.json')},
+                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json')},
             'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -106,7 +106,7 @@ def test_frames_sources_historical_fixtures_and_nonrequest_definitions_unchanged
     # T21/T22/T23/T24/T25/T26 version Translate/Guideline/Explain request bytes; the T20 fixture stays
     # unchanged, and all other reference files retain their exact assertions.
     before = {**baseline['reference_sha256'], 'reference/factories/translate.py':
-              'ad6138e850f73b13673be3d1d5f75c1bc6faa73df1c0a13eb1da465a4360a3b5',
+              'f8655d02268b1c73522a76da428a815002ce55883603bdc8408ce6d9a1a4dba1',
               'reference/factories/guideline.py':
               'fb3c1a3f6b9bdc8de7f9d44ddea70348472a7cfd6347ec67b7645da851e378de',
               'reference/factories/explain.py':

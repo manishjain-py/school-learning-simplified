@@ -14,6 +14,7 @@ from reference.inputs import ROOT, canonical, read, sha
 from reference.providers import Bedrock, Fixture
 from reference.runtime import Runner, report
 from test_translate_teaching_line_string import LINE, strip_line
+from test_translate_teaching_identity_string import IDENTITY
 
 SCALAR = (
     '\nScalar member syntax: title_display has exactly one JSON string value in each teaching item. '
@@ -53,7 +54,7 @@ def test_full_immutable_base_matrix_preserves_prefix_user_blocks_and_declaration
     assert request['messages'] == old['request']['messages']
     if declared['stream'] == 'teaching' and role.endswith('_final'):
         text = request['system'][0]['text']
-        assert text == old['request']['system'][0]['text']+SCALAR+LINE
+        assert text == old['request']['system'][0]['text']+SCALAR+LINE+IDENTITY
         for forbidden in ('SYNTHETIC', 'नमूना', 'OPERATOR_SENTINEL', 'AGENTS', 'SKILL', str(ROOT)):
             assert forbidden not in text
         for item in declared['items']:
@@ -74,9 +75,9 @@ def test_only_request_changed_and_exact_source_restoration_reconstructs_prior_tr
     current_source = Path(translate.__file__).read_text()
     original_ast, current_ast = ast.parse(old['translate_source']), ast.parse(current_source)
     constants = [n for n in ast.walk(current_ast) if isinstance(n, ast.Constant)
-                 and isinstance(n.value, str) and n.value.endswith(SCALAR+LINE)]
+                 and isinstance(n.value, str) and n.value.endswith(SCALAR+LINE+IDENTITY)]
     assert len(constants) == 1
-    constants[0].value = constants[0].value[:-len(SCALAR+LINE)]
+    constants[0].value = constants[0].value[:-len(SCALAR+LINE+IDENTITY)]
     assert ast.dump(current_ast) == ast.dump(original_ast)
     before = next(n for n in original_ast.body if isinstance(n, ast.FunctionDef) and n.name == 'request')
     after = next(n for n in current_ast.body if isinstance(n, ast.FunctionDef) and n.name == 'request')
@@ -87,7 +88,7 @@ def test_only_request_changed_and_exact_source_restoration_reconstructs_prior_tr
     module.body = [n for n in module.body if not (isinstance(n, ast.FunctionDef) and n.name == 'request')]
     assert sha(ast.dump(module).encode()) == old['outside_request_ast_sha256']
     assert files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()) == old['prompt_sha256']
-    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE and p.name != 'translate-teaching-line-string-baseline.json') == old['all_historical_fixtures_sha256']
+    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE and p.name not in ('translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json')) == old['all_historical_fixtures_sha256']
     assert sha((ROOT/'requirements.lock').read_bytes()) == old['requirements_sha256']
     prior = old['prior_tree_sha256']
     for excluded, expected in prior.items():
@@ -113,7 +114,7 @@ def test_inert_converse_exact_graph_outputs_hashes_exports_and_zero_call_byte_st
             assert kwargs['inferenceConfig'] == {'maxTokens':8192, 'temperature':.1}
             if 'system' in kwargs:
                 request['system'] = kwargs['system']
-                assert kwargs['system'][0]['text'].endswith(SCALAR+LINE)
+                assert kwargs['system'][0]['text'].endswith(SCALAR+LINE+IDENTITY)
             assert set(kwargs) == {'modelId', 'messages', 'inferenceConfig', *({'system'} if 'system' in request else set())}
             return Fixture().invoke(request, role=role, notes_pages=None)
     provider = Bedrock({'model':'synthetic-no-service', 'max_output_tokens':8192})

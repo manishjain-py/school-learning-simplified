@@ -158,7 +158,13 @@ def request(run, role, declared, batch, notes, final):
             'to the text instead of emitting another delimiter quote. Syntax-only illustration: '
             '{"display":"Example line","audio":"Example line"}. This illustrates string delimiters, not '
             'replacement content. Use each actual translated line and preserve every required line, item, '
-            'identity and the complete envelope.'}]
+            'identity and the complete envelope.'
+            '\nOpaque identity strings: Copy each teaching item\'s complete supplied source_hash value exactly, '
+            'without shortening, abbreviation, recomputation or translation. Close that JSON string with its '
+            'delimiter quote before the separating comma and next property. Copy the slot value exactly from '
+            'the same supplied descriptor. These identity values remain unchanged while title_display and '
+            'line display/audio carry the translated text. Preserve every required item, line and the complete '
+            'envelope.'}]
     return request
 
 
