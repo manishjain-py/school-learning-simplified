@@ -30,7 +30,10 @@ def test_exact_pre_edit_t08_requests_and_all_projections(tmp_path):
             assert request.pop('system') == [{'text': content[-1]['text']}]
             assert sha(content[1]['text'].encode()) == baseline['research_final_block_sha256']
         else:
-            assert 'system' not in request
+            if role == 'explain_winner_revision':
+                assert request.pop('system') == [{'text': content[-1]['text']}]
+            else:
+                assert 'system' not in request
             request['messages'][0]['content'] = content[:1]
         assert sha(canonical(request)) == baseline['request_sha256'][role]
     definitions = {node.name: sha(ast.dump(node).encode())
