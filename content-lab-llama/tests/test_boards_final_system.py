@@ -73,7 +73,8 @@ def capture():
             'prompt_sha256': {str(p.relative_to(ROOT)): sha(p.read_bytes())
                              for p in sorted((ROOT/'prompts').rglob('*')) if p.is_file()},
             'historical_fixtures_sha256': {p.name: sha(p.read_bytes()) for p in sorted((ROOT/'tests/fixtures').glob('*.json'))
-                                         if p.name != 'boards-final-system-baseline.json'},
+                                         if p.name not in ('boards-final-system-baseline.json',
+                                                           'translate-teaching-final-system-baseline.json')},
             'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -97,7 +98,10 @@ def test_frames_sources_historical_fixtures_and_nonrequest_definitions_unchanged
     for key in ('frames', 'outside_request_ast_sha256', 'prompt_sha256',
                 'historical_fixtures_sha256', 'requirements_sha256'):
         assert current[key] == baseline[key]
-    before = baseline['reference_sha256']
+    # T21 versions only Translate request bytes; the immutable T20 fixture stays
+    # unchanged, and all other reference files retain their exact assertions.
+    before = {**baseline['reference_sha256'], 'reference/factories/translate.py':
+              '27bc8ac5c0dd9728dba26f901ebf1abe68451b116220286ad3ab38652592d712'}
     assert set(current['reference_sha256']) == set(before)
     changed = 'reference/factories/boards.py'
     assert current['reference_sha256'][changed] != before[changed]

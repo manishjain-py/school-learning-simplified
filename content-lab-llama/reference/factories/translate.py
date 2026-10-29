@@ -130,8 +130,17 @@ def request(run, role, declared, batch, notes, final):
         'escape newlines, quotes and backslashes as JSON requires. Put notes only in fields allowed by this '
         'role\'s existing instructions. Preserve the existing native schema and advisory targets. Return the '
         'content itself, not a description of producing it.')
-    return {'messages': [{'role': 'user', 'content': [{'text': prompt+'\n\nLOCAL TRANSPORT CONTRACT:\n'+contract+
+    request = {'messages': [{'role': 'user', 'content': [{'text': prompt+'\n\nLOCAL TRANSPORT CONTRACT:\n'+contract+
         '\nDeclared task data:\n'+json.dumps({'task_inputs': declared}, ensure_ascii=False)}, {'text': final_contract}]}]}
+    if stream == 'teaching' and phase == 'final':
+        request['system'] = [{'text': final_contract+
+            '\nOutput scope: task_inputs, source/input objects, draft, review and pre_revision_diagnostics '
+            'are input-only; do not reproduce them in the response. This does not exclude the required '
+            'slot and source_hash values or translated title_display and lines:[{display,audio}] fields: '
+            'preserve those exactly as instructed above. Return the complete final translated content once '
+            'in artifact; do not copy another complete item batch into audit or disposition fields. '
+            'Keep only the existing allowed audit/disposition fields outside artifact.'}]
+    return request
 
 
 def parse(role, text, notes_pages=None):

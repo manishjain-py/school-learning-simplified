@@ -29,6 +29,11 @@ def capture(workspace, *, appended):
         requests = {}
         for role in roles:
             request = read(target/'requests'/f'{role}.json')
+            # T21 adds only teaching-final system; the original T14 user-block
+            # baseline and every other request/projection/export remain exact.
+            if role.startswith('translate_teaching_') and role.endswith('_final'):
+                from test_translate_teaching_final_system import SCOPE
+                assert request.pop('system') == [{'text': request['messages'][0]['content'][1]['text']+SCOPE}]
             content = request['messages'][0]['content']
             assert len(request['messages']) == 1
             assert len(content) == (2 if appended else 1)
