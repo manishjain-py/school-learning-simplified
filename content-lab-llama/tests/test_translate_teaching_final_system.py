@@ -81,7 +81,8 @@ def capture(workspace):
         'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
         'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
                                           if p.name not in ('translate-teaching-final-system-baseline.json',
-                                                            'guideline-refresher-system-baseline.json')),
+                                                            'guideline-refresher-system-baseline.json',
+                                                            'explain-splitter-system-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -136,9 +137,11 @@ def test_only_request_changes_and_all_historical_sources_remain_exact():
     for key in ('outside_request_ast_sha256', 'prompt_sha256', 'historical_fixtures_sha256', 'requirements_sha256'):
         assert current[key] == old[key]
     changed = 'reference/factories/translate.py'
-    # T22 changes only Guideline request bytes; preserve the immutable T21 fixture.
+    # T22/T23 change only Guideline/Explain request bytes; retain the T21 fixture.
     expected = {**old['reference_sha256'], 'reference/factories/guideline.py':
-                'fb3c1a3f6b9bdc8de7f9d44ddea70348472a7cfd6347ec67b7645da851e378de'}
+                'fb3c1a3f6b9bdc8de7f9d44ddea70348472a7cfd6347ec67b7645da851e378de',
+                'reference/factories/explain.py':
+                'ce0a5fdc0d4fe2076d8275c8475a3533cba2ae324782486d3bec4807ebee97c6'}
     assert current['reference_sha256'].keys() == expected.keys()
     assert current['reference_sha256'][changed] != expected[changed]
     assert {k:v for k,v in current['reference_sha256'].items() if k != changed} == {
@@ -154,7 +157,8 @@ def capture_sources():
         'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
         'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
                                           if p.name not in ('translate-teaching-final-system-baseline.json',
-                                                            'guideline-refresher-system-baseline.json')),
+                                                            'guideline-refresher-system-baseline.json',
+                                                            'explain-splitter-system-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 

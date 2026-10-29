@@ -75,7 +75,8 @@ def capture():
             'historical_fixtures_sha256': {p.name: sha(p.read_bytes()) for p in sorted((ROOT/'tests/fixtures').glob('*.json'))
                                          if p.name not in ('boards-final-system-baseline.json',
                                                            'translate-teaching-final-system-baseline.json',
-                                                           'guideline-refresher-system-baseline.json')},
+                                                           'guideline-refresher-system-baseline.json',
+                                                           'explain-splitter-system-baseline.json')},
             'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -99,12 +100,14 @@ def test_frames_sources_historical_fixtures_and_nonrequest_definitions_unchanged
     for key in ('frames', 'outside_request_ast_sha256', 'prompt_sha256',
                 'historical_fixtures_sha256', 'requirements_sha256'):
         assert current[key] == baseline[key]
-    # T21/T22 version only Translate/Guideline request bytes; the T20 fixture stays
+    # T21/T22/T23 version Translate/Guideline/Explain request bytes; the T20 fixture stays
     # unchanged, and all other reference files retain their exact assertions.
     before = {**baseline['reference_sha256'], 'reference/factories/translate.py':
               '27bc8ac5c0dd9728dba26f901ebf1abe68451b116220286ad3ab38652592d712',
               'reference/factories/guideline.py':
-              'fb3c1a3f6b9bdc8de7f9d44ddea70348472a7cfd6347ec67b7645da851e378de'}
+              'fb3c1a3f6b9bdc8de7f9d44ddea70348472a7cfd6347ec67b7645da851e378de',
+              'reference/factories/explain.py':
+              'ce0a5fdc0d4fe2076d8275c8475a3533cba2ae324782486d3bec4807ebee97c6'}
     assert set(current['reference_sha256']) == set(before)
     changed = 'reference/factories/boards.py'
     assert current['reference_sha256'][changed] != before[changed]

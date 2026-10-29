@@ -19,12 +19,12 @@ def test_only_research_system_added_to_exact_base_requests_and_projections(tmp_p
     for role in explain.ROLES:
         request = read(tmp_path/'requests'/f'{role}.json')
         assert sha(canonical(payload(request))) == baseline['declared_sha256'][role]
-        if role in ('explain_research', 'explain_winner_revision'):
+        if role in ('explain_research', 'explain_winner_revision', 'explain_split'):
             assert set(request) == {'messages', 'system'}
             assert request.pop('system') == [{'text': request['messages'][0]['content'][-1]['text']}]
         else:
             assert set(request) == {'messages'}
-        # Remove ONLY the T16/T19 added fields; both existing user blocks stay intact.
+        # Remove ONLY the T16/T19/T23 fields; both existing user blocks stay intact.
         assert sha(canonical(request)) == baseline['request_sha256'][role]
 
 
@@ -83,7 +83,7 @@ def test_actual_transport_graph_saved_hashes_deterministic_and_completed_resume_
             def converse(self, **kwargs):
                 role = explain.ROLES[len(calls)]
                 calls.append(kwargs)
-                if role in ('explain_research', 'explain_winner_revision'):
+                if role in ('explain_research', 'explain_winner_revision', 'explain_split'):
                     assert kwargs['system'] == [{'text': kwargs['messages'][0]['content'][-1]['text']}]
                 else:
                     assert 'system' not in kwargs

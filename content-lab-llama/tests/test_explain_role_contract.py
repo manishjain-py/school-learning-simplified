@@ -30,7 +30,7 @@ def test_exact_pre_edit_t08_requests_and_all_projections(tmp_path):
             assert request.pop('system') == [{'text': content[-1]['text']}]
             assert sha(content[1]['text'].encode()) == baseline['research_final_block_sha256']
         else:
-            if role == 'explain_winner_revision':
+            if role in ('explain_winner_revision', 'explain_split'):
                 assert request.pop('system') == [{'text': content[-1]['text']}]
             else:
                 assert 'system' not in request

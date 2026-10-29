@@ -233,7 +233,7 @@ def request(run, role, declared, batch, notes, final):
             'allowed by this role\'s existing instructions; preserve all native schema and content '
             'instructions above.'})
     request = {'messages': [{'role': 'user', 'content': content}]}
-    if role in ('explain_research', 'explain_winner_revision'):
+    if role in ('explain_research', 'explain_winner_revision', 'explain_split'):
         request['system'] = [{'text': content[-1]['text']}]
     return request
 

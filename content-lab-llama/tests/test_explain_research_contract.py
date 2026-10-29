@@ -23,7 +23,7 @@ def test_historical_first_blocks_match_after_removing_only_appended_blocks(tmp_p
         assert sha(canonical(payload(request))) == baseline['declared_sha256'][role]
         content = request['messages'][0]['content']
         assert len(content) == 2
-        if role in ('explain_research', 'explain_winner_revision'):
+        if role in ('explain_research', 'explain_winner_revision', 'explain_split'):
             assert request.pop('system') == [{'text': content[-1]['text']}]
         else:
             assert 'system' not in request

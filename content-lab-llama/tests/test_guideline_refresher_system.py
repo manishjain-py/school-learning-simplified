@@ -25,7 +25,8 @@ def source_snapshot():
     return {'outside_request_ast_sha256': sha(ast.dump(module).encode()),
             'reference_sha256': files((ROOT/'reference').rglob('*.py')),
             'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
-            'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p.name != FIXTURE),
+            'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
+                                              if p.name not in (FIXTURE, 'explain-splitter-system-baseline.json')),
             'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -88,7 +89,11 @@ def test_only_request_delta_preserves_sources_and_reconstructs_prior_trees():
     for key in ('outside_request_ast_sha256', 'prompt_sha256', 'historical_fixtures_sha256', 'requirements_sha256'):
         assert current[key] == old[key]
     assert current['reference_sha256'][GUIDELINE] != old['reference_sha256'][GUIDELINE]
-    restored = {**current['reference_sha256'], GUIDELINE: old['reference_sha256'][GUIDELINE]}
+    # T23 versions only Explain request bytes; the historical T22 fixture stays exact.
+    assert current['reference_sha256']['reference/factories/explain.py'] == (
+        'ce0a5fdc0d4fe2076d8275c8475a3533cba2ae324782486d3bec4807ebee97c6')
+    restored = {**current['reference_sha256'], GUIDELINE: old['reference_sha256'][GUIDELINE],
+                'reference/factories/explain.py': old['reference_sha256']['reference/factories/explain.py']}
     assert restored == old['reference_sha256']
     prior = {'practice': 'e4541da543ffd27e8c3636267b89370189603cbbfbc7498ee8ad91d706663976',
              'revise': 'dc92655aeacc5e6f5d38cabf4ab2368a154ec6da53b6db7ef483fa9f5875b87c',

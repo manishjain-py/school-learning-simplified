@@ -27,11 +27,13 @@ def test_only_winner_system_added_research_and_other_fifteen_requests_exact(tmp_
         if role == WINNER:
             assert set(request) == {'messages', 'system'}
             assert request.pop('system') == [{'text': content[-1]['text']}]
+        elif role == 'explain_split':
+            assert request.pop('system') == [{'text': content[-1]['text']}]
         elif role == 'explain_research':
             assert request['system'] == [{'text': content[-1]['text']}]
         else:
             assert set(request) == {'messages'}
-        # Remove ONLY T19's new field, leaving research's T16 field untouched.
+        # Remove ONLY T19/T23 fields, leaving research's T16 field untouched.
         assert sha(canonical(request)) == baseline['request_sha256'][role]
     definitions = {node.name: sha(ast.dump(node).encode())
                    for node in ast.parse(Path(explain.__file__).read_text()).body
@@ -67,7 +69,7 @@ def test_real_graph_converse_saved_system_hashes_final_authors_and_zero_repeat_r
             def converse(self, **kwargs):
                 role = explain.ROLES[len(calls)]
                 calls.append(kwargs)
-                if role in ('explain_research', WINNER):
+                if role in ('explain_research', WINNER, 'explain_split'):
                     assert kwargs['system'] == [{'text': kwargs['messages'][0]['content'][-1]['text']}]
                 else:
                     assert 'system' not in kwargs
