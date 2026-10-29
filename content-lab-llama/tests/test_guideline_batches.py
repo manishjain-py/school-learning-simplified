@@ -73,8 +73,9 @@ def test_eight_roles_independently_attach_exact_typed_three_plus_two(tmp_path, m
             assert len(request['messages']) == 1
             assert set(request) == {'messages'}
             content = request['messages'][0]['content']
-            assert [item['text'] for item in content[1::2]] == [f'Original printed page {p["printed_page"]}:' for p in batch]
-            assert [item['image'] for item in content[2::2]] == [
+            image_content = content[1:-1] if turn else content[1:]
+            assert [item['text'] for item in image_content[::2]] == [f'Original printed page {p["printed_page"]}:' for p in batch]
+            assert [item['image'] for item in image_content[1::2]] == [
                 {'format': p['format'], 'source': {'bytes': run.blobs[p['file']]}} for p in batch]
             prompt = content[0]['text'].split('Declared task data:\n', 1)[0]
             assert 'whole source for provenance' in prompt
@@ -84,9 +85,8 @@ def test_eight_roles_independently_attach_exact_typed_three_plus_two(tmp_path, m
                 assert 'Do not include absent, not-yet-attached or previously noted pages in page_notes.' in prompt
                 assert 'Do not produce final role output yet.' in prompt
             else:
-                assert 'Authors return {"artifact": <complete requested JSON>, ...audit fields}.' in prompt
-                assert 'Selection returns winner_index using the explicit candidate index.' in prompt
-                assert 'Reviews return their feedback object.' in prompt
+                assert content[-1]['text'].startswith('Final output contract:\n')
+                assert '<complete requested JSON>' not in prompt
                 assert 'use the full sequential context' in prompt
                 assert 'The final revision is authoritative' in prompt
                 assert 'Do not produce final role output yet.' not in prompt

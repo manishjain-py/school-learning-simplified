@@ -30,9 +30,7 @@ def request(run, role, declared, batch, notes, final):
             'Use at most 1200 words total. Do not produce final role output yet. '
             'Earlier role-local notes are your own observations, not original images. This turn contract overrides the usual output contract.')
     else:
-        prompt += ('\nReturn only one JSON object. Authors return {"artifact": <complete requested JSON>, ...audit fields}. '
-            'Selection returns winner_index using the explicit candidate index. Reviews return their feedback object. '
-            'Prior role-local page notes, if present, are YOUR OWN direct observations from this same role. '
+        prompt += ('\nPrior role-local page notes, if present, are YOUR OWN direct observations from this same role. '
             'You now see the remaining originals; use the full sequential context. Do not claim simultaneous access. '
             'Metadata defines grade, language and audience; do not assume an audience absent from it. '
             'The final revision is authoritative; do not require a later quality gate.')
@@ -42,6 +40,29 @@ def request(run, role, declared, batch, notes, final):
     for page in batch:
         content.extend([{'text': f'Original printed page {page["printed_page"]}:'},
                         {'image': {'format': page['format'], 'source': {'bytes': run.blobs[page['file']]}}}])
+    if final:
+        contract = ('Final output contract:\nReturn one complete strict JSON object, with no surrounding prose, '
+                    'comments or trailing commas. ')
+        if role in ('draft_1', 'draft_2', 'revision', 'refresher'):
+            native = 'refresher' if role == 'refresher' else 'chapter'
+            contract += (f'Return the complete requested native {native} JSON as the object-valued artifact field. '
+                f'The earlier native {native} shape and examples describe the VALUE of artifact, not the response root. '
+                'Syntax-only envelope illustration:\n{"artifact": {}}\n'
+                'The empty object illustrates nesting only: replace it with the complete requested native artifact, '
+                'including all its fields; do not return an empty or template response. '
+                'Keep any separately requested author audit fields beside artifact.')
+        elif role == 'selection':
+            indices = [candidate['index'] for candidate in declared['candidates']]
+            contract += ('Return winner_index as a JSON integer copied from the explicit index of the chosen '
+                'task_inputs.candidates entry. Available candidate indices: '+json.dumps(indices)+'. '
+                'Preserve the original index; do not renumber candidates. '
+                'Return scores, concerns and note as requested by the source role alongside winner_index. '
+                'Do not use an artifact envelope.')
+        else:
+            contract += ('Return the source lens feedback object directly, with ok, findings and note in the '
+                'source role\'s shape and meaning. Do not use an artifact envelope. '
+                'Feedback remains advisory for the final author; it does not veto the final revision.')
+        content.append({'text': contract})
     return {'messages': [{'role': 'user', 'content': content}]}
 
 
