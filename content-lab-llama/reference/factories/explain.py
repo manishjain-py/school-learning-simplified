@@ -157,8 +157,29 @@ def request(run, role, declared, batch, notes, final):
             'summary carries key_analogies, key_examples, teaching_notes. Use arc for core/secondary '
             'objectives and coverage_map only; ignore arc moves when shaping cards.')
     payload = {'task_inputs': declared}
-    return {'messages': [{'role': 'user', 'content': [{'text': prompt+'\n\nLOCAL TRANSPORT CONTRACT:\n'+
-        '\n'.join(instructions)+'\nDeclared task data:\n'+json.dumps(payload, ensure_ascii=False)}]}]}
+    content = [{'text': prompt+'\n\nLOCAL TRANSPORT CONTRACT:\n'+
+        '\n'.join(instructions)+'\nDeclared task data:\n'+json.dumps(payload, ensure_ascii=False)}]
+    if role == 'explain_research':
+        content.append({'text': 'Final research response contract:\n'
+            'Return one complete strict JSON object. Its first non-whitespace character must be { '
+            'and its last must be }. Put the complete native research JSON object in the '
+            'object-valued artifact field, not at the response root or in a string. '
+            'Follow the research schema above, including topic, no_real_misconceptions, candidates '
+            'and notes. Each candidate uses name, description, evidence_note, evidence_strength, '
+            'concrete_disproof, conceptual and prevalence_note as specified above. '
+            'The procedure describes work to perform, not headings to narrate in the response. '
+            'Keep all narrative, procedure explanations and commentary inside appropriate JSON '
+            'string fields, such as artifact.notes or envelope note. No preamble, postscript, '
+            'Markdown fences, multiple objects, JSON comments, trailing commas or file-write receipts. '
+            'Preserve the existing at-most-six shortlist and honest zero/negative findings and '
+            'limitations under the research prompt; do not pad or invent misconceptions, citations, '
+            'prevalence statistics or fresh web research.\n'
+            'Syntax-only envelope illustration:\n'
+            '{"artifact":{}}\n'
+            'This illustrates nesting only, not substitute curriculum or permission to omit required '
+            'native fields. Replace the empty object with your complete requested research artifact; '
+            'do not return an empty or template response.'})
+    return {'messages': [{'role': 'user', 'content': content}]}
 
 
 def parse(role, text, notes_pages=None):

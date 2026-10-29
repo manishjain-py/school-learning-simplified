@@ -1,0 +1,52 @@
+{
+  "base_commit": "e609b0034b8ca273f7016802c84110cb672979f6",
+  "explain_source_sha256": "ffccd9b67d0649f3e13cea081bbbf41046c7ec22503abaf55dae5e64539d1c25",
+  "request_sha256": {
+    "explain_research": "08cd24093b658883326ac2921dd70f5e735d34c8f75ea57d517fbe41ba52c4fb",
+    "explain_arc": "7d49fd26b47b96ae34abb4ce3af778c9f8bdc1a166dfea47be47865a8ce392e0",
+    "explain_writer_1": "bcf6ee401ee9a0527511034851818043576e94eb322b5ec85ac6025b6d491593",
+    "explain_writer_2": "bcf6ee401ee9a0527511034851818043576e94eb322b5ec85ac6025b6d491593",
+    "explain_selection": "8bef8d0c869cbdc1b11fe50c5920ccf0b2991977df62f7667db49b5e396a77fb",
+    "explain_winner_revision": "79f80df91e3ebba3392afa069c70f7b62d53396aeb10d7f5f53328921ac52c62",
+    "explain_clarity_flow": "b30c9972d4173a3db9bb2f1d7dfafbd412a81590858af866f26f3ed3be8da79c",
+    "explain_accuracy": "7544a51552abb4eedce8cc6eab57d7fc77757eabeb552ba327bc067333b99cd9",
+    "explain_language_economy": "72f246cc3360a2a6fbf0eb3919a1b527af51e6405a029ced5c9d5aa780d7bfc5",
+    "explain_prose_final": "7d80e809052faab8fd8f15dd7d19dd73af5ea78dedf2f9ef05f306e38bce7563",
+    "explain_split": "436ae1f4c76b8a4a1fd683512a48ad604949a5ac13be96db2f734e130046fd93",
+    "explain_split_review": "954d7efe7656115b0a1eb295edea9c18358eef39374c17802dedc30444d79493",
+    "explain_split_final": "3c6d81985131437dd2da0f672d8c3c16377d6efedfe020a51dac6e9921891c85",
+    "explain_checkins": "6a0393ccb481abc7e3082fbd6de1da83a8ee7f4ad2ac62c135a3d6569cf367e9",
+    "explain_checkin_review": "7e7e47de79bb470e2cf0e5a4b068d51d6a6cb2355f2cdc9a844db0d8a548aadd",
+    "explain_checkins_final": "29c0227a967f3858794eadcb787a1d0b53bb1e7cd5b2fe9991c8e32e18a25a52"
+  },
+  "declared_sha256": {
+    "explain_research": "2a9f871d18f3ad0aff2e4a9c928f4e9535b41f242d74abecf8be6858d12d14ce",
+    "explain_arc": "6281d9675857e0f2fd356ba5c226f0cf8d7f83dbb21663206f013334156a4e76",
+    "explain_writer_1": "32f7073412e0c2f3da42762de11956586694ca8c518537d3b8b41a9b0ec47c9b",
+    "explain_writer_2": "32f7073412e0c2f3da42762de11956586694ca8c518537d3b8b41a9b0ec47c9b",
+    "explain_selection": "00e329d7b7fc6d723389eb0f5f89e9c41272742bb062c4a6bfe8f4fc68378938",
+    "explain_winner_revision": "dec0fd0db36812657662df1bfa0af522ae08d575a86509bc6b142c7673ce14eb",
+    "explain_clarity_flow": "9685884f26abc00159a0b888f75cc609dfbaf1a76c726db0ba9de8df1a20a32f",
+    "explain_accuracy": "9685884f26abc00159a0b888f75cc609dfbaf1a76c726db0ba9de8df1a20a32f",
+    "explain_language_economy": "9685884f26abc00159a0b888f75cc609dfbaf1a76c726db0ba9de8df1a20a32f",
+    "explain_prose_final": "2c9e36a46046dcb7dd80775b21b6fed53366c1d815e5e98e29878aa6a1170a39",
+    "explain_split": "3b9a36706e7960ef64ff82cb36292da98621e3c60a37f324232a61137914dc0c",
+    "explain_split_review": "50e6e12bbce8b1d7476f251c95bd53ae25821213ea20d97ded26c80338b5619c",
+    "explain_split_final": "33074cd5fd6b5cf231717858624208d45f2b353c9ddfd5ccc8a7f5ccb0cae53a",
+    "explain_checkins": "5ac14afbd312905e2724bd474ea0b764a2ca6a9ee2cc2ead9acfdab9fdd863c2",
+    "explain_checkin_review": "2acc5e8551f12b5a151547d78b643431016d42ea297aae4630c2e103f52f6112",
+    "explain_checkins_final": "d62cc480be55c134eb00e89e1861ec7ca08fb0af31d22554b82a5655ab2d5b0d"
+  },
+  "research_first_block_sha256": "42bf845db49f40d19ea3f6890fc32a074bd8fff8e2f1b11ee01aa5c098bda87e",
+  "unchanged_definitions_sha256": {
+    "guideline_view": "e1b50b00a254ff230c26b8686cc4399a9903f221784537c30c5e1d0fdf8e7a22",
+    "research_view": "a20466b67fded811e709838360b7d3403bc96253d5d5347cbe1322b3301bcc88",
+    "validate_inputs": "54823ef11a0b7f26b0a3ed00233eb82c8cb74d8272c5675726050b1233b00a1d",
+    "parse": "049cfc217924bb85c75bfc3442638ab7146aff044c2a47896d1df86d1d349538",
+    "required": "cdcee71f300986d3b8febd14a9ee3e05e66c25c861e172e634b8a4381e0fb978",
+    "selected": "8fdc4b72321522ed0517d63bffea332dfe7b3332683da3aeb391861e3f7076b4",
+    "declared": "7891141da88886116972174e710746823872acf2d82cd693cb454e88f5759c8f",
+    "graph": "f916bc0d31b71ad5facea71351dbb230f9b7f20f1b54441627c127a7b57f3a49",
+    "observations": "44546249e191d80510d3ec387a9de4402599f313b042fc50d63570b5ce1c0c40"
+  }
+}
