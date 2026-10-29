@@ -145,13 +145,35 @@ const defaults: ParentEmailDependencies = {
 const rejectionNames = new Set(['MessageRejected', 'MessageRejectedException', 'MailFromDomainNotVerifiedException', 'NotFoundException', 'BadRequestException', 'AccountSuspendedException', 'SendingPausedException', 'TooManyRequestsException', 'LimitExceededException', 'ForbiddenException', 'AccessDeniedException']);
 const definiteSesRejection = (issue: unknown) => rejectionNames.has((issue as Error)?.name);
 const diagnosticNames = new Set([...rejectionNames, 'AbortError', 'TimeoutError', 'InternalServerErrorException', 'ServiceUnavailableException', 'CredentialsProviderError', 'Error']);
-function reportSendFailure(issue: unknown) {
-  const error = issue as { name?: unknown; $metadata?: { httpStatusCode?: unknown } } | null;
+function sendDenialCategories(name: string, message: unknown, from: string, to: string) {
+  const result = { deniedAction: 'unknown', denialReason: 'unknown', resourceKind: 'other_or_unknown' };
+  if (name !== 'AccessDeniedException' || typeof message !== 'string') return result;
+  const text = message.slice(0, 8_192);
+  const action = text.match(/\bis not authorized to perform:?\s*(['"`]?)(ses:(?:SendEmail|SendRawEmail|ApplyTrackingConfigurationOverrides))\1(?=\s|[,.;:)]+(?:\s|$)|$)/)?.[2];
+  if (!action) return result;
+  result.deniedAction = action;
+  if (/\bbecause no permissions boundary allows\b|\bwith an explicit deny in (?:a|the) permissions boundary\b/i.test(text)) result.denialReason = 'permissions_boundary';
+  else if (/\bbecause no service control policy allows\b|\bwith an explicit deny in (?:a|the) service control policy\b/i.test(text)) result.denialReason = 'service_control_policy';
+  else if (/\bwith an explicit deny\b/i.test(text)) result.denialReason = 'explicit_deny';
+  else if (/\bbecause no identity-based policy allows\b/i.test(text)) result.denialReason = 'identity_policy_missing';
+  const resource = text.match(/\bon resource:?\s*(['"`]?)arn:aws(?:-[a-z]+)*:ses:[a-z0-9-]+:\d{12}:(identity|configuration-set)\/([^\s"'`]+)\1(?=\s|[,.;:)]+(?:\s|$)|$)/);
+  if (resource?.[2] === 'configuration-set') result.resourceKind = 'configuration_set';
+  else if (resource?.[2] === 'identity') {
+    const value = resource[3].replace(/[.,;:)]+$/, '').toLowerCase(); const sender = from.trim().toLowerCase(); const recipient = to.trim().toLowerCase();
+    const domain = (email: string) => email.match(/^[^@\s]+@([^@\s]+)$/)?.[1];
+    if (value === sender) result.resourceKind = 'sender_address_identity';
+    else if (value === domain(sender)) result.resourceKind = 'sender_domain_identity';
+    else if (value === recipient || value === domain(recipient)) result.resourceKind = 'recipient_identity';
+  }
+  return result;
+}
+function reportSendFailure(issue: unknown, from: string, to: string) {
+  const error = issue as { name?: unknown; message?: unknown; $metadata?: { httpStatusCode?: unknown } } | null;
   const name = typeof error?.name === 'string' && diagnosticNames.has(error.name) ? error.name : 'UnknownError';
   const status = error?.$metadata?.httpStatusCode;
   const httpStatus = typeof status === 'number' && Number.isInteger(status) && status >= 100 && status <= 599 ? status : null;
-  // Never log provider messages, request metadata, account/recipient IDs or content.
-  console.warn('parent_email_send_failed', { name, httpStatus });
+  // Only fixed categories leave the parser, never provider text, ARNs, addresses or IDs.
+  console.warn('parent_email_send_failed', { name, httpStatus, ...sendDenialCategories(name, error?.message, from, to) });
 }
 function notificationId(value: string) { return /^[a-f0-9]{64}$/.test(value) ? value : fail(404, 'EMAIL_NOT_FOUND', 'This email notification could not be found.'); }
 function configIssue(config: Settings, recipient: string, at: Date): string | null {
@@ -252,7 +274,7 @@ export function createParentEmailService(overrides: Partial<ParentEmailDependenc
       if (!sent.MessageId) return finish(dispatch, 'unknown', 'SEND_UNKNOWN', false);
       return finish(dispatch, 'accepted', 'ACCEPTED', false, { messageId: sent.MessageId, acceptedAt: deps.now().toISOString() });
     } catch (issue) {
-      reportSendFailure(issue);
+      reportSendFailure(issue, config.from, dispatch.recipient);
       return definiteSesRejection(issue) ? finish(dispatch, 'not_sent', 'SERVICE_REJECTED', true) : finish(dispatch, 'unknown', 'SEND_UNKNOWN', false);
     }
   }

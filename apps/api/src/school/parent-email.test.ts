@@ -228,7 +228,7 @@ test('existing unknown notifications stay unchanged and nonretryable after SES r
   assert.equal(f.state.accountCalls.length, 0); assert.equal(f.state.sends.length, 0);
 });
 
-test('send-failure diagnostics contain only an allowlisted error name and bounded HTTP status', async t => {
+test('send-failure diagnostics contain only allowlisted names, statuses and categories', async t => {
   const warnings = t.mock.method(console, 'warn', () => {});
   const cases = [
     Object.assign(new Error('private IAM diagnostic for parent@example.test'), { name: 'AccessDeniedException', $metadata: { httpStatusCode: 403, requestId: 'private-request-id' }, account: 'private-account', token: 'private-token' }),
@@ -238,9 +238,65 @@ test('send-failure diagnostics contain only an allowlisted error name and bounde
     const f = fixture(); f.state.send = async () => { throw issue; }; await f.dispatch();
   }
   assert.deepEqual(warnings.mock.calls.map(call => call.arguments), [
-    ['parent_email_send_failed', { name: 'AccessDeniedException', httpStatus: 403 }],
-    ['parent_email_send_failed', { name: 'UnknownError', httpStatus: null }],
+    ['parent_email_send_failed', { name: 'AccessDeniedException', httpStatus: 403, deniedAction: 'unknown', denialReason: 'unknown', resourceKind: 'other_or_unknown' }],
+    ['parent_email_send_failed', { name: 'UnknownError', httpStatus: null, deniedAction: 'unknown', denialReason: 'unknown', resourceKind: 'other_or_unknown' }],
   ]);
+});
+
+test('standard AWS denial wording produces fixed action, reason and resource categories without private strings', async t => {
+  const warnings = t.mock.method(console, 'warn', () => {});
+  const identity = (value: string) => `arn:aws:ses:us-east-2:123456789012:identity/${value}`;
+  const cases = [
+    { action: 'ses:SendEmail', resource: identity('schoollearningsimplified.com'), reason: 'because no identity-based policy allows the ses:SendEmail action', resourceKind: 'sender_domain_identity', denialReason: 'identity_policy_missing' },
+    { action: 'ses:SendRawEmail', resource: identity('updates@schoollearningsimplified.com'), reason: 'with an explicit deny in an identity-based policy', resourceKind: 'sender_address_identity', denialReason: 'explicit_deny' },
+    { action: 'ses:SendEmail', resource: identity('parent@example.test'), reason: 'because no permissions boundary allows the ses:SendEmail action', resourceKind: 'recipient_identity', denialReason: 'permissions_boundary' },
+    { action: 'ses:SendEmail', resource: 'arn:aws:ses:us-east-2:123456789012:configuration-set/private-configuration', reason: 'with an explicit deny in a service control policy', resourceKind: 'configuration_set', denialReason: 'service_control_policy' },
+    { action: 'ses:ApplyTrackingConfigurationOverrides', resource: '*', reason: 'because no identity-based policy allows the ses:ApplyTrackingConfigurationOverrides action', resourceKind: 'other_or_unknown', denialReason: 'identity_policy_missing' },
+    { action: 'ses:SendEmail', resource: identity('schoollearningsimplified.com'), reason: 'with an explicit deny in a permissions boundary', resourceKind: 'sender_domain_identity', denialReason: 'permissions_boundary' },
+    { action: 'ses:SendEmail', resource: identity('example.test'), reason: 'because no service control policy allows the ses:SendEmail action', resourceKind: 'recipient_identity', denialReason: 'service_control_policy' },
+    { action: 'ses:SendEmail', resource: identity('private-other.example.test'), reason: 'private unrecognized reason token=private-token', resourceKind: 'other_or_unknown', denialReason: 'unknown' },
+    { action: 'ses:DeleteIdentity', resource: identity('parent@example.test'), reason: 'because no identity-based policy allows the ses:DeleteIdentity action', resourceKind: 'other_or_unknown', denialReason: 'unknown' },
+  ];
+  for (const entry of cases) {
+    const f = fixture();
+    const message = `User: arn:aws:sts::123456789012:assumed-role/private-role/private-session is not authorized to perform: ${entry.action} on resource: ${entry.resource} ${entry.reason}`;
+    f.state.send = async () => { throw Object.assign(new Error(message), { name: 'AccessDeniedException', $metadata: { httpStatusCode: 403, requestId: 'private-request-id' }, token: 'private-token' }); };
+    await f.dispatch(); assert.equal(f.stored().code, 'SERVICE_REJECTED'); assert.equal(f.stored().attempts, 1); assert.equal(f.state.budget, 1);
+  }
+  assert.deepEqual(warnings.mock.calls.map(call => call.arguments), cases.map(entry => ['parent_email_send_failed', {
+    name: 'AccessDeniedException', httpStatus: 403, deniedAction: entry.action === 'ses:DeleteIdentity' ? 'unknown' : entry.action, denialReason: entry.denialReason, resourceKind: entry.resourceKind,
+  }]));
+  const logged = JSON.stringify(warnings.mock.calls.map(call => call.arguments));
+  for (const secret of ['arn:', '123456789012', '@', 'schoollearningsimplified.com', 'example.test', 'private-']) assert(!logged.includes(secret));
+});
+
+test('denial diagnostics handle quoted actions and ARNs plus terminal punctuation without widening actions', async t => {
+  const warnings = t.mock.method(console, 'warn', () => {});
+  const arn = 'arn:aws:ses:us-east-2:123456789012:identity/updates@schoollearningsimplified.com';
+  const formats = [
+    { action: "'ses:SendEmail'", resource: `'${arn}'`, punctuation: '.' },
+    { action: '"ses:SendEmail"', resource: `"${arn}"`, punctuation: ',' },
+    { action: '`ses:SendEmail`', resource: '`' + arn + '`', punctuation: ';' },
+    { action: 'ses:SendEmail', resource: arn, punctuation: '.' },
+    { action: "'ses:SendEmail':", resource: `"${arn}"`, punctuation: ')' },
+  ];
+  for (const format of formats) {
+    const f = fixture();
+    const message = `User: private-user is not authorized to perform ${format.action} on resource ${format.resource}${format.punctuation} because no identity-based policy allows the ses:SendEmail action`;
+    f.state.send = async () => { throw Object.assign(new Error(message), { name: 'AccessDeniedException', $metadata: { httpStatusCode: 403 } }); };
+    await f.dispatch();
+  }
+  for (const action of ['"ses:SendEmail\'', 'ses:SendEmailExtra', 'ses:SendEmail/private-token', 'ses:SendEmail.private-token']) {
+    const f = fixture();
+    f.state.send = async () => { throw Object.assign(new Error(`User: private-user is not authorized to perform ${action} on resource '${arn}' because no identity-based policy allows it`), { name: 'AccessDeniedException', $metadata: { httpStatusCode: 403 } }); };
+    await f.dispatch();
+  }
+  assert.deepEqual(warnings.mock.calls.map(call => call.arguments), [
+    ...formats.map(() => ['parent_email_send_failed', { name: 'AccessDeniedException', httpStatus: 403, deniedAction: 'ses:SendEmail', denialReason: 'identity_policy_missing', resourceKind: 'sender_address_identity' }]),
+    ...Array.from({ length: 4 }, () => ['parent_email_send_failed', { name: 'AccessDeniedException', httpStatus: 403, deniedAction: 'unknown', denialReason: 'unknown', resourceKind: 'other_or_unknown' }]),
+  ]);
+  const logged = JSON.stringify(warnings.mock.calls.map(call => call.arguments));
+  for (const secret of ['arn:', '123456789012', '@', 'schoollearningsimplified.com', 'private-']) assert(!logged.includes(secret));
 });
 
 test('cumulative reservation cap is separate from AI and blocks the hundred-and-first attempt', async () => {
