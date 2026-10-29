@@ -32,7 +32,8 @@ def capture(run):
         'outside_request_ast_sha256': sha(ast.dump(module).encode()),
         'reference_sha256': files((ROOT/'reference').rglob('*.py')),
         'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
-        'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE),
+        'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
+                                          if p != BASELINE and p.name != 'translate-teaching-final-nesting-baseline.json'),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -66,8 +67,11 @@ def test_nonrequest_definitions_sources_prompts_lock_and_historical_fixture_byte
     changed = 'reference/factories/explain.py'
     assert current['reference_sha256'].keys() == baseline['reference_sha256'].keys()
     assert current['reference_sha256'][changed] != baseline['reference_sha256'][changed]
+    # T24 versions only Translate request bytes; keep the full other-file comparison.
+    expected = {**baseline['reference_sha256'], 'reference/factories/translate.py':
+                'f3a80bd2277c917a528f441fb7dfb3524844b264199638e457ae58c772d4b5cd'}
     assert {k:v for k,v in current['reference_sha256'].items() if k != changed} == {
-        k:v for k,v in baseline['reference_sha256'].items() if k != changed}
+        k:v for k,v in expected.items() if k != changed}
 
 
 def test_system_contains_only_existing_contract_without_declared_or_operator_data(tmp_path, monkeypatch):

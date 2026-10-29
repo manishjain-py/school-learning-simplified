@@ -139,7 +139,14 @@ def request(run, role, declared, batch, notes, final):
             'slot and source_hash values or translated title_display and lines:[{display,audio}] fields: '
             'preserve those exactly as instructed above. Return the complete final translated content once '
             'in artifact; do not copy another complete item batch into audit or disposition fields. '
-            'Keep only the existing allowed audit/disposition fields outside artifact.'}]
+            'Keep only the existing allowed audit/disposition fields outside artifact.'
+            '\nEnvelope nesting: after returning schema_version 2 and every translated item in artifact.items, '
+            'close the items array and then the artifact object. Put existing permitted audit/disposition fields '
+            'alongside artifact in the outer response object, never inside artifact or items. Do not copy the '
+            'review-only verdicts or batch_issues fields or the input-only pre_revision_diagnostics field. '
+            'After the permitted outer audit/disposition fields, close the outer response object. Include every '
+            'required translated item and field, exact slot and source_hash, and source order; do not return a '
+            'partial batch or template.'}]
     return request
 
 

@@ -82,7 +82,8 @@ def capture(workspace):
         'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
                                           if p.name not in ('translate-teaching-final-system-baseline.json',
                                                             'guideline-refresher-system-baseline.json',
-                                                            'explain-splitter-system-baseline.json')),
+                                                            'explain-splitter-system-baseline.json',
+                                                            'translate-teaching-final-nesting-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -91,6 +92,8 @@ def baseline():
 
 
 def strip_new_system(request, stream, phase):
+    from test_translate_teaching_final_nesting import strip_nesting
+    strip_nesting(request, stream, phase)
     if stream == 'teaching' and phase == 'final':
         assert request.pop('system') == [{'text': request['messages'][0]['content'][1]['text']+SCOPE}]
     else:
@@ -120,6 +123,8 @@ def test_system_is_existing_contract_plus_fixed_scope_without_task_data(monkeypa
         if data['stream'] != 'teaching' or not role.endswith('_final'):
             assert 'system' not in request
             continue
+        from test_translate_teaching_final_nesting import strip_nesting
+        strip_nesting(request, data['stream'], 'final')
         text = request['system'][0]['text']
         assert text == request['messages'][0]['content'][1]['text']+SCOPE
         for forbidden in ('SYNTHETIC', 'नमूना', 'OPERATOR_SENTINEL', 'AGENTS', 'SKILL', str(ROOT)):
@@ -158,7 +163,8 @@ def capture_sources():
         'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
                                           if p.name not in ('translate-teaching-final-system-baseline.json',
                                                             'guideline-refresher-system-baseline.json',
-                                                            'explain-splitter-system-baseline.json')),
+                                                            'explain-splitter-system-baseline.json',
+                                                            'translate-teaching-final-nesting-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
