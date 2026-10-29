@@ -218,7 +218,15 @@ export async function handleSchool(event: APIGatewayProxyEventV2WithJWTAuthorize
     if (!tail && method === 'GET') {
       const allClasses = await query(schoolPK(schoolId), 'CLASS#');
       const classes = allClasses.filter((item) => context.role === 'admin' || item.teacherEmails.includes(normalizeEmail(user.email))).map((item) => publicClass(item as SchoolClass));
-      const teachers = context.role === 'admin' ? (await query(schoolPK(schoolId), 'TEACHER#')).filter((item) => item.active).map((item) => publicTeacher(item as Teacher)) : [];
+      let teachers: ReturnType<typeof publicTeacher>[];
+      if (context.role === 'admin') teachers = (await query(schoolPK(schoolId), 'TEACHER#')).filter((item) => item.active).map((item) => publicTeacher(item as Teacher));
+      else {
+        // A teacher needs their own display name, not the school's staff directory.
+        const email = normalizeEmail(user.email);
+        const member = await get<Teacher>(schoolPK(schoolId), `TEACHER#${hash(email)}`);
+        if (!member?.active || member.email !== email) return fail(403, 'SCHOOL_ACCESS_DENIED', 'This school workspace is not available to your account.');
+        teachers = [publicTeacher(member)];
+      }
       return json(200, { school: publicSchool(context.school), role: context.role, classes, teachers });
     }
     const teacherMatch = tail.match(/^teachers\/([^/]+)$/);
