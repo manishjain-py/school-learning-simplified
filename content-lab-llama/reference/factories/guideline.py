@@ -17,10 +17,17 @@ def request(run, role, declared, batch, notes, final):
     prompt = (ROOT/'prompts'/f'{PROMPTS[role]}.md').read_text()
     # No audience invention or historical fixed chapter/page wrapper.
     prompt = prompt.replace('{grade}', str(run.bundle['metadata']['grade']))
+    current_pages = [p['printed_page'] for p in batch]
+    prompt += ('\nsource_printed_pages lists the whole source for provenance. '
+        'current_batch_printed_pages lists only the originals attached to this request, in attachment order. '
+        'Page labels retain their supplied JSON integer or string types.')
     if not final:
         prompt += ('\nThis is an inspection batch within this same role. Inspect only the attached original pages. '
             'Return ONLY {"page_notes":[{"printed_page": <supplied integer or string label>, "observations": "your bounded observations and uncertainties"}]} '
-            'with one entry per currently attached page, at most 1200 words total. Do not produce final role output yet. '
+            'with exactly one entry per current_batch_printed_pages label in this exact order: '
+            +json.dumps(current_pages, ensure_ascii=False)+'. Copy each label and its JSON type exactly. '
+            'Do not include absent, not-yet-attached or previously noted pages in page_notes. '
+            'Use at most 1200 words total. Do not produce final role output yet. '
             'Earlier role-local notes are your own observations, not original images. This turn contract overrides the usual output contract.')
     else:
         prompt += ('\nReturn only one JSON object. Authors return {"artifact": <complete requested JSON>, ...audit fields}. '
@@ -30,7 +37,7 @@ def request(run, role, declared, batch, notes, final):
             'Metadata defines grade, language and audience; do not assume an audience absent from it. '
             'The final revision is authoritative; do not require a later quality gate.')
     payload = {'metadata': run.bundle['metadata'], 'source_printed_pages': [p['printed_page'] for p in run.bundle['pages']],
-               'task_inputs': declared, 'role_local_page_notes': notes}
+               'current_batch_printed_pages': current_pages, 'task_inputs': declared, 'role_local_page_notes': notes}
     content = [{'text': prompt+'\nDeclared task data:\n'+json.dumps(payload, ensure_ascii=False)}]
     for page in batch:
         content.extend([{'text': f'Original printed page {page["printed_page"]}:'},
