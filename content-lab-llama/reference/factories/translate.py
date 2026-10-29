@@ -152,7 +152,13 @@ def request(run, role, declared, batch, notes, final):
             'within that string; escape any embedded quotes, backslashes and line breaks as JSON requires. '
             'Syntax-only illustration: {"title_display":"Example title"}. This demonstrates one member\'s '
             'syntax, not a replacement title, item or response. Supply each item\'s actual translated title '
-            'and preserve all required items, fields, identities and envelope.'}]
+            'and preserve all required items, fields, identities and envelope.'
+            '\nTeaching-line string syntax: Each display and audio value is one JSON string. Use exactly one '
+            'opening and one closing delimiter quote around its entire text; escape any quote that belongs '
+            'to the text instead of emitting another delimiter quote. Syntax-only illustration: '
+            '{"display":"Example line","audio":"Example line"}. This illustrates string delimiters, not '
+            'replacement content. Use each actual translated line and preserve every required line, item, '
+            'identity and the complete envelope.'}]
     return request
 
 

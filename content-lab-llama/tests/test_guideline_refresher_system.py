@@ -28,7 +28,8 @@ def source_snapshot():
             'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
                                               if p.name not in (FIXTURE, 'explain-splitter-system-baseline.json',
                                                                 'translate-teaching-final-nesting-baseline.json',
-                                                                'translate-teaching-title-scalar-baseline.json')),
+                                                                'translate-teaching-title-scalar-baseline.json',
+                                                            'translate-teaching-line-string-baseline.json')),
             'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -94,9 +95,9 @@ def test_only_request_delta_preserves_sources_and_reconstructs_prior_trees():
     # T23 versions only Explain request bytes; the historical T22 fixture stays exact.
     assert current['reference_sha256']['reference/factories/explain.py'] == (
         'ce0a5fdc0d4fe2076d8275c8475a3533cba2ae324782486d3bec4807ebee97c6')
-    # T24/T25 change only Translate request(); restore that exact base hash for prior trees.
+    # T24/T25/T26 change only Translate request(); restore that exact base hash for prior trees.
     assert current['reference_sha256']['reference/factories/translate.py'] == (
-        'e4e47abacde4b284bfedb300eb8214da228e2f3b09a34a8e72e681c432f605b6')
+        'ad6138e850f73b13673be3d1d5f75c1bc6faa73df1c0a13eb1da465a4360a3b5')
     restored = {**current['reference_sha256'], GUIDELINE: old['reference_sha256'][GUIDELINE],
                 'reference/factories/explain.py': old['reference_sha256']['reference/factories/explain.py'],
                 'reference/factories/translate.py': old['reference_sha256']['reference/factories/translate.py']}
