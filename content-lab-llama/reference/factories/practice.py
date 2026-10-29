@@ -257,7 +257,9 @@ def request(run, role, declared, batch, notes, final):
         'practice_blueprint': 'Return an object-valued artifact containing the complete native skills, digest and theme_wheel, '
             'and the existing note. Preserve skill_key, section_key, title, objective, what_to_test, formats, '
             'difficulty_notes, misconceptions, parameter_space, weight and optional taught_method. Preserve digest '
-            'vocabulary, step_labels, methods_conventions, contexts_used and board_titles.',
+            'vocabulary, step_labels, methods_conventions, contexts_used and board_titles. '
+            'Every skill must include misconceptions as an array of strings: use [] when no relevant guideline '
+            'entries apply; never omit it, use null or a string, or invent misconceptions to fill it.',
         'practice_review': 'Return the native unenveloped JSON root with wrong array, boolean holistic_pass, '
             'holistic_issues array and optional comment. Do not wrap the review in artifact. Copy each finding\'s '
             'ORIGINAL signature verbatim as its locator; question_text and format remain evidence, never replacement locators. '
