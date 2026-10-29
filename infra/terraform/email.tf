@@ -47,7 +47,10 @@ resource "aws_iam_role_policy" "parent_email" {
       { Effect = "Allow", Action = ["cognito-idp:AdminGetUser"], Resource = aws_cognito_user_pool.users.arn }
       ], var.parent_email_enabled && length(var.parent_email_allowed_recipients) > 0 ? [
       {
-        Effect = "Allow", Action = ["ses:SendEmail"], Resource = aws_sesv2_email_identity.parent_updates.arn
+        Effect = "Allow", Action = ["ses:SendEmail"]
+        Resource = concat([aws_sesv2_email_identity.parent_updates.arn], [
+          for email in var.parent_email_allowed_recipients : "arn:${data.aws_partition.current.partition}:ses:${var.region}:${data.aws_caller_identity.current.account_id}:identity/${email}"
+        ])
         Condition = {
           StringEquals                = { "ses:FromAddress" = "updates@${var.domain}" }
           "ForAllValues:StringEquals" = { "ses:Recipients" = var.parent_email_allowed_recipients }
