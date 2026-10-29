@@ -85,8 +85,8 @@ def test_independent_writers_blind_choice_lenses_feedback_and_artifact_ownership
     text = json.dumps(requests)
     for prohibited in ('MUST_NOT_ENTER', 'AGENTS.md', 'SKILL.md', str(tmp_path), 'AWS_PROFILE', 'manifest.json'):
         assert prohibited not in text
-    assert all(len(q['messages']) == 1 and len(q['messages'][0]['content']) ==
-               (2 if role == 'explain_research' else 1) for role, q in requests.items())
+    assert all(len(q['messages']) == 1 and len(q['messages'][0]['content']) == 2
+               for q in requests.values())
     w1, w2 = (payload(requests['explain_writer_'+str(i)]) for i in (1, 2))
     assert w1 == w2
     assert set(w1) == {'guideline', 'supplied_research', 'misconception_research', 'arc'}

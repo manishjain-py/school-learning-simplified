@@ -179,6 +179,59 @@ def request(run, role, declared, batch, notes, final):
             'This illustrates nesting only, not substitute curriculum or permission to omit required '
             'native fields. Replace the empty object with your complete requested research artifact; '
             'do not return an empty or template response.'})
+    else:
+        if role in TEXT_ROLES:
+            shape = ('Put the complete authoritative continuous Markdown prose in artifact as a JSON '
+                'STRING, never an object or array. Markdown headings inside that string remain valid. '
+                'Escape newlines, double quotes and backslashes correctly for JSON. Keep note and '
+                'dispositions as instructed above.\nSyntax-only escaping illustration:\n'
+                +json.dumps({'artifact': '## Heading\nHe says "hello".\nC:\\example'})+'\n'
+                'This illustrates string escaping only, not replacement prose; supply the complete '
+                'requested explanation and existing author fields.')
+        elif role == 'explain_arc':
+            shape = ('Put the complete native arc JSON object in the object-valued artifact field, '
+                'not at the response root or in a string. Preserve the arc schema above and the '
+                'existing envelope book_treatment_present boolean and note. Keep design observations '
+                'in artifact.design_note or the existing note field.')
+        elif role in ('explain_split', 'explain_split_final'):
+            shape = ('Put the complete native deck object, including cards and summary, in the '
+                'object-valued artifact field, not at the response root or in a string. Follow all '
+                'existing card/summary instructions. Keep dispositions and note as instructed above; '
+                'put observations only in those existing fields or native summary fields.')
+        elif role in ('explain_checkins', 'explain_checkins_final'):
+            shape = ('Put the complete native check-in object with its check_ins array in the '
+                'object-valued artifact field, not at the response root or in a string. Preserve '
+                'all existing activity fields and per-type instructions. Keep dispositions and note '
+                'as instructed above; put author observations only in those existing fields.')
+        elif role == 'explain_selection':
+            shape = ('Return the native verdict at the JSON root: integer winner_index (1 or 2), '
+                'per-candidate scores, reasons and concerns as instructed above. Do not wrap the '
+                'verdict in artifact or return replacement prose. Keep explanations in the existing '
+                'reasons and concern fields; an empty concerns array remains valid.')
+        elif role == 'explain_split_review':
+            shape = ('Return the native review object at the JSON root with the existing boolean '
+                'ok, findings array and note. Do not wrap the review in artifact. Keep explanations '
+                'in existing finding fields or note. Preserve negative findings; empty findings '
+                'remain valid. The verdict remains advisory.')
+        elif role == 'explain_checkin_review':
+            shape = ('Return the native review object at the JSON root with the existing wrong '
+                'array, boolean holistic_pass, holistic_issues array and comment. Do not wrap the '
+                'review in artifact. Keep explanations in existing problem/fix, issue or comment '
+                'fields. Preserve negative findings; empty arrays remain valid. The opinion '
+                'remains advisory.')
+        else:  # the three independent prose-review lenses
+            shape = ('Return the native review object at the JSON root with its findings array, '
+                'not an artifact envelope. Follow your existing lens and finding schema. Keep '
+                'explanations only in existing finding string fields. Preserve negative findings; '
+                'an empty findings array remains valid. Do not invent findings to fill it.')
+        content.append({'text': 'Final response contract for '+role+':\n'
+            'Return one complete strict JSON object. Its first non-whitespace character must be { '
+            'and its last must be }. '+shape+'\n'
+            'Perform the requested work without procedure narration outside JSON. No preamble, '
+            'postscript, response headings, Markdown fences, surrounding prose, multiple objects, '
+            'JSON comments, trailing commas or file-write receipts. Put notes only in fields '
+            'allowed by this role\'s existing instructions; preserve all native schema and content '
+            'instructions above.'})
     return {'messages': [{'role': 'user', 'content': content}]}
 
 
