@@ -119,9 +119,37 @@ def request(run, role, declared, batch, notes, final):
             'findings are retained; accepted_findings is the source critical/major deduplicated subset. '
             'Apply or decline findings with reasons outside the artifact. You own the exported artifact. '
             'No later reviewer, repair, reversion or veto follows.')
+    if role == 'revise_selection':
+        result_type = ('Return the native unenveloped verdict with winner A/B/tie, margin clear/slight and reasons '
+            'as short strings. Do not wrap the verdict in artifact. Tie selects A. No replacement deck.')
+    elif role[7:] in LENSES:
+        result_type = ('Return the native unenveloped JSON root with findings array. Do not wrap the review in artifact. '
+            'Each finding retains card_idx, lens, severity, issue, evidence and suggested_fix. YOUR ONLY LENS: '+
+            role[7:]+'. Empty findings and negative advisory feedback remain valid; do not invent problems.')
+    elif role == 'revise_select':
+        result_type = ('Return an object-valued artifact containing the native concepts array, with concept_key, '
+            'section_key, section_seq, gist and source_card_idxs. Return the concepts themselves, not card text '
+            'or a description of selecting concepts.')
+    else:
+        result_type = ('Return the complete object-valued artifact containing the native cards. Keep idx, '
+            'question and answer with display and audio, source_card_idxs, concept_key, section_key and section_seq. ')
+        if role == 'revise_final':
+            result_type += ('Keep the existing cards_changed, notes and dispositions fields outside artifact but '
+                'inside this same JSON object. Apply or decline indexed findings with reasons and retain unresolved '
+                'feedback honestly. Make one final revision even when accepted_findings is empty. The final author '
+                'is authoritative; no later quality gate, repair, reversion or veto follows.')
+        else:
+            result_type += 'Keep the existing short note outside artifact but inside this same JSON object.'
+    final_contract = ('Final response contract:\n'+result_type+
+        '\nReturn one complete strict JSON object. The first non-whitespace character must be { and the last must be }. '
+        'No response-level preamble or postscript, procedure narration, headings, Markdown fences, extra objects, '
+        'comments, trailing commas or file receipts. Text and Markdown inside JSON strings remain valid; escape '
+        'newlines, quotes and backslashes as JSON requires. Put notes only in fields allowed by this role\'s existing '
+        'instructions. Preserve the existing native schema and advisory targets. Return the content itself, '
+        'not a description of producing it.')
     return {'messages': [{'role': 'user', 'content': [{'text': prompt+
         '\n\nLOCAL TRANSPORT CONTRACT:\n'+contract+'\nDeclared task data:\n'+
-        json.dumps({'task_inputs': declared}, ensure_ascii=False)}]}]}
+        json.dumps({'task_inputs': declared}, ensure_ascii=False)}, {'text': final_contract}]}]}
 
 
 def parse(role, text, notes_pages=None):

@@ -1,0 +1,78 @@
+{
+  "baseline_commit": "a0592cadd8d600e9300b67758fb2a1ffbcb2fbc9",
+  "capture": "Unmodified git archive; actual synthetic Revise graph with SDK/network forbidden.",
+  "snapshot": {
+    "requests": {
+      "revise_select": {
+        "request_sha256": "68efa4ccbb75561a7a0ebc404df28421db289fc17270511b1324f4e92626e500",
+        "first_block_sha256": "1701e783c938b15f76f39b24ccae50c3e997d6d0279297fcd692c287444b112b",
+        "declared_sha256": "5095bc66e01bc04750a8a1aa16c9810fabd10703c4eee0fbd82b790a99f183a6"
+      },
+      "revise_author_a": {
+        "request_sha256": "60e31bfed7823174b04f3f45b8f92fbd04da6357860da5b74f0dfd3750786f4b",
+        "first_block_sha256": "ddad3b9ce4fd5f6290eb7ec443d4f49703e25599da194c2f6b8d4047414105bf",
+        "declared_sha256": "4bc8bc3f296ea502f5e814511adf0211dbd5faad7d77f7be9f7e03cc51955910"
+      },
+      "revise_author_b": {
+        "request_sha256": "60e31bfed7823174b04f3f45b8f92fbd04da6357860da5b74f0dfd3750786f4b",
+        "first_block_sha256": "ddad3b9ce4fd5f6290eb7ec443d4f49703e25599da194c2f6b8d4047414105bf",
+        "declared_sha256": "4bc8bc3f296ea502f5e814511adf0211dbd5faad7d77f7be9f7e03cc51955910"
+      },
+      "revise_selection": {
+        "request_sha256": "cc49c6a759a2e7783135c75a86cadaeebf2a57ecb16ee141104ed34881e88542",
+        "first_block_sha256": "fd69367120b4071f569efa43ac5cbc059de2375ddc9a1d79199dec66bb0419e4",
+        "declared_sha256": "3bd0b4ac1308fa9c11d7a64c4b1816b5320be28bc900b4ce64e5fdac57ca960d"
+      },
+      "revise_lightness": {
+        "request_sha256": "374d9e0663d646d2e10723709173e2c18712d799c2ae267fe46f5d4948a1b430",
+        "first_block_sha256": "a519a267592b6974bfeb075ae934c91656f4c94d2b172cc105189f3d5c2e77f8",
+        "declared_sha256": "a9745f17f6ec5e14d787667ca757191af1ab6306132c52351408ce0ae55559f0"
+      },
+      "revise_accuracy": {
+        "request_sha256": "e23464d80cd5d823d821b7d79188416e75d4e3a4329b0c597ba6afb0d858f480",
+        "first_block_sha256": "d672a7350e89ab5e946f93cf7b9708516188a4265fbe4c190c459141ac5efaa2",
+        "declared_sha256": "a9745f17f6ec5e14d787667ca757191af1ab6306132c52351408ce0ae55559f0"
+      },
+      "revise_easy_english": {
+        "request_sha256": "22bc00beb7db3693e845f50ede5799f5eb28d80982e00f2d8b7ea6f09ff3c3cf",
+        "first_block_sha256": "ae791457114e1cc9a5a0646fb3886ce4003b118f6958bbd4976087643d6f507b",
+        "declared_sha256": "a9745f17f6ec5e14d787667ca757191af1ab6306132c52351408ce0ae55559f0"
+      },
+      "revise_final": {
+        "request_sha256": "fe96431aa41565307a73315fd72ee0271a17541987dcb74b21df3e6819be129b",
+        "first_block_sha256": "6fde6fb8969a747b30d22a52ed65a7db217d1922eabb5ea142278f11b7595db1",
+        "declared_sha256": "6f32aa5a62a14b573491b437c817d6007f169a724d9d2c66c8c09a6318f08be3"
+      }
+    },
+    "outputs": {
+      "revise_select": "9d8097653e1ab06840fa328a2f06914475df2310aed9aaebc83794f7566b5b2c",
+      "revise_author_a": "647b75afa44f99f47961a4fa53ccf5904bf1517bb81bc142c53a053b5a14f2e9",
+      "revise_author_b": "f9463f4cdc206d23a60f672fd0d95c98a320b526424f947bc1850cbc88b73656",
+      "revise_selection": "a3270370a3b42727d2f1d35918e7a7c528a4edc2ccbcaaefc60c9c4277969747",
+      "revise_lightness": "b44ff4abfecbe3a244b720c50752e036005a1de6a01d01ae6554740d12f2ffb7",
+      "revise_accuracy": "04f12c8cb8412878d3fa562a5687d73cd22993bca7f0d173a69fd429527af4ba",
+      "revise_easy_english": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36",
+      "revise_final": "bd7e490e822e0c1c9490389e90726d80809b3b72f17bc2e3b8734b0e9aa881dc"
+    },
+    "files": {
+      "views": {
+        "explain-deck.json": "0858f1bad6fd765cf54b838ff3d39a6f8374022c453ceca84750c7f98abda659",
+        "explain-index-map.json": "cd26dd8447ccfca4a6366d8a158d7bca1933cf207962fcf4667c9cefb70554a0",
+        "guideline.json": "1b2279a248ce2423834d09af4a98c622cca24737ebb0b4239eba4c2c0197714f",
+        "reference-identity.json": "87d39e8e54195d9197f145f6ead35bddd129eab58366b6fe7ab844a5f7602f55"
+      },
+      "artifacts": {
+        "concepts.json": "26bea82fa4863db9f7ffadb67c65a9d2eafb47d464cdd20c41347eb7ff29fd9f",
+        "revise_deck.json": "51ce01d17d138cd898d728a2237853df5a9f432a81cc347282deaa737db18d27",
+        "selected-draft.json": "e4216da6cb253a6657f50b589f0bd9081383c102c0d6d51e82c3378d544600e6"
+      },
+      "diagnostics": {
+        "selection.json": "e142e44399237d701de1455a2d62d621da75097e075c08c6fc554ba9828a4ae7"
+      }
+    },
+    "outside_request_ast_sha256": "1313b450932d57a0dcd8cc54c1bd4c535b3784bc7952781af64cb8630e017bef",
+    "prompt_tree_sha256": "25dde46ffb09e7f3c5032cea0d7ea2d6c3389ebb8ffffa94ced424766a914cb3",
+    "other_reference_tree_sha256": "fecadf56c934f9b515bdc5cedac86182a33d1c69261948d3ae2fcd234bd2219a",
+    "requirements_sha256": "8e4221a16d4720f86978bc905de127277035c2156a8ad9836eff58676d9aecea"
+  }
+}
