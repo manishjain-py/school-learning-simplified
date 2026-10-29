@@ -1,0 +1,596 @@
+{
+  "baseline_commit": "8648cae40c8190c29074a2f9411929b11b6d1e82",
+  "capture": "Unmodified git archive; actual synthetic Translate graphs at batch sizes 12 and 2 with SDK/network forbidden.",
+  "snapshot": {
+    "scenarios": {
+      "12": {
+        "requests": {
+          "translate_teaching_b001_author": {
+            "request_sha256": "e19289d717cdc7b02218c65f7ead002cedc3e0fb8954a543cb7133d572cd9074",
+            "first_block_sha256": "8084c7e08ab14bac52dc9e1802dbd87682d7536ffd16d9d6766910352e6b3f59",
+            "declared_sha256": "cb408a31e561e1611722f1f4fcbe91acce5b444cc536b0eed1aa52bfb93e63c8"
+          },
+          "translate_teaching_b001_review": {
+            "request_sha256": "d35b0be152fea5704e3b0557af38dc696b85a95ef8e490890c7cd350ac0c1864",
+            "first_block_sha256": "67f7c93f970ba17d0894fb86922a76c30431e3d60ebdd6542dbf1d40187a4bae",
+            "declared_sha256": "38c9ca3e4cc135badbfeb3b71271b190259e2dc79e3b05bea6ba4f16fe368de2"
+          },
+          "translate_teaching_b001_final": {
+            "request_sha256": "0bc8cab93bb5b309875aadf24e92209c9f6d2a9582c6dbf32b643997e0c69c6f",
+            "first_block_sha256": "6f2b28c4b7f6a7c9cdbe4f41e022628a69503935bc245599ec8e9a1faf386e1d",
+            "declared_sha256": "17e7dd7086a1a7d52a42c1be05acf50f066cbdfd9386ae4dbe28534a28f147a9"
+          },
+          "translate_checkin_b001_author": {
+            "request_sha256": "07ec5e59bbe65fd5442b36ddd3047be4561d94e7fb34ce8abbe0379dcfc6404a",
+            "first_block_sha256": "3ce5b1f18377ea846cf124d7258a7506129d759afbf8fe4856b65939f6283da7",
+            "declared_sha256": "00a203b89ca981342131790073ca5003f87ef746dd55ad22990ecb18b6824204"
+          },
+          "translate_checkin_b001_review": {
+            "request_sha256": "a7ea012cbfd2ae84a24edf1e4815da0a40a7edfdc26937c42df5177ec0601570",
+            "first_block_sha256": "0c615a6c31b6dd82b45e88fef644f099dae3566bc61819806c08daf8ac0f6af3",
+            "declared_sha256": "75b704a8094a2983406882544cc92ac76fda6afc26f55b5f3c364dbb4761b7b5"
+          },
+          "translate_checkin_b001_final": {
+            "request_sha256": "119eccbd8b3de0fde434e9f85e1493f3e0b6b6d7d2dc1a74e5ec9c3838cbda9b",
+            "first_block_sha256": "0bd73039c41904843bb8b99034ff7c2c626a3d8d84485c5cac5004fbd24c1bd9",
+            "declared_sha256": "44cf0b58c5225e00758c14d1dd9057b6e944760c4f16e23c5d890a9e057b74c0"
+          },
+          "translate_practice_b001_author": {
+            "request_sha256": "9fbb48ae1f8e15f011e113aa39efde5a99d65c099561a7c93150bc7e24ce2c5c",
+            "first_block_sha256": "c0372a3c2900d2c0ded5146beb04896afe6517d79a954c276f20b8add2647f85",
+            "declared_sha256": "7be2db7d82fe9fd8b34c73837d1de9943636a0617051b88530014c444354aab4"
+          },
+          "translate_practice_b001_review": {
+            "request_sha256": "55c99005168842cf1db82e1958d5041f8fe8dbaab286132769a4598761838cbe",
+            "first_block_sha256": "5052b9fd7f2842f8a79af3a59b0cb115bb1be66fa545d511cb0395c243da0bee",
+            "declared_sha256": "52a7749396db236757533f785ec7f97e25274be81cb2e6c60bf418e494e81360"
+          },
+          "translate_practice_b001_final": {
+            "request_sha256": "31cb1a49ee3a0436a97e28f07aeed43025d12a5b213fdd2dced5e068f62575b9",
+            "first_block_sha256": "629167536da23aceeb47faa7c7900f9f9c07af161bc330266ae021b6d1593c46",
+            "declared_sha256": "aa4e78c1a2d68a7f40e5df88ee988b7337ebfeb983468347e0b696126ca9fe86"
+          },
+          "translate_feedback_b001_author": {
+            "request_sha256": "8d13b3d5e1ddfc7bc7c8680d1643873bc40423eea31268dce51f9f8eda936ef1",
+            "first_block_sha256": "510a63116a92a201274619ad5d31363e28f18e8ff3be1a712fd4c37c6d74729d",
+            "declared_sha256": "cbf459ca151069990b9d41fe9845681ca85ae93e95642765a8e0ef1530fde319"
+          },
+          "translate_feedback_b001_review": {
+            "request_sha256": "28893f4aec8530ef08ae2e3e1e345e7d8fce5e6e78134c8cd436070fde799712",
+            "first_block_sha256": "66d47bc034122440117cbacb1754deef870416c716d56890dd184b1e93b2203a",
+            "declared_sha256": "3258bca0e5b7bdc8c8740e4b5453af52c3aca3ef2516d2d94bd9a9a5e9f5c4c1"
+          },
+          "translate_feedback_b001_final": {
+            "request_sha256": "5b048189e4231401312ea40d5f1b80abbcd21ad3570062396c2ddf5648599bb0",
+            "first_block_sha256": "df483b0dcf3d2fa0000209eaab05135f543a44f3a6095053a5a067dd2d1feea5",
+            "declared_sha256": "4ca266452dc69ea6a74f9ff16a9190b7066ff8286d30549b6cbb69313d49312d"
+          },
+          "translate_feedback_b002_author": {
+            "request_sha256": "95890e88513a04aca7e2577b48bfe8515df42fc771089cd92395bd59fe122bcb",
+            "first_block_sha256": "033c2c7155d7b6e90adf3627cfc0515da8daff25e91448def2f49122cb88f498",
+            "declared_sha256": "6375a07f3ee7c765bfad33bbf05fd0c263dc4a6ffbd99c69a74ed5db471462db"
+          },
+          "translate_feedback_b002_review": {
+            "request_sha256": "c19955ac988353c47f018b28da63f5f2521659b52df4a10c326abb72fdb6eb3e",
+            "first_block_sha256": "95feafdc12451bec946fb1d6727a7f562364ac6ae5bc148b9eaf1ba0b0507e5b",
+            "declared_sha256": "4f9ca41584e649db1717c647e6d21b1aa181b901583db81717d09eef1b5f878c"
+          },
+          "translate_feedback_b002_final": {
+            "request_sha256": "f5cc7460335b7ff49326ac454c607d28ce9088866ecd98c29e8df644f38cf37f",
+            "first_block_sha256": "074b78b910a0047ce3af25a0a309a0b573938ceda89d9846ea4603a9d1e4583d",
+            "declared_sha256": "bee963f9683eafc4f4fe26d71932eed481d93345e563329b0615b1a7c8c3fa6f"
+          },
+          "translate_revise_b001_author": {
+            "request_sha256": "f79edd3c6aa200e46846026c204026cc9983d2b3498156e0361866dd022106ba",
+            "first_block_sha256": "d206469d2539a13b3120d71fade129d9dcf5880afb28a33901928dba176a9808",
+            "declared_sha256": "98db6c6de88de6cb9661878f14f2f71cd03497bda1a9b2a8a4e9326721f877a3"
+          },
+          "translate_revise_b001_review": {
+            "request_sha256": "ac9e35c7eec8d948ddc288ad6c03b43ab10f7843c7d195448c6273ed0aa49776",
+            "first_block_sha256": "9c077c65a44e1545c939e45b9e7f94ff4d04014d9468abbfa2366ce54a510dee",
+            "declared_sha256": "302d9a09cbef2bc52fb89c70d0d3ed96ae418e564769a2f6981546518e79e6ef"
+          },
+          "translate_revise_b001_final": {
+            "request_sha256": "50079abf8eeeb8aa5ac64b1354a31cb9756714e6eca38a4da6ef708d9702a867",
+            "first_block_sha256": "cecf6f768d259c28f001e550422b7c6f9e3b0390a4f1e3fe4423b9692072d3db",
+            "declared_sha256": "414932fb8d563f043747cae4a535326a0663f5f515ab65833e83d47afea1d142"
+          }
+        },
+        "outputs": {
+          "translate_teaching_b001_author": "10b1beac2dc78143f4bf231826cf16906630e179e7b77a220dddfc7b7d5b8124",
+          "translate_teaching_b001_review": "86f627136cd4c8d44b891b8d946a0397316b16341a988aac58d42a270ef74b61",
+          "translate_teaching_b001_final": "0c46f13249a173b3c679e63f6ef354d0ab144316aee02ed22400f154b9371191",
+          "translate_checkin_b001_author": "f9c38ebd0d198ca35e2c0d86569bb9f3a6a091bae03d7464fd9aa1973b5a8491",
+          "translate_checkin_b001_review": "300478a80f791a347659c086d05e276410e6cd09d40098e2c159f68751111168",
+          "translate_checkin_b001_final": "7d9007100e2e002e9338d23e1d6afe7e512465849424a66af7b77fae4bd41716",
+          "translate_practice_b001_author": "39a88119491d83b89166c25fd3164c8169e293f5afb66731bf1199b6879cd427",
+          "translate_practice_b001_review": "7a817eb316832d7717b62ac0519827ade700b3089559119d6182e037a344a783",
+          "translate_practice_b001_final": "3040d2e443a5bd4131852ef29c5f80a4896cd2f53a56346fc61dae42a4b6f315",
+          "translate_feedback_b001_author": "89eae12aaeb1aea6d2aee31da598e22ef5271ea75191e58044d7395d564eb80a",
+          "translate_feedback_b001_review": "d36c35dbc076202ecbeeb40ac935693e81b4cc45e05ba7834bdbb0d9726e8fc3",
+          "translate_feedback_b001_final": "d3139c81034edcef914db660e577dc576d99a8bb2c39eb59729c80af54680ab5",
+          "translate_feedback_b002_author": "98a2b73308ca59d9c2c0e33f7985cd1cc332393c9b0f965a1f23a1e77cf5260d",
+          "translate_feedback_b002_review": "0c235de0e52a60cce85089f03100f8ed8347ebcd430ced69d7b685b4f335174c",
+          "translate_feedback_b002_final": "6309ff615d3eba788c25ebf35c7cbe0c9bc67e11788921e7638c0daa5b487331",
+          "translate_revise_b001_author": "04b11164d9ffae698a2c159f1e9bfbd7c17f778de097bc446a4bf090ae069be8",
+          "translate_revise_b001_review": "fc94e5d2e84e30e0fc05badc8ed0eeaf397667cfeef5c3eba980c8534db711bb",
+          "translate_revise_b001_final": "80d0ccbeb2bc07580fc629b479f4921eca7a566ed4187f5554f9b33b617ea92f"
+        },
+        "files": {
+          "views": {
+            "batches.json": "6eca25128c86cd3c0edc54b52c89c409e4dbc9f47e0961b4922d2ddd455a5e7b",
+            "interleaved-index-map.json": "5d36e88a271e8cbe9a4f371435cae9e53ed925a749bb0c2c5aa858a3930fc15c",
+            "projections.json": "d2321322d1e1f2aec309a85b269c69027fa111d27d69614606a22a756ae2a7f2",
+            "reference-identity.json": "73917bd3314dd4495c47195033d35b9014958ed0a7c65cffe053ad44d3ce981a",
+            "source-descriptors.json": "1d943efcab38b9adabcc511525f1a3ecbc80618d81964eb3a1fa7beaeb796e56"
+          },
+          "artifacts": {
+            "deck_hi.json": "795af9013af39eab55f002899a8681dc340501a69441e5dfb731f97ce6845b16",
+            "practice_hi.json": "1984b4d60d0dc2f8d5e8b862373ae6b2768f6222ced515d61683e31607b2735d",
+            "revise_hi.json": "f47fd693c1cbf0853a2398b440816fd2ff6ce73a32efad930fe48334380410f1",
+            "translate_checkin_b001_final.json": "92a1f540b9b0dd6b913639aa0166f28d61099937e6ff60d190d616267a6c8d87",
+            "translate_feedback_b001_final.json": "f8d3ae8766cb975b010ea62cf17a37bd43821d3f750e7e9ee809545e9f34b3b0",
+            "translate_feedback_b002_final.json": "8a69a4be60d61bc9f157ff5377187fe04d7caa7462ad71a7f1af6b5808062d89",
+            "translate_practice_b001_final.json": "6232a9e01b49dc6e0668e81351dbc9c8958e66b7d08e041c9b0e7551e5ddc44a",
+            "translate_revise_b001_final.json": "8b43c270ec0367624f74fdd437a8b0d0300c2fee7c33f38294d64774dd8426d7",
+            "translate_teaching_b001_final.json": "0fb2633a00214f57d5b691c89f16781684c5d4911b2dca8b226d75ad5ddd3df0"
+          },
+          "diagnostics": {
+            "translate_checkin_b001_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_feedback_b001_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_feedback_b002_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_practice_b001_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_revise_b001_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_teaching_b001_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7"
+          }
+        }
+      },
+      "2": {
+        "requests": {
+          "translate_teaching_b001_author": {
+            "request_sha256": "0b41888dc2034fbfc0c488e588afb6623b8d4873c2759d7bf3700fcfcd3b95bb",
+            "first_block_sha256": "510fe2a855b31d294c95846afbc7baf336b3c2fb653257632a4797e2a1de4209",
+            "declared_sha256": "3a449a45d9255a88ef3e6c08bb29ab44fe2d5af35769f95bb18f488523c39788"
+          },
+          "translate_teaching_b001_review": {
+            "request_sha256": "e3d7c969c0b0d8494379b14506067c5c1f29c6076d90c2a22125db3f2c24091d",
+            "first_block_sha256": "fc722ee4c0124e5004cc23195727d6bc1a4b9356bba1520c6f0a41270dbb4299",
+            "declared_sha256": "2091b9c09ac35efc05dc4b1f9b80248434c0eff9919b2f1f5567453ea7bb1521"
+          },
+          "translate_teaching_b001_final": {
+            "request_sha256": "9e1484aa65a24f39ec9cd136043e9f6311ca60f3fcb7561dea2f428ec8354019",
+            "first_block_sha256": "e04997033b05d0aa5703c48a80c8ad881690291624aabb1afce8a2adc3e50624",
+            "declared_sha256": "f74fa4b69f0c128f43a6a7aaf3655537b03c0af1806b47313e805287a429c3e9"
+          },
+          "translate_teaching_b002_author": {
+            "request_sha256": "e1ba47023cae1e314f144edc84cda394b406762c9ad623f569347e3407c83596",
+            "first_block_sha256": "fb6796a5b85d995d9c80f003cce245cdcf6594fb9152697f8c3b000513c4ca39",
+            "declared_sha256": "82f485e169aa97a74fa18e9d8f8a3751b0102d77f4bcfd9e5799d1ce5cdf6e02"
+          },
+          "translate_teaching_b002_review": {
+            "request_sha256": "43e483501e8b65ff829f988f4df5e39391ecd9820b34dab25ceaa123afdf3fb9",
+            "first_block_sha256": "3ef49610bd20245eee7827402aef69a030bf9d24c534b9ec9b31fef2065e0f19",
+            "declared_sha256": "50de93e2e642ce8e04c5f62b8e0f6efac277471cc6c94e168c3507ebd76a026a"
+          },
+          "translate_teaching_b002_final": {
+            "request_sha256": "5cedaeb65ed6d89440b24bf97bfc598c792d2693c50ab66800b1b5a9f7dbab47",
+            "first_block_sha256": "3cf076aed258ef84a822a3dd5e4da624a9c09875ec10f8d16f674f15ce2c99c3",
+            "declared_sha256": "f51b2adf518d858e78c7cba569fdda76257a45ef4d039791aa6cf720fc968929"
+          },
+          "translate_teaching_b003_author": {
+            "request_sha256": "93d698ab6f6b244cbdb5b9a08a1ff65fad9f9d184bff22ac05f5a159c2eca188",
+            "first_block_sha256": "2ba28173a531d2d0625dab5ead573a2aa42f8e4f4aa8e2fbef3cd2db65e0f5b8",
+            "declared_sha256": "ead870c1505aee304af2b0048b5d217c7d5856a75e9176e0c3496b81a1226d07"
+          },
+          "translate_teaching_b003_review": {
+            "request_sha256": "48f883e2a05ff0b6dc9304d1e8753959694111c9f82564a2a13705ff91fa004f",
+            "first_block_sha256": "1dfd87f4447d64f64294a872026495036ae8b12893b0393eb65af6dcd8ac8dc6",
+            "declared_sha256": "db3ff842a319433ed5f3506bd39b084576090886238f381029277a32316df89d"
+          },
+          "translate_teaching_b003_final": {
+            "request_sha256": "a53f1bb3d626e44d5dc0d91465c7778efd1c8de4560ba147ef9a3e68b3a8d051",
+            "first_block_sha256": "11bca86f0e616f5462b111530385a09591511705167355b65dd526621a58dac2",
+            "declared_sha256": "2a788d202c8c81ed7c3d00d07e601af36073c980e589a92295fe018779f9f110"
+          },
+          "translate_teaching_b004_author": {
+            "request_sha256": "00d06ef25484a174ab0e09d25cbf3aaa288256c42da0e93f86b7a896db65f11e",
+            "first_block_sha256": "5d43d0d610289b807445102a832975149dca2daccde7caea3e0d3ae8faeb59ab",
+            "declared_sha256": "526ac2b00785d7951da2a77a195bee729cc7e84eb628a41e59462b4cd282dbf4"
+          },
+          "translate_teaching_b004_review": {
+            "request_sha256": "5e3354d27aa962b1eeee460777bd8788f6147df0a39e4aac37e06dd0e4022100",
+            "first_block_sha256": "db9bed74bc86b995f0088415bb7d774293b74ccc34538e125e2530827a3fa955",
+            "declared_sha256": "2f405fc50ca057dcaeb78ab7aaeee88d10007c6ed25e615e7c86aa29d1c76742"
+          },
+          "translate_teaching_b004_final": {
+            "request_sha256": "1eee8d364041b8acf982adced530b88f6fe5be0f35cc11bd361e91a52f64ac11",
+            "first_block_sha256": "81e70b4ecd76f40034c116ce0e88b970620b57d2818c0c4852d57dc7611a1b2d",
+            "declared_sha256": "fdc02a3191ec59e56485eb40d2ce06f105118db17f17d88be13b37c4c1492ead"
+          },
+          "translate_teaching_b005_author": {
+            "request_sha256": "590bfd460f2570567f99b534883440df0b701873ef740937d3021696de2423f7",
+            "first_block_sha256": "7754893ac43e6c21b3ee55039b40084e0896b4d0864ad634559e4a3c51805e41",
+            "declared_sha256": "6f1775a0d5efb454fcf3a6cbc3c05832e16fa6ca5d19594687845eadb0daed5f"
+          },
+          "translate_teaching_b005_review": {
+            "request_sha256": "bdb65b38d3fd9c6ec44d4a4ac7a945d57e42c4496cc00fc308d6c2e097fc56e1",
+            "first_block_sha256": "c16a0e2d443a46ff3ee351cfbbe23ab43ca2b0f82deeda781df017fccb757652",
+            "declared_sha256": "a8449be6c47c5dc97104cb9ecc9ccad3e4cef42e13abe0e8660edeb0eed4f4f4"
+          },
+          "translate_teaching_b005_final": {
+            "request_sha256": "3c25535daf5eab8d9579007a5e13893d39f46b15c29dd267869e64ed5687f68a",
+            "first_block_sha256": "25e02f99463142f61e0b96a53177cfba45bcc7bfba2c3c4ab9965bd45c359682",
+            "declared_sha256": "d9a553e0ef79a6c91eb45083d4fb485d8afaac1fb4eef0c3f414cc39377e677e"
+          },
+          "translate_teaching_b006_author": {
+            "request_sha256": "dca9c67618ad7b6adcf11ee1bd752b7f60bc1bc73f682ab71cca6ffc3c215f53",
+            "first_block_sha256": "96d7906994a9685a2209da1d53b22194dc79be6e5d79d994f92521cca248060a",
+            "declared_sha256": "7b3cc4c409a3db6c20d2a74e6c4b77f6520fc062da003772d869120037d865a3"
+          },
+          "translate_teaching_b006_review": {
+            "request_sha256": "7ca4815ff5ff33ffcd22c9c54ddab5a44458051c67ad52149683b122889d9c91",
+            "first_block_sha256": "433aca3bb7f06398df22e4d7ab5a86f84238e1efca7ae886714947f6a645c313",
+            "declared_sha256": "95ace25f5bd01fe328805f8b12940329dec60592dd60130430e7c455bdacb1ee"
+          },
+          "translate_teaching_b006_final": {
+            "request_sha256": "252a5ebe7447e829fb351d901fd9b80934279ef8939c9ff1357e567305c3f64f",
+            "first_block_sha256": "c80424344e38f323a82c28c4c57a77b087af51fbcfca48e07c9079f10e27de32",
+            "declared_sha256": "2f46af5939e0a2e6f967eebabb8edd6454a1e5443dc7b074553947776184cf13"
+          },
+          "translate_checkin_b001_author": {
+            "request_sha256": "49f84c6f2f5270ed9757c2b6b7b0f16ff9c0cb4a2de008e45a901bb17d373b82",
+            "first_block_sha256": "284a5ed46d521184ec178bf47fa3fe723914ae13741086a3d84efb9aa49b8131",
+            "declared_sha256": "2dbca228d55c65b03f27d0415d729d4ff160a9a7e19faa8f8a4b5869c82754de"
+          },
+          "translate_checkin_b001_review": {
+            "request_sha256": "18fdb990a9724f7d7d7ac2ac3d64f1ae5f450f3bdd334a02e6f7b044660d85f8",
+            "first_block_sha256": "e5078b1eb5a9fd607f30cbf295458796c3f8a65f111c401b8dde293ed3906494",
+            "declared_sha256": "58e748e6f3fd7aeb04a6a9c49eb2045af214d6475037bb94724a0c196f1e619f"
+          },
+          "translate_checkin_b001_final": {
+            "request_sha256": "6d6291ce36ff44da018ad59a4b5f42e8c435e1942861268cf3819520e855a537",
+            "first_block_sha256": "4336f68d507893190d81a470d6cda04d3439782b48bc1ab12ea6ebabca439a27",
+            "declared_sha256": "61dc1f31e0939061f8dc2810bd4adff95b05020d2dc75811a0226b7d5d77fa91"
+          },
+          "translate_checkin_b002_author": {
+            "request_sha256": "1150ef4820efbcc52fc3beadb19bb6f5d71286554b097705c93bdfea44eaa021",
+            "first_block_sha256": "d7f842e951e33707463a92fc440037048501a9283f9e24542a6fb08fc4f0b093",
+            "declared_sha256": "7dcaff5f8b4aeef38c4540020e8d6f2549929678a93839e4f19be47c64cfcede"
+          },
+          "translate_checkin_b002_review": {
+            "request_sha256": "1064b3b8bda7be7ce4ab46cc2096f553e18c5a7a8dc089663417592f04fcb71b",
+            "first_block_sha256": "f8f7f2fc1245679e0731d489afef54669ea2741bb849011fdabef2050648a046",
+            "declared_sha256": "a115142188042720bb8e02b337022c37bb72e63a31156f6bac04d8378f49422d"
+          },
+          "translate_checkin_b002_final": {
+            "request_sha256": "cc4f9d3ee7c7111a4d45a2c583327fa25c6de19a7bb5cbc25259d7218d2990b4",
+            "first_block_sha256": "66b765b77c03f8bdf7dc5686a486a3c8d69f2523c10ce16599aa763dfbae045a",
+            "declared_sha256": "fabc383aea8d70bd3e120bc57782ed65c46adce473780e1f87b40316f642b360"
+          },
+          "translate_checkin_b003_author": {
+            "request_sha256": "5f942c815804f70a4789b9f093784b9542c30025e9fa62b2064a2f1a0820a636",
+            "first_block_sha256": "61c11e0f8e039df9e8e46be7d59a28da3096a22678e582c6b40b6d9e205de9f3",
+            "declared_sha256": "cd26dd817ee774b3faa35919987342d2516a72e9e784dba9e93ab78424557f3b"
+          },
+          "translate_checkin_b003_review": {
+            "request_sha256": "2683e7bc9bea5f0fa1a9ab983246938980dffa6aff0fd13dd40e673e33b899f2",
+            "first_block_sha256": "9a7c22d13e59100084b47bcd332e5405dcccec83525710e90ad1a0163b05bab3",
+            "declared_sha256": "f503c4eebe71e9da90bc18c2e9b94f3ee06bbe96e655e4c2c61bf9547daf5dfb"
+          },
+          "translate_checkin_b003_final": {
+            "request_sha256": "120a04569e67ab7469beb2dbf21f1b9dd65bcdb4e15665ae2105eb7147740226",
+            "first_block_sha256": "cdcce97aa53bb140ad2067b063cd8c8cfed8c1c5d63d52b983c0bc6cf2742e2e",
+            "declared_sha256": "fc1e5083cda72551d7e1e656e0600609d5caae9b6328be04ad22c7d46a65962b"
+          },
+          "translate_practice_b001_author": {
+            "request_sha256": "d65f0103abce340f82bfbab8d4d3ffab9bb14b8a957f25bbe06573829340aa1f",
+            "first_block_sha256": "ed1777ab8a1af131a7bc7c33f675de8b062b379f5550ca5fec5b53e83d12067a",
+            "declared_sha256": "40f83bd4d8e767636f209ae893fa976eb3166381be96fab2b43058090b33ed4e"
+          },
+          "translate_practice_b001_review": {
+            "request_sha256": "f90385b900f53ee40f75590d60732761a52bee15b4332995efa0dad341896695",
+            "first_block_sha256": "7806123205c334ba8a60589ca86be9f63c15ea08642598d739f6971db6d98be0",
+            "declared_sha256": "032ee84571d561255cdd0126d8af34586d273871452e38100f8a3697013806e1"
+          },
+          "translate_practice_b001_final": {
+            "request_sha256": "6ee8fbd507b07e4d7cd6c5c8a13b9215ffc81253045cca3261eba40b1b13531b",
+            "first_block_sha256": "2c86d80b489ee97784fb4af454a1214f7b4e08f7cbbdf9e733d8fa724dc50309",
+            "declared_sha256": "0944acad5e29462315a10ff909ed7800e749e7e7eb36e29edbcde59dbea232aa"
+          },
+          "translate_practice_b002_author": {
+            "request_sha256": "47d6bb3278fce2c0ff4042fd7a57d3661047b600bd41093d8dce224f94a2a3cb",
+            "first_block_sha256": "39ceea9695be77576c768e7092a9bab58e1eef559b75033bbb2b96f625db3ff0",
+            "declared_sha256": "1fdcbbbaa9df93795477570b677ca7eae29243119692a0b48296f967a1d1d1f8"
+          },
+          "translate_practice_b002_review": {
+            "request_sha256": "77e407a2ba588efe86b62002e51ea27f7033aa589ec1e9d0cffbf87cddc2a1ab",
+            "first_block_sha256": "adbdc6975c1555714a3343869c332f654e814cb4f2c61778f02efd35fadc53b5",
+            "declared_sha256": "cf3280f7873c4ec3478c20c4a085cb5ca08043583ca53e51a8b53a8af41d7bdc"
+          },
+          "translate_practice_b002_final": {
+            "request_sha256": "a4a5b869be2fc806143bee6196cd411027cbbb3da9917199c9538bef2a982352",
+            "first_block_sha256": "389ef07131f0c5265387f96defa5751a70244c23209723737f1951bd616094fb",
+            "declared_sha256": "8ff2e9084aa0b296b82d060873055947a36253c42ee1d405831f3ffc4fefaa08"
+          },
+          "translate_practice_b003_author": {
+            "request_sha256": "0c79c81a3311560230da8b44b498d1f8eb24322694a33e315e45f46fe0a1646b",
+            "first_block_sha256": "75a3aa4fb313ec1a4ab203f5943339019b64094e88a4983a212f1be3f3f3b1e8",
+            "declared_sha256": "bfb62fedc19742e9399033556a4fe6633030c0c6baa88cf398260190f7e3fc1e"
+          },
+          "translate_practice_b003_review": {
+            "request_sha256": "d323474050db80c1503ec82d61fc5a4465c23396f86a86cd0b9a2558f7f7aee4",
+            "first_block_sha256": "6524f7dd9b17e4667281b665b47bd5adf2e040d0a2215f3a99ac18fc2078039d",
+            "declared_sha256": "93b5d630b5542556ed5ee2788c719b99108557b5b7585ed0954ee756993406d8"
+          },
+          "translate_practice_b003_final": {
+            "request_sha256": "ee66d8e40eb28ed75f7be2679fe75a15042efeda471e77a5d714dd49ab156589",
+            "first_block_sha256": "88b7f795977ad4c34f9485ab93dd3d842b9db3b8be5a0fff120f287db7730d1a",
+            "declared_sha256": "cd7919bf1c2b5ac385af1b0f0ea8768d0703e28a2cecc8bc800bb38a95d0758e"
+          },
+          "translate_practice_b004_author": {
+            "request_sha256": "505acf313351f022e091c901bdda08af7d1a83e747f6fcc59bcb7fb078efc8e7",
+            "first_block_sha256": "66d3ae2460803ab9a05072e821a3497ec340d38c95084583681d32e0075f0547",
+            "declared_sha256": "a490fa953289db4400bb10f6c06c7ac06b6654b1c7eece89d73917dffbd5ec4f"
+          },
+          "translate_practice_b004_review": {
+            "request_sha256": "23b2fdf042b54dbe72fa499fac4760e8942f37dde4d4cbc6cf12c83e07168191",
+            "first_block_sha256": "a3956cf8a997f9b490cb097e7b668a25b4fa8160ad1ae2ec718b8d513c4478c8",
+            "declared_sha256": "91f487cf0d27249c0cb6273a960b236c04157fe9dc69304d77a214c2c9ad43ea"
+          },
+          "translate_practice_b004_final": {
+            "request_sha256": "b5d16a35a0a9d6175f801a36cb7a5dd40e5ff0c53f11e3bb14ea644bcf1d35c1",
+            "first_block_sha256": "64ec05c5b79faa7deb5f79c17d528f03f34057db836d424dfc2a7dd617f4189d",
+            "declared_sha256": "4424c0ab69d028c8e3b8dbab309380b153172af273c8329089284c90bb4809bf"
+          },
+          "translate_feedback_b001_author": {
+            "request_sha256": "e08ff623b48cb92ecd95b174f8657ebb0d424be59e6fdd560fe816078559fcc8",
+            "first_block_sha256": "94c8ceafe827dad48096258119b2225c6723bb9f4bf42ab0551047b616d854b9",
+            "declared_sha256": "edd0e2e1e571c23b48f9ca0a81935bd1982621953c043d04b86bf297e52cb521"
+          },
+          "translate_feedback_b001_review": {
+            "request_sha256": "3b4933838ffe575fb98560e4ad223fac8f79b35d7cbc5f15aacb81c1af5fdcfe",
+            "first_block_sha256": "dd73e6c9b4318e3197c11c585e9094600d2ec2ea738ca382486d1fc4235e784f",
+            "declared_sha256": "23aba35c727b2100c5512901a1d77b660f27ce69a88df0fbc0e2683c2585cca3"
+          },
+          "translate_feedback_b001_final": {
+            "request_sha256": "75b5b20ec37c4c0f2ccfe3010ef3978e9cdec0834bfa222ea8a959f541d37916",
+            "first_block_sha256": "0e5832c717d4013d745fc607411861905919d69c46ffc60511bba27525d93a47",
+            "declared_sha256": "2156e31ccfa86fea1f554532ee161582f677ab078df3cbba9b840ccbe25db5c3"
+          },
+          "translate_feedback_b002_author": {
+            "request_sha256": "67131d3c2da39c6113178329abfe96d11ae956d1deae93e65524ab20d5836f1f",
+            "first_block_sha256": "05046d9a3be55668e64f466b7222cf610c5e26481dbdc82e1e95715c753f433f",
+            "declared_sha256": "7d41c2de9ab7b7b7405d6382f33dc31efef625a2e983e480f17ed80b4d2f5358"
+          },
+          "translate_feedback_b002_review": {
+            "request_sha256": "50999cdc7cfa4b725bfeef065921055b70d19b27163de02bea17686b0f3194a5",
+            "first_block_sha256": "50e070ea08fea7e1bb51fe9eef74f854a0412cccf255bd4bdbe02c0438752b0e",
+            "declared_sha256": "c2ba4d381a2a57ba08d60966ebc44154c878bd43099a64d80685d20dc0de6804"
+          },
+          "translate_feedback_b002_final": {
+            "request_sha256": "393e42b3d22d6cc61a0252852a6f291de882c3ddc1af069a0ee7f1ad38104b79",
+            "first_block_sha256": "5dc49339eea2e1285bf01848b87490bf67d551086272c9cb9c28672280b81839",
+            "declared_sha256": "2920fcd92face626f3f6b330afa80ab9ed4707bb00f31c49a681d2e81ef8708e"
+          },
+          "translate_feedback_b003_author": {
+            "request_sha256": "1c9b7b44ebf86115a0e1e35f474c78c3d742f8abebe531f391abd41a6d187ab4",
+            "first_block_sha256": "966476035dd6f60de6cef169057fb8555633ab8bf402326da2e6ba9ea39d0279",
+            "declared_sha256": "c65a31a200f03cf1603a50d9356fa3be2c802ce6197c7a122481f3ccccb5244f"
+          },
+          "translate_feedback_b003_review": {
+            "request_sha256": "c0090c3908572ef35a9fee7a1561df55783b26701e517816fbb34d7e8f967d6b",
+            "first_block_sha256": "ec345cc04dc42e95fd09758e549ddb4a675bf588311a2acfdfb920df3677b10e",
+            "declared_sha256": "4c3330790364d58ff6a507d4a9ffbc25daa8b3338acbef6f7d62a9b4bb19377d"
+          },
+          "translate_feedback_b003_final": {
+            "request_sha256": "85a1ca396b992020d51e364bc06466e13ab18fd0e2cb4fae31e66903454ef4f6",
+            "first_block_sha256": "d460a012a430867b1cf2a70bfa80dac92bb5983011dd04a00e2b9c8c67a01db1",
+            "declared_sha256": "5482dd313f91ceef9997b838b074b8ecf807cdb2a7f548107e6632f8f08191db"
+          },
+          "translate_feedback_b004_author": {
+            "request_sha256": "128ac97bf72523bddbdab24d1ca41d2606dea15f5571f12f0e3714cbc13bca20",
+            "first_block_sha256": "d95047a04ae8a8509f28890bdbb89b8b9fa30cfcaa6c5db4e7391f000cda32a9",
+            "declared_sha256": "20969ac3c4b2077814ca16649fcfb5b4f06a9e15a7f7bc8badfcbeacc08ae519"
+          },
+          "translate_feedback_b004_review": {
+            "request_sha256": "e917bdd490cd5a4e5ebfec49ccee160422c25a57767f86b64eb09da533f7da2d",
+            "first_block_sha256": "8e2410e4237784b9c698b19adfa89569df3a6003f324c2a5f7ad20fd9a9dfca2",
+            "declared_sha256": "681048be7a872304bf258fd2f99711a5f41cf5dc8edbe222464caa87512ce3b1"
+          },
+          "translate_feedback_b004_final": {
+            "request_sha256": "7f64e66a715e167e34b365b2a4f6bbe4e6ece9c98fab231d8e8382ef85dad496",
+            "first_block_sha256": "43556ced8e442da2014ae4b0f8696543cdd846a47fb914f2c6067ed47f61e279",
+            "declared_sha256": "66811491580d6ac000383d111181c05bdf49a27ace7d16aa6b560defcfeded99"
+          },
+          "translate_feedback_b005_author": {
+            "request_sha256": "5fdcde6b1c5cd34cd00a07c78296293a49040deccdc8aad1ee24f07744cd915a",
+            "first_block_sha256": "801b914fe137b56c9c2b7e098dac05663fdd14dacfc4894e4e4e91af24c55f0c",
+            "declared_sha256": "6fcea0bb26ed7d2569ec668599688eca3f1067bf41653029187af43dacd132c5"
+          },
+          "translate_feedback_b005_review": {
+            "request_sha256": "fc98f52df230c8771dce67a8be8cb05a7f42454cb0db1c5ca0cbd9f2fdcb41ca",
+            "first_block_sha256": "8139f432ee42c26c2e9ee8d8987ef1d21d9fb591c78eef380e8133ac27d6fd87",
+            "declared_sha256": "c460bbfa5df590ab17a2238d1ceb5cac7b360e309da4d5c514fb8ea245036286"
+          },
+          "translate_feedback_b005_final": {
+            "request_sha256": "afa7969e6d75e938cddae42da8cb483e53a784e9df28bd6f6ba4ceba4e9e81bb",
+            "first_block_sha256": "9e0fd585a409c0ea4b6c7c6806c55faad84ba5f1639c5799bce9acc9d347c242",
+            "declared_sha256": "3a6719cf944252a35999a2ff3e104acffec4634f12ee08c3f13b54ae53daaace"
+          },
+          "translate_feedback_b006_author": {
+            "request_sha256": "f5521f6c5ec30a53c7aea6ece64d9b598920f05d4a08544d7d66ad5fd952813b",
+            "first_block_sha256": "e6b8bca3e17216d59aaaa1fd3893dcdcd7ad62970186d2257fe10374afabccb1",
+            "declared_sha256": "7444bf1c64be905e81d236589ee86cbccc397d1c62eb4a55ae770f0511ee993c"
+          },
+          "translate_feedback_b006_review": {
+            "request_sha256": "8a63a22c089ec7b7d1290884c754f489f0b109d84046a8a66637a6a69a6ff44d",
+            "first_block_sha256": "c0f255b59ac707344edf4b5ba59b77d753e6d7bc320609ed04344b55696ffc3c",
+            "declared_sha256": "00f7dd2030cbaaa8188854dc3f0f4f15621435233eae00d60b1c556861ffff69"
+          },
+          "translate_feedback_b006_final": {
+            "request_sha256": "7424661a7ce513841b0930d95a491caf8d04cab9e5ca784c4f1803aed75a7ce8",
+            "first_block_sha256": "dbc1de6c4542fda5d1719d9b8a14083f355f26f9336fe36bc0a6ab624af8045e",
+            "declared_sha256": "125119c1c03259fcb501223fec6bb3adacc8f3da7415ba053fe6149a4ff5b075"
+          },
+          "translate_feedback_b007_author": {
+            "request_sha256": "95890e88513a04aca7e2577b48bfe8515df42fc771089cd92395bd59fe122bcb",
+            "first_block_sha256": "033c2c7155d7b6e90adf3627cfc0515da8daff25e91448def2f49122cb88f498",
+            "declared_sha256": "6375a07f3ee7c765bfad33bbf05fd0c263dc4a6ffbd99c69a74ed5db471462db"
+          },
+          "translate_feedback_b007_review": {
+            "request_sha256": "c19955ac988353c47f018b28da63f5f2521659b52df4a10c326abb72fdb6eb3e",
+            "first_block_sha256": "95feafdc12451bec946fb1d6727a7f562364ac6ae5bc148b9eaf1ba0b0507e5b",
+            "declared_sha256": "4f9ca41584e649db1717c647e6d21b1aa181b901583db81717d09eef1b5f878c"
+          },
+          "translate_feedback_b007_final": {
+            "request_sha256": "f5cc7460335b7ff49326ac454c607d28ce9088866ecd98c29e8df644f38cf37f",
+            "first_block_sha256": "074b78b910a0047ce3af25a0a309a0b573938ceda89d9846ea4603a9d1e4583d",
+            "declared_sha256": "bee963f9683eafc4f4fe26d71932eed481d93345e563329b0615b1a7c8c3fa6f"
+          },
+          "translate_revise_b001_author": {
+            "request_sha256": "f79edd3c6aa200e46846026c204026cc9983d2b3498156e0361866dd022106ba",
+            "first_block_sha256": "d206469d2539a13b3120d71fade129d9dcf5880afb28a33901928dba176a9808",
+            "declared_sha256": "98db6c6de88de6cb9661878f14f2f71cd03497bda1a9b2a8a4e9326721f877a3"
+          },
+          "translate_revise_b001_review": {
+            "request_sha256": "ac9e35c7eec8d948ddc288ad6c03b43ab10f7843c7d195448c6273ed0aa49776",
+            "first_block_sha256": "9c077c65a44e1545c939e45b9e7f94ff4d04014d9468abbfa2366ce54a510dee",
+            "declared_sha256": "302d9a09cbef2bc52fb89c70d0d3ed96ae418e564769a2f6981546518e79e6ef"
+          },
+          "translate_revise_b001_final": {
+            "request_sha256": "50079abf8eeeb8aa5ac64b1354a31cb9756714e6eca38a4da6ef708d9702a867",
+            "first_block_sha256": "cecf6f768d259c28f001e550422b7c6f9e3b0390a4f1e3fe4423b9692072d3db",
+            "declared_sha256": "414932fb8d563f043747cae4a535326a0663f5f515ab65833e83d47afea1d142"
+          }
+        },
+        "outputs": {
+          "translate_teaching_b001_author": "afd48680cd08b4e618041c16907091382f4a56ee9c799f63a57bcc711f828908",
+          "translate_teaching_b001_review": "8a62735d00cd873e7cdfa9b7b322cdce72caea360c08daffeef65cfab4660a81",
+          "translate_teaching_b001_final": "cfd23977dc5a2e6d76797f9be985cefc45073919e0be5cbd6b04b2aaef0a9df1",
+          "translate_teaching_b002_author": "420722d22ed846ee8439301133b6dc39e338e56cd9bbd1f549b512865651a73c",
+          "translate_teaching_b002_review": "5070117ffdfabc9c4ec6f381d3b7f79fb6ad9cd4b39772ed76cbf4d160f44b23",
+          "translate_teaching_b002_final": "7b12d65d538b0e1c4a3011a0e94d78ea2d1b0d7bce5afb9dd60f842a2c8dcbeb",
+          "translate_teaching_b003_author": "43e56aea64fecd66251ff7a4584379212aa92a81ba44728a3914f58b46feadb1",
+          "translate_teaching_b003_review": "4d2c3a6c8892d15d86e5d03b05bb46477829d1fc4f369a4aecb76a55e74485fa",
+          "translate_teaching_b003_final": "b86bf890b39616eedf93396801f121ff805e8072dbacf6e233ec6e453620e92c",
+          "translate_teaching_b004_author": "c60b68e18c8b5c27033a5bf3ec191435621e905f1e5142d14863dd381564d353",
+          "translate_teaching_b004_review": "0bbc1691b38cd489781687a7268eac7ae02eab5de11f0c0fd893157727b1dbcf",
+          "translate_teaching_b004_final": "3b81aa4994db97ac65c710ec1100fb4517ed42399d34f4e0485e2b3c9b95c282",
+          "translate_teaching_b005_author": "771ba59ae0aca17d6f4be6f33b026ee7aac973cb34bce2129dcfcbac34016dae",
+          "translate_teaching_b005_review": "ab01eaf829b43f7790a0e24808c4ef8ee7c6e8943c3eef1719896b0380afde31",
+          "translate_teaching_b005_final": "15471c02ff65dfe17dae31c766de990f7dd2748db5b1cf1e61a90338d74865dc",
+          "translate_teaching_b006_author": "3627e5ee1b8d74284e078da9eefde4f7ae6287584ff221e3494aca5210392807",
+          "translate_teaching_b006_review": "1a930b2b59353db5903c2319f770163d1d960e08837d4e77206887c2244090a9",
+          "translate_teaching_b006_final": "baa257b256835c5c33d418c246c455d15b353e0dd36a4f7a26bbc920a2b4ef4d",
+          "translate_checkin_b001_author": "7a48c9bee7db7225aed8002ba41c6c117449451a3995df13d0876e5d39897363",
+          "translate_checkin_b001_review": "af4ab0425f04543a6c948b309a208790053b2d77b2974f0a7cb86b625a3d0a75",
+          "translate_checkin_b001_final": "40d4cd56a81d68749d9c56efd327efdb5c55f8761322d35890a6861ead83a008",
+          "translate_checkin_b002_author": "f2ae03fdd45be2792e49bbe5eb4a4365589c236dc50db20177b353687d644d4c",
+          "translate_checkin_b002_review": "8ae9ee988f92eb3a00aa70e8d5f67a6ed0e04af10273c6792d8afe5a9688e795",
+          "translate_checkin_b002_final": "1623557c409e28b37b62594f9ac4bb715170d9c87589d4acfd66cb9120d2a15b",
+          "translate_checkin_b003_author": "7d7c0086e0eccfcb09bd28cd89dfe2ebf5cf24f66c07a4a98bde4795ce3db1c5",
+          "translate_checkin_b003_review": "7b9ac47d5e978c9ea611ceb56a024ca69b4ce96c21830dff4f3df49f27861c88",
+          "translate_checkin_b003_final": "e05f0d422c108c4cc7d0ade665060786b09792701285e8ee773fb914500c5c8e",
+          "translate_practice_b001_author": "31b624ca0cd5441cd024606a99db84152013346af50944e54ff84b9c61dfd728",
+          "translate_practice_b001_review": "17641dfbc524c9cd0eaf63c0ff924e3479aa5dc60a0fb242c8f14a320a9d6c49",
+          "translate_practice_b001_final": "deb9434d63d259822b8c582d727b2560cebed96ad95451164fa96a50f08f63af",
+          "translate_practice_b002_author": "e91f6d562ddb46797cd30fba1b8c766adfee6b8cd42e703ec3b445929df7b1ee",
+          "translate_practice_b002_review": "7ec9b929cc175715b4dca32c098d7bb12a3469e2f5977a5e3db037c2282b9c3f",
+          "translate_practice_b002_final": "af76c47bd64df28b81ece139990743a8d79aa677b7e5b2e992070e58b6b0e75b",
+          "translate_practice_b003_author": "2e7182b4d65896ad65f1553d11f354e55b4aaf370850b5628a9ef0a500443f22",
+          "translate_practice_b003_review": "30ceecb2773278a372bbd47dea0b6e1061752edb269f386d3520c89af84319eb",
+          "translate_practice_b003_final": "b5f1eedc4dce6c38855555ecfc80f85a99153789199e83a0369d7327f0493836",
+          "translate_practice_b004_author": "7e81ac3d22a9f09fc3f7c8d5b70eeb513f560b347aaf6b9fb1012c34248fa1b9",
+          "translate_practice_b004_review": "0c235de0e52a60cce85089f03100f8ed8347ebcd430ced69d7b685b4f335174c",
+          "translate_practice_b004_final": "41b0488670113b967c5b34622b1acd7b0ef9032cc58d32dae3c8ed17b1b7d341",
+          "translate_feedback_b001_author": "c5135847d112b641ffc28952a3ce3d0c58c2260bf50fe4ae161901b34ee6bedf",
+          "translate_feedback_b001_review": "af4ab0425f04543a6c948b309a208790053b2d77b2974f0a7cb86b625a3d0a75",
+          "translate_feedback_b001_final": "25be2ec6e2c00f8422e6a39f69a9793048e3dc503c1b501b28882951c40b70f7",
+          "translate_feedback_b002_author": "1e6da0b76beb500df7494e9d14877a6a720f6edb25afc3344ba781d192e12790",
+          "translate_feedback_b002_review": "8ae9ee988f92eb3a00aa70e8d5f67a6ed0e04af10273c6792d8afe5a9688e795",
+          "translate_feedback_b002_final": "6677af0c0c09a1e3463c530a1baca8e27756d1d6ea103af391555d026f501fbf",
+          "translate_feedback_b003_author": "707e5ae4917b1c9a8cff94037f4f8bcb9bc3db36f87cc39e4a31c9ca9f62f6a4",
+          "translate_feedback_b003_review": "7b9ac47d5e978c9ea611ceb56a024ca69b4ce96c21830dff4f3df49f27861c88",
+          "translate_feedback_b003_final": "346a38b2ea0de2333b6b95ff62fa8f0392c80f021771fafb2b2a169070b4981b",
+          "translate_feedback_b004_author": "59240a183bfa9acffdfbd6bdf3c50e6b1d057945b83c5006d20739a8b555db30",
+          "translate_feedback_b004_review": "17641dfbc524c9cd0eaf63c0ff924e3479aa5dc60a0fb242c8f14a320a9d6c49",
+          "translate_feedback_b004_final": "ade04cdca6f2bbb4542e3a8258272442c2fbb12613dd4d9f4fbe0548a191d829",
+          "translate_feedback_b005_author": "cb0610a04f44be82279ef59973acb48ff4e58dcbb27e8d6ebb66286c8be7b797",
+          "translate_feedback_b005_review": "7ec9b929cc175715b4dca32c098d7bb12a3469e2f5977a5e3db037c2282b9c3f",
+          "translate_feedback_b005_final": "48272bd6e88c29cf97ab284e54395877f002fdcf01c3877d1533414c2d669f72",
+          "translate_feedback_b006_author": "8f63a2e5d63e5d8f2b5e0602c5f376f40b1e5daa0a5a84ac41743460e9852cee",
+          "translate_feedback_b006_review": "30ceecb2773278a372bbd47dea0b6e1061752edb269f386d3520c89af84319eb",
+          "translate_feedback_b006_final": "9783b7dcebb73df4681a070c8a4e2e314cf8787de06fd5134256366c097da5d7",
+          "translate_feedback_b007_author": "98a2b73308ca59d9c2c0e33f7985cd1cc332393c9b0f965a1f23a1e77cf5260d",
+          "translate_feedback_b007_review": "0c235de0e52a60cce85089f03100f8ed8347ebcd430ced69d7b685b4f335174c",
+          "translate_feedback_b007_final": "6309ff615d3eba788c25ebf35c7cbe0c9bc67e11788921e7638c0daa5b487331",
+          "translate_revise_b001_author": "04b11164d9ffae698a2c159f1e9bfbd7c17f778de097bc446a4bf090ae069be8",
+          "translate_revise_b001_review": "fc94e5d2e84e30e0fc05badc8ed0eeaf397667cfeef5c3eba980c8534db711bb",
+          "translate_revise_b001_final": "80d0ccbeb2bc07580fc629b479f4921eca7a566ed4187f5554f9b33b617ea92f"
+        },
+        "files": {
+          "views": {
+            "batches.json": "04f6681b72e181743b7ca9a28ee6b3fdde1bf6d31a2a6725d8014db7c20f45a4",
+            "interleaved-index-map.json": "5d36e88a271e8cbe9a4f371435cae9e53ed925a749bb0c2c5aa858a3930fc15c",
+            "projections.json": "d2321322d1e1f2aec309a85b269c69027fa111d27d69614606a22a756ae2a7f2",
+            "reference-identity.json": "b9b05b61a43ab006e002cd581ad940f582f6a7d29fe1b814fc2d3f5693e7ea6a",
+            "source-descriptors.json": "1d943efcab38b9adabcc511525f1a3ecbc80618d81964eb3a1fa7beaeb796e56"
+          },
+          "artifacts": {
+            "deck_hi.json": "795af9013af39eab55f002899a8681dc340501a69441e5dfb731f97ce6845b16",
+            "practice_hi.json": "1984b4d60d0dc2f8d5e8b862373ae6b2768f6222ced515d61683e31607b2735d",
+            "revise_hi.json": "f47fd693c1cbf0853a2398b440816fd2ff6ce73a32efad930fe48334380410f1",
+            "translate_checkin_b001_final.json": "0c918875a90602a2524bde734eb88d29fbb9bef82c46b1fa072ab6b27534bd68",
+            "translate_checkin_b002_final.json": "d08fa2ed077af283d7f9ea6b53512bfcd997b1a8adadfc26d3a9cca970d3ff17",
+            "translate_checkin_b003_final.json": "717dd5526c311daa698606fc0bd08bfc4260b0be93f3f3d878ed10801ff262e8",
+            "translate_feedback_b001_final.json": "4f8450a8169f9d01e1569f14c2b054e57a38873dfa8fc8d9d2e77fdbc4491151",
+            "translate_feedback_b002_final.json": "eea0a8f7618b74142367f624fce1c55b5e672ce8551470257ebe9dc40f0acfe4",
+            "translate_feedback_b003_final.json": "a1de2ba983b7a4c32ac9e296fbca586a558ee2d5fb56984097c80453fb2687be",
+            "translate_feedback_b004_final.json": "ebdef5a5d7fb1fd109bd59665fb14dde851ff86e34a9cc39c84cd8f00bb046ec",
+            "translate_feedback_b005_final.json": "2df6f3e6b3aa2d8b4fe1be85f63a57f3ffe91d63951ca8232302989e711ef7cc",
+            "translate_feedback_b006_final.json": "218b3afe157c4524943efef156959b27440c33e914f3710044f7dfed85ad0401",
+            "translate_feedback_b007_final.json": "8a69a4be60d61bc9f157ff5377187fe04d7caa7462ad71a7f1af6b5808062d89",
+            "translate_practice_b001_final.json": "ad0d5a81e850b9b8f5d7da02be6e91e493b6c7fab752f93cf99cdcbc49ebadde",
+            "translate_practice_b002_final.json": "6f796d69bef09295906217176fdbbb20a128d9f8a8c025b45e3b48f30c1140c0",
+            "translate_practice_b003_final.json": "6a45c4f470f7bc317cfeda80d7df6ce1d107ea5118cac4f5243f5e81cafea58e",
+            "translate_practice_b004_final.json": "08272949297425b6d6525c9dd65e3a5c2f9f7afdc822eca26756982fc2939dde",
+            "translate_revise_b001_final.json": "8b43c270ec0367624f74fdd437a8b0d0300c2fee7c33f38294d64774dd8426d7",
+            "translate_teaching_b001_final.json": "304d9f211a85612188b8fff57f1bf0cfc67d717aa605bfc3fdff3d6fa61e51cf",
+            "translate_teaching_b002_final.json": "bea2eb63aaf240aac36f70d78b155796f9f490644acdc9faed0689ac8a05a115",
+            "translate_teaching_b003_final.json": "6c3cbcc58780844f4e7401503b0bdf4b5937b63c6b37d141ccbd2f590c7e32c4",
+            "translate_teaching_b004_final.json": "f8b0c391091f473d14f6d60fde3a0dee43f5aabdcca4dc376eadc90aa4d1966b",
+            "translate_teaching_b005_final.json": "681121897cdc3c32e9650f953dbb1fcb6f9990a6e0aa91fb2a735d21c34f156a",
+            "translate_teaching_b006_final.json": "f5ef87639abbbab37819dc2fd92c5d8df2f82d004dd8141f9b38f67ff7fdd8a8"
+          },
+          "diagnostics": {
+            "translate_checkin_b001_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_checkin_b002_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_checkin_b003_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_feedback_b001_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_feedback_b002_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_feedback_b003_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_feedback_b004_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_feedback_b005_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_feedback_b006_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_feedback_b007_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_practice_b001_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_practice_b002_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_practice_b003_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_practice_b004_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_revise_b001_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_teaching_b001_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_teaching_b002_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_teaching_b003_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_teaching_b004_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_teaching_b005_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7",
+            "translate_teaching_b006_author.json": "da548565349a79de05298cec6b6664edfceaef52a14506481283d1233e072bf7"
+          }
+        }
+      }
+    },
+    "outside_request_ast_sha256": "8086cbd4530f422bee37784384c445338aed3b78173e1ebf9f58cb9c0fb59c5e",
+    "prompt_tree_sha256": "25dde46ffb09e7f3c5032cea0d7ea2d6c3389ebb8ffffa94ced424766a914cb3",
+    "other_reference_tree_sha256": "05773dc4b395942931fef75e46eaf610a7fcb8acb59e4614a5085dfbab7e9ac6",
+    "requirements_sha256": "8e4221a16d4720f86978bc905de127277035c2156a8ad9836eff58676d9aecea"
+  }
+}

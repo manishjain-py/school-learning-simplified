@@ -89,8 +89,49 @@ def request(run, role, declared, batch, notes, final):
             contract += ('Make ONE final revision using all supplied verdicts and batch issues. '
                 'Apply or decline feedback with reasons outside artifact. Your fields are final; no later '
                 'quality review, repair, subset salvage or content veto follows. ')
+    if phase == 'review':
+        result_type = ('Return the native unenveloped JSON root with verdicts array of objects containing '
+            'slot (string), pass (boolean) and reason (text), and batch_issues as a text array. '
+            'Do not wrap the review in artifact. Copy the actual supplied string slots verbatim; never replace '
+            'them with numeric placeholders. Assess the complete draft. Empty arrays and negative advisory '
+            'feedback remain valid; do not invent findings. Feedback cannot veto the final author. ')
+    else:
+        result_type = ('Return an object-valued artifact with schema_version 2 and the complete native items batch. '
+            'Every item must copy its supplied slot and opaque source_hash exactly. Return every supplied item in '
+            'source order, including unflagged items; no partial or flagged-only subset. Keep existing audit fields '
+            'outside artifact but inside this same JSON object. ')
+        if phase == 'final':
+            result_type += ('Make one final revision using all supplied verdicts and batch issues. Apply or decline '
+                'feedback with reasons in the existing dispositions outside artifact. Your translated fields are '
+                'authoritative; no later quality review, repair, subset salvage or content veto follows. ')
+    stream_type = {
+        'teaching': 'Translation item fields: title_display and lines:[{display,audio}], one line per source line '
+                    'in source order. Audio fields contain spoken text only.',
+        'checkin': 'Translation item fields: ONLY answer-free question_display and question_audio text, plus options_display '
+                   'and options_audio text arrays. Keep options in exactly the supplied positions/count. For '
+                   'true_false use empty options_display/options_audio arrays and include the statement in the '
+                   'question text. Do not add answer-telling text.',
+        'practice': 'Translation item fields: ONLY answer-free question_display and question_audio text, plus options_display '
+                    'and options_audio text arrays. Keep options in exactly the supplied positions/count. For '
+                    'true_false use empty options_display/options_audio arrays and include the statement in the '
+                    'question text. Do not add answer-telling text.',
+        'feedback': 'Translation item fields: Translate only actually supplied fields. For kind practice, '
+                    'explanation_why becomes explanation_display and correct_answer_line becomes '
+                    'correct_answer_display. Practice entries remain text only. For kind checkin, hint becomes '
+                    'hint_display/hint_audio, success_message becomes success_display/success_audio and '
+                    'reveal_text becomes reveal_display/reveal_audio, each pair only when its source is supplied.',
+        'revise': 'Translation item fields: question:{display,audio}, answer:{display,audio}. '
+                  'Both native faces are supplied; audio fields contain spoken text only.',
+    }[stream]
+    final_contract = ('Final response contract:\nRole: '+role+'. Stream: '+stream+'. Phase: '+phase+'. '+result_type+stream_type+
+        '\nReturn one complete strict JSON object. The first non-whitespace character must be { and the last must be }. '
+        'No response-level preamble or postscript, procedure narration, headings, Markdown fences, extra objects, '
+        'comments, trailing commas or file receipts. Text, Markdown and Unicode inside JSON strings remain valid; '
+        'escape newlines, quotes and backslashes as JSON requires. Put notes only in fields allowed by this '
+        'role\'s existing instructions. Preserve the existing native schema and advisory targets. Return the '
+        'content itself, not a description of producing it.')
     return {'messages': [{'role': 'user', 'content': [{'text': prompt+'\n\nLOCAL TRANSPORT CONTRACT:\n'+contract+
-        '\nDeclared task data:\n'+json.dumps({'task_inputs': declared}, ensure_ascii=False)}]}]}
+        '\nDeclared task data:\n'+json.dumps({'task_inputs': declared}, ensure_ascii=False)}, {'text': final_contract}]}]}
 
 
 def parse(role, text, notes_pages=None):
