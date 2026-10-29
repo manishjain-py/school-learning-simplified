@@ -13,6 +13,7 @@ from reference.factories.translate_fixture import payload
 from reference.inputs import ROOT, canonical, read, sha
 from reference.providers import Bedrock, Fixture
 from reference.runtime import Runner, report
+from test_translate_teaching_title_scalar import SCALAR, strip_scalar
 
 NESTING = (
     '\nEnvelope nesting: after returning schema_version 2 and every translated item in artifact.items, '
@@ -31,6 +32,7 @@ def baseline():
 
 def strip_nesting(request, stream, phase):
     """Remove only the exact T24 suffix, keeping all previous system bytes."""
+    strip_scalar(request, stream, phase)
     if stream == 'teaching' and phase == 'final':
         assert set(request['system'][0]) == {'text'} and len(request['system']) == 1
         text = request['system'][0]['text']
@@ -52,7 +54,7 @@ def test_full_immutable_base_matrix_preserves_prefix_user_blocks_and_declaration
     assert request['messages'] == old['request']['messages']
     if declared['stream'] == 'teaching' and role.endswith('_final'):
         text = request['system'][0]['text']
-        assert text == old['request']['system'][0]['text']+NESTING
+        assert text == old['request']['system'][0]['text']+NESTING+SCALAR
         for forbidden in ('SYNTHETIC', 'नमूना', 'OPERATOR_SENTINEL', 'AGENTS', 'SKILL', str(ROOT)):
             assert forbidden not in text
         for item in declared['items']:
@@ -73,9 +75,9 @@ def test_only_request_changed_and_exact_source_restoration_reconstructs_prior_tr
     current_source = Path(translate.__file__).read_text()
     original_ast, current_ast = ast.parse(old['translate_source']), ast.parse(current_source)
     constants = [n for n in ast.walk(current_ast) if isinstance(n, ast.Constant)
-                 and isinstance(n.value, str) and n.value.endswith(NESTING)]
+                 and isinstance(n.value, str) and n.value.endswith(NESTING+SCALAR)]
     assert len(constants) == 1
-    constants[0].value = constants[0].value[:-len(NESTING)]
+    constants[0].value = constants[0].value[:-len(NESTING+SCALAR)]
     assert ast.dump(current_ast) == ast.dump(original_ast)
     before = next(n for n in original_ast.body if isinstance(n, ast.FunctionDef) and n.name == 'request')
     after = next(n for n in current_ast.body if isinstance(n, ast.FunctionDef) and n.name == 'request')
@@ -86,7 +88,7 @@ def test_only_request_changed_and_exact_source_restoration_reconstructs_prior_tr
     module.body = [n for n in module.body if not (isinstance(n, ast.FunctionDef) and n.name == 'request')]
     assert sha(ast.dump(module).encode()) == old['outside_request_ast_sha256']
     assert files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()) == old['prompt_sha256']
-    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE) == old['all_historical_fixtures_sha256']
+    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE and p.name != 'translate-teaching-title-scalar-baseline.json') == old['all_historical_fixtures_sha256']
     assert sha((ROOT/'requirements.lock').read_bytes()) == old['requirements_sha256']
     prior = {'practice': 'c09def3c7971e5a12c7379d47bafe413052262022ad34a35c81de533410a940a',
              'revise': '71ca33469e8a381b1e563f02c7494a248285b4a1fd646b50623254718d112b39',
@@ -114,7 +116,7 @@ def test_inert_converse_exact_graph_outputs_hashes_exports_and_zero_call_byte_st
             assert kwargs['inferenceConfig'] == {'maxTokens':8192, 'temperature':.1}
             if 'system' in kwargs:
                 request['system'] = kwargs['system']
-                assert kwargs['system'][0]['text'].endswith(NESTING)
+                assert kwargs['system'][0]['text'].endswith(NESTING+SCALAR)
             assert set(kwargs) == {'modelId', 'messages', 'inferenceConfig', *({'system'} if 'system' in request else set())}
             return Fixture().invoke(request, role=role, notes_pages=None)
     provider = Bedrock({'model':'synthetic-no-service', 'max_output_tokens':8192})

@@ -83,7 +83,8 @@ def capture(workspace):
                                           if p.name not in ('translate-teaching-final-system-baseline.json',
                                                             'guideline-refresher-system-baseline.json',
                                                             'explain-splitter-system-baseline.json',
-                                                            'translate-teaching-final-nesting-baseline.json')),
+                                                            'translate-teaching-final-nesting-baseline.json',
+                                                            'translate-teaching-title-scalar-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -164,7 +165,8 @@ def capture_sources():
                                           if p.name not in ('translate-teaching-final-system-baseline.json',
                                                             'guideline-refresher-system-baseline.json',
                                                             'explain-splitter-system-baseline.json',
-                                                            'translate-teaching-final-nesting-baseline.json')),
+                                                            'translate-teaching-final-nesting-baseline.json',
+                                                            'translate-teaching-title-scalar-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 

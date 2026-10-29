@@ -146,7 +146,13 @@ def request(run, role, declared, batch, notes, final):
             'review-only verdicts or batch_issues fields or the input-only pre_revision_diagnostics field. '
             'After the permitted outer audit/disposition fields, close the outer response object. Include every '
             'required translated item and field, exact slot and source_hash, and source order; do not return a '
-            'partial batch or template.'}]
+            'partial batch or template.'
+            '\nScalar member syntax: title_display has exactly one JSON string value in each teaching item. '
+            'Write its property name once, one colon, and one quoted string value. Keep Markdown and Unicode '
+            'within that string; escape any embedded quotes, backslashes and line breaks as JSON requires. '
+            'Syntax-only illustration: {"title_display":"Example title"}. This demonstrates one member\'s '
+            'syntax, not a replacement title, item or response. Supply each item\'s actual translated title '
+            'and preserve all required items, fields, identities and envelope.'}]
     return request
 
 
