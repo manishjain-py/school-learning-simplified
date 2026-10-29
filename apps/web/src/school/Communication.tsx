@@ -161,7 +161,7 @@ function Acknowledgements({ items, version, childName, parentView, timeZone }: {
 }
 
 function ReadError({ error, retry }: { error: string; retry: () => void }) {
-  return error ? <div className="family-read-error"><p className="school-help">Could not save your read marker: {error}</p><button className="text-button" onClick={retry}>Try marking as read again</button></div> : null;
+  return error ? <div className="family-read-error"><p className="school-help">Could not mark this as read: {error}</p><button className="text-button" onClick={retry}>Try marking as read again</button></div> : null;
 }
 
 function Threads({ path, revision, onChanged, onRead, timeZone, ...auth }: Auth & { path: string; timeZone: string; revision: number; onChanged: () => void; onRead: () => void }) {
@@ -221,7 +221,7 @@ function ParentUpdate({ update, child, path, thread, revision, initiallyOpen, on
     {open && <div className="family-update-conversation">
       <ReadError error={read.error} retry={read.retry} />
       {!canReply && <p className="school-help">Add your name above to acknowledge updates and send private replies.</p>}
-      {currentAck ? <p className="family-acknowledged" role="status">You acknowledged this.</p> : <button className="button secondary family-ack-button" onClick={acknowledge} disabled={acknowledging || !canReply}>{acknowledging ? 'Acknowledging…' : 'Acknowledge'}</button>}
+      {!currentAck && <button className="button secondary family-ack-button" onClick={acknowledge} disabled={acknowledging || !canReply}>{acknowledging ? 'Acknowledging…' : 'Acknowledge'}</button>}
       <ErrorText error={ackError} />
       {threadId && <ThreadMessages key={threadId} {...auth} path={`${path}/threads/${threadId}/messages`} timeZone={child.timeZone} revision={revision} onChanged={onChanged} onRead={sequence => { setReadThrough(previous => Math.max(previous, sequence || 0)); onRead(); }} role="parent" showUpdate={false} composer={false} />}
       <TextReply key={update.id} {...auth} path={`${path}/threads`} updateId={update.id} label="Your private reply" button="Send to teacher" disabled={!canReply} onSaved={result => { if (result?.thread) setCreatedThread(result.thread); onChanged(); }} />

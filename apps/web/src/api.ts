@@ -1,10 +1,12 @@
 import { CognitoIdentityProviderClient, InitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider';
 import type { Config } from './types';
+import { checkRequestSignal, createGetRequestQueue } from './getRequestQueue';
 
 type Session = { accessToken: string; refreshToken: string; expiresAt: number; subject: string };
 const key = 'sls.session.v1';
 let refreshing: Promise<Session> | null = null;
 let refreshingOwner = '';
+const scheduleGet = createGetRequestQueue();
 export class ApiError extends Error { constructor(message: string, public status: number) { super(message); } }
 function tokenSubject(token: string): string {
   // This only prevents cross-account queued UI writes; the gateway and API still
@@ -40,19 +42,26 @@ async function accessToken(config: Config): Promise<string> {
   return (await refreshing).accessToken;
 }
 export async function request<T>(config: Config, path: string, options: { authenticated?: boolean; expectedUserId?: string; body?: unknown; method?: 'GET' | 'PUT' | 'POST'; signal?: AbortSignal } = {}): Promise<T> {
-  const headers: Record<string, string> = { Accept: 'application/json' };
-  if (options.authenticated) {
-    const token = await accessToken(config);
-    if (options.expectedUserId && tokenSubject(token) !== options.expectedUserId) throw new ApiError('The account changed. Open this lesson again to continue.', 401);
-    headers.Authorization = `Bearer ${token}`;
-  }
-  if (options.body) headers['Content-Type'] = 'application/json';
-  const response = await fetch(`${config.apiBaseUrl}${path}`, { method: options.method || (options.body ? 'PUT' : 'GET'), headers, body: options.body ? JSON.stringify(options.body) : undefined, signal: options.signal });
-  const data = await response.json().catch((issue: Error) => {
-    if (issue.name === 'AbortError' || options.signal?.aborted) throw new DOMException('The request was cancelled.', 'AbortError');
-    return { message: 'The server returned an unexpected response. Please try again.' };
-  });
-  if (options.signal?.aborted) throw new DOMException('The request was cancelled.', 'AbortError');
-  if (!response.ok) throw new ApiError(data.message || 'Please try again shortly.', response.status);
-  return data as T;
+  const method = options.method || (options.body ? 'PUT' : 'GET');
+  const attempt = async () => {
+    checkRequestSignal(options.signal);
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    if (options.authenticated) {
+      // GETs reach this only after obtaining a slot, including on their one retry.
+      const token = await accessToken(config);
+      checkRequestSignal(options.signal);
+      if (options.expectedUserId && tokenSubject(token) !== options.expectedUserId) throw new ApiError('The account changed. Open this lesson again to continue.', 401);
+      headers.Authorization = `Bearer ${token}`;
+    }
+    if (options.body) headers['Content-Type'] = 'application/json';
+    const response = await fetch(`${config.apiBaseUrl}${path}`, { method, headers, body: options.body ? JSON.stringify(options.body) : undefined, signal: options.signal });
+    const data = await response.json().catch((issue: Error) => {
+      if (issue.name === 'AbortError' || options.signal?.aborted) throw new DOMException('The request was cancelled.', 'AbortError');
+      return { message: 'The server returned an unexpected response. Please try again.' };
+    });
+    checkRequestSignal(options.signal);
+    if (!response.ok) throw new ApiError(data.message || 'Please try again shortly.', response.status);
+    return data as T;
+  };
+  return method === 'GET' ? scheduleGet(attempt, options.signal) : attempt();
 }

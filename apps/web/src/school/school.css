@@ -33,6 +33,7 @@
 .family-requested-update{scroll-margin-top:25px;outline-offset:5px}.family-requested-update:focus{outline:2px solid #80a46b}.school-family>.family-communication{margin:18px 0 24px}.family-show-all{margin-top:12px}
 @media(max-width:760px){.parent-email-status{padding:10px}.parent-email-heading{gap:4px}.parent-email-heading .text-button{font-size:12px}.parent-email-actions{flex-direction:column;align-items:stretch}.parent-email-actions .button{width:100%}.parent-email-preview iframe{height:500px}.family-communication .school-list-heading{align-items:flex-start;gap:8px;flex-wrap:wrap}.family-communication .school-list-heading h3{min-width:0;overflow-wrap:anywhere}}
 .family-communication .text-button{min-height:44px}
+.communication-entry>.family-reply-button{display:block;margin-top:12px}
 
 /* Family conversations retain their update context and make new activity visible. */
 .family-new-badge{display:inline-flex;align-items:center;justify-content:center;gap:4px;background:#dcecd0;color:#315b3c;border:1px solid #b7cfa9;border-radius:20px;padding:3px 8px;font-size:10px;font-weight:700;line-height:1.5;white-space:nowrap;flex-shrink:0;vertical-align:middle}
