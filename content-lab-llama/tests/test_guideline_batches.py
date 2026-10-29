@@ -71,7 +71,7 @@ def test_eight_roles_independently_attach_exact_typed_three_plus_two(tmp_path, m
                 'role_local_page_notes': own_notes if turn else []}
             assert [type(x) for x in payload['current_batch_printed_pages']] == [type(x) for x in expected]
             assert len(request['messages']) == 1
-            assert set(request) == ({'messages', 'system'} if turn == 0 else {'messages'})
+            assert set(request) == ({'messages', 'system'} if turn == 0 or role == 'refresher' else {'messages'})
             content = request['messages'][0]['content']
             image_content = content[1:-1] if turn else content[1:]
             assert [item['text'] for item in image_content[::2]] == [f'Original printed page {p["printed_page"]}:' for p in batch]

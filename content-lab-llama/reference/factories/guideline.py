@@ -70,6 +70,8 @@ def request(run, role, declared, batch, notes, final):
     result = {'messages': [{'role': 'user', 'content': content}]}
     if not final:
         result['system'] = [{'text': inspection_contract}]
+    elif role == 'refresher':
+        result['system'] = [{'text': content[-1]['text']}]
     return result
 
 

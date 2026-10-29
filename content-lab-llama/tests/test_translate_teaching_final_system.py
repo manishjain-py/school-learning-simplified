@@ -80,7 +80,8 @@ def capture(workspace):
         'reference_sha256': files((ROOT/'reference').rglob('*.py')),
         'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
         'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
-                                          if p.name != 'translate-teaching-final-system-baseline.json'),
+                                          if p.name not in ('translate-teaching-final-system-baseline.json',
+                                                            'guideline-refresher-system-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -135,10 +136,13 @@ def test_only_request_changes_and_all_historical_sources_remain_exact():
     for key in ('outside_request_ast_sha256', 'prompt_sha256', 'historical_fixtures_sha256', 'requirements_sha256'):
         assert current[key] == old[key]
     changed = 'reference/factories/translate.py'
-    assert current['reference_sha256'].keys() == old['reference_sha256'].keys()
-    assert current['reference_sha256'][changed] != old['reference_sha256'][changed]
+    # T22 changes only Guideline request bytes; preserve the immutable T21 fixture.
+    expected = {**old['reference_sha256'], 'reference/factories/guideline.py':
+                'fb3c1a3f6b9bdc8de7f9d44ddea70348472a7cfd6347ec67b7645da851e378de'}
+    assert current['reference_sha256'].keys() == expected.keys()
+    assert current['reference_sha256'][changed] != expected[changed]
     assert {k:v for k,v in current['reference_sha256'].items() if k != changed} == {
-        k:v for k,v in old['reference_sha256'].items() if k != changed}
+        k:v for k,v in expected.items() if k != changed}
 
 
 def capture_sources():
@@ -149,7 +153,8 @@ def capture_sources():
         'reference_sha256': files((ROOT/'reference').rglob('*.py')),
         'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
         'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
-                                          if p.name != 'translate-teaching-final-system-baseline.json'),
+                                          if p.name not in ('translate-teaching-final-system-baseline.json',
+                                                            'guideline-refresher-system-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
