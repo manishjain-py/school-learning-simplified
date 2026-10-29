@@ -14,6 +14,8 @@ from reference.inputs import ROOT, canonical, read, sha
 from reference.providers import Bedrock, Fixture
 from reference.runtime import Runner, report
 
+from test_translate_teaching_identity_string import IDENTITY, strip_identity
+
 LINE = (
     '\nTeaching-line string syntax: Each display and audio value is one JSON string. Use exactly one '
     'opening and one closing delimiter quote around its entire text; escape any quote that belongs '
@@ -29,7 +31,8 @@ def baseline():
 
 
 def strip_line(request, stream, phase):
-    """Remove only T26, retaining every byte of the T21/T24/T25 prefix."""
+    """Remove exact T27 then T26, retaining every byte of the T21/T24/T25 prefix."""
+    strip_identity(request, stream, phase)
     if stream == 'teaching' and phase == 'final':
         assert len(request['system']) == 1 and set(request['system'][0]) == {'text'}
         text = request['system'][0]['text']
@@ -51,7 +54,7 @@ def test_complete_git_base_requests_declarations_user_blocks_and_prefix(case, mo
     assert request['messages'] == old['request']['messages']
     if declared['stream'] == 'teaching' and role.endswith('_final'):
         text = request['system'][0]['text']
-        assert text == old['request']['system'][0]['text']+LINE
+        assert text == old['request']['system'][0]['text']+LINE+IDENTITY
         for forbidden in ('SYNTHETIC', 'नमूना', 'OPERATOR_SENTINEL', 'AGENTS', 'SKILL', str(ROOT)):
             assert forbidden not in text
         for item in declared['items']:
@@ -73,9 +76,9 @@ def test_only_request_changes_and_actual_base_bytes_reconstruct_prior_trees():
     current_source = Path(translate.__file__).read_text()
     before_ast, after_ast = ast.parse(old['translate_source']), ast.parse(current_source)
     constants = [n for n in ast.walk(after_ast) if isinstance(n, ast.Constant)
-                 and isinstance(n.value, str) and n.value.endswith(LINE)]
+                 and isinstance(n.value, str) and n.value.endswith(LINE+IDENTITY)]
     assert len(constants) == 1
-    constants[0].value = constants[0].value[:-len(LINE)]
+    constants[0].value = constants[0].value[:-len(LINE+IDENTITY)]
     assert ast.dump(after_ast) == ast.dump(before_ast)
     before = next(n for n in before_ast.body if isinstance(n, ast.FunctionDef) and n.name == 'request')
     after = next(n for n in after_ast.body if isinstance(n, ast.FunctionDef) and n.name == 'request')
@@ -86,7 +89,7 @@ def test_only_request_changes_and_actual_base_bytes_reconstruct_prior_trees():
     module.body = [n for n in module.body if not (isinstance(n, ast.FunctionDef) and n.name == 'request')]
     assert sha(ast.dump(module).encode()) == old['outside_request_ast_sha256']
     assert files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()) == old['prompt_sha256']
-    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE) == old['all_historical_fixtures_sha256']
+    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE and p.name != 'translate-teaching-identity-string-baseline.json') == old['all_historical_fixtures_sha256']
     assert sha((ROOT/'requirements.lock').read_bytes()) == old['requirements_sha256']
     for excluded, expected in old['prior_tree_sha256'].items():
         assert sha(canonical({k:v for k,v in restored.items() if k != f'reference/factories/{excluded}.py'})) == expected
@@ -111,7 +114,7 @@ def test_native_converse_graph_exports_hashes_and_byte_stable_zero_call_resume(t
             assert kwargs['inferenceConfig'] == {'maxTokens':8192, 'temperature':.1}
             if 'system' in kwargs:
                 request['system'] = kwargs['system']
-                assert kwargs['system'][0]['text'].endswith(LINE)
+                assert kwargs['system'][0]['text'].endswith(LINE+IDENTITY)
             assert set(kwargs) == {'modelId', 'messages', 'inferenceConfig', *({'system'} if 'system' in request else set())}
             return Fixture().invoke(request, role=role, notes_pages=None)
     provider = Bedrock({'model':'synthetic-no-service', 'max_output_tokens':8192})

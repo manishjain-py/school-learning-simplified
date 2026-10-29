@@ -85,7 +85,7 @@ def capture(workspace):
                                                             'explain-splitter-system-baseline.json',
                                                             'translate-teaching-final-nesting-baseline.json',
                                                             'translate-teaching-title-scalar-baseline.json',
-                                                            'translate-teaching-line-string-baseline.json')),
+                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -168,7 +168,7 @@ def capture_sources():
                                                             'explain-splitter-system-baseline.json',
                                                             'translate-teaching-final-nesting-baseline.json',
                                                             'translate-teaching-title-scalar-baseline.json',
-                                                            'translate-teaching-line-string-baseline.json')),
+                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
