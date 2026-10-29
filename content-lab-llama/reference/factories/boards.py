@@ -34,8 +34,19 @@ def report_stages(workspace):
 
 
 def request(run, role, declared, batch, notes, final):
-    return c.request(run, role, declared, batch, notes, final,
-                     'board_verify' if role.endswith('_review') else 'board_author')
+    request = c.request(run, role, declared, batch, notes, final,
+                        'board_verify' if role.endswith('_review') else 'board_author')
+    if role.startswith('boards_c') and role.endswith('_final'):
+        request['system'] = [{'text': (
+            'For this final board-author revision, return one complete strict JSON object with no text outside it. '
+            'Return {"artifact":<complete native board plan>,"dispositions":[],"note":"..."}. '
+            'The object-valued artifact contains the original card_idx and complete route ("board" or "hold"), '
+            'rationale, nodes, beats and needs, using the native types and supplied identity and scripts already instructed. '
+            'A justified hold with empty nodes and beats remains valid. '
+            'Preserve the existing dispositions/note envelope; keep reasoning and explanations inside the allowed JSON fields. '
+            'Do not include a preamble, postscript, heading, Markdown fence or file-write receipt. '
+            'Review is advisory; this final author revision is authoritative content with no later content-quality review or veto.')}]
+    return request
 
 
 def narration(run, card):

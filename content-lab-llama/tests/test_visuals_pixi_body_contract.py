@@ -78,6 +78,9 @@ def test_exact_base_requests_only_pixi_author_and_final_add_system(case):
     assert len(request['messages']) == len(request['messages'][0]['content']) == 1
     if declared['mode'] == 'pixi' and role.endswith(('_author', '_final')):
         assert request.pop('system') == [{'text': CONTRACT}]
+    elif factory is boards and role.endswith('_final'):
+        from test_boards_final_system import CONTRACT as BOARDS_FINAL_CONTRACT
+        assert request.pop('system') == [{'text': BOARDS_FINAL_CONTRACT}]
     else:
         assert 'system' not in request
     baseline = read(ROOT/'tests/fixtures/visuals-pixi-body-baseline.json')
