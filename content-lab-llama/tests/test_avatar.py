@@ -7,6 +7,8 @@ import os
 from pathlib import Path
 import socket
 import sys
+from types import SimpleNamespace
+import wave
 
 import pytest
 from PIL import Image
@@ -180,7 +182,7 @@ def test_native_r6_hindi_map_hash_byte_binding_and_silent_title(tmp_path,local_s
     directory=tmp_path/'avatar';directory.mkdir()
     run=Runner(directory,avatar,bundle=bundle,blobs=blobs,config=CONFIG)
     avatar.graph(run).invoke({'last_role':'start'})
-    audio=read(directory/'media/avatar_c012_audio/narration.json')
+    audio=read(directory/'views/avatar_c012-narration.json')
     assert audio['blocks'][0]['start_ms']==0 and audio['blocks'][0]['end_ms']==600 and audio['blocks'][1]['start_ms']==600
     assert audio['assembly']['gap_ms']==300 and audio['blocks'][1]['index']==1
     bundle['declared']['translated_deck']['schema_version']=1
@@ -188,6 +190,106 @@ def test_native_r6_hindi_map_hash_byte_binding_and_silent_title(tmp_path,local_s
     bundle['declared']['translated_deck']['schema_version']=2
     bundle['declared']['translated_identity']['source_file_sha256']['deck']='wrong'
     with pytest.raises(ValueError,match='byte identity'):avatar.descriptor(bundle,card)
+
+
+@pytest.fixture
+def supplied_narration(tmp_path, monkeypatch):
+    """Exercise native narrator receipts with deterministic PCM and no speech tools."""
+    binary=tmp_path/'fixed-tool'; binary.write_bytes(b'fixed decoder identity')
+    monkeypatch.setattr(media,'_tool',lambda name:str(binary))
+    def forbidden(*args,**kwargs):raise AssertionError('Supplied PCM needs no speech or hosted call')
+    monkeypatch.setattr(media,'installed_voices',forbidden)
+    monkeypatch.setattr(media,'_run',forbidden)
+    state={'decoded':[],'interrupt':None}
+    def decode(source,target):
+        state['decoded'].append(str(source))
+        if len(state['decoded'])==state['interrupt']:raise KeyboardInterrupt()
+        with wave.open(str(source),'rb') as audio:pcm=audio.readframes(audio.getnframes())
+        with wave.open(str(target),'wb') as audio:
+            audio.setnchannels(1);audio.setsampwidth(2);audio.setframerate(24000);audio.writeframes(pcm)
+        return pcm,len(pcm)/2/24000*1000,272.0
+    monkeypatch.setattr(media,'_decode',decode)
+    return state
+
+
+def narration_run(tmp_path,language):
+    from reference.factories.translate_inputs import teaching_hash
+    workspace=tmp_path/'avatar';(workspace/'inputs').mkdir(parents=True)
+    card={'card_idx':1,'card_type':'welcome','title':'Synthetic title.',
+          'lines':[{'display':'First display.','audio':'First authored line.'},
+                   {'display':'Second display.','audio':'Second authored line.'}],'visual':None}
+    deck={'cards':[card]};digest=sha(canonical(deck))
+    declared={'deck':deck,'speech':{'language':language,'clips':{'1':[]}}}
+    identity={'deck':{'sha256':digest}}
+    for i in range(2 if language=='hi' else 3):
+        slot=f'clip_{i+1:03d}';name=f'declared-{slot}.binary';path=workspace/'inputs'/name
+        with wave.open(str(path),'wb') as audio:
+            audio.setnchannels(1);audio.setsampwidth(2);audio.setframerate(24000);audio.writeframes(b'\x10\x01'*2400)
+        declared['speech']['clips']['1'].append(slot)
+        declared[slot]={'sha256':sha(path.read_bytes()),'bytes':path.stat().st_size}
+        identity[slot]={'sha256':sha(path.read_bytes()),'file':name,'type':'binary'}
+    if language=='hi':
+        declared.update(translated_deck={'schema_version':2,'language':'hi','items':[{
+            'source':{'card_idx':3,'original_card_idx':1,'card_type':'welcome','source_card_hash':teaching_hash(card)},
+            'title_display':'कृत्रिम शीर्षक','lines':[{'display':'पहली पंक्ति','audio':'पहली ध्वनि'},
+                                                      {'display':'दूसरी पंक्ति','audio':'दूसरी ध्वनि'}]}]},
+            index_map=[{'kind':'teaching','card_idx':3,'original_card_idx':1}],
+            translated_identity={'source_file_sha256':{'deck':digest}})
+    return SimpleNamespace(workspace=workspace,bundle={'declared':declared,'file_identity':identity}),card
+
+
+def narration_bytes(directory):
+    return {str(p.relative_to(directory)):p.read_bytes() for p in directory.rglob('*') if p.is_file()}
+
+
+@pytest.mark.parametrize('language',('en','hi'))
+def test_native_narration_receipt_stays_valid_and_title_view_rebuilds_without_decode(tmp_path,supplied_narration,language):
+    run,card=narration_run(tmp_path,language)
+    result=avatar.narration(run,card)
+    directory=run.workspace/'media/avatar_c001_audio';view=run.workspace/'views/avatar_c001-narration.json'
+    raw=read(directory/'narration.json');receipt=read(directory/'narration-complete.json')
+    assert sha((directory/'narration.json').read_bytes())==receipt['files']['narration.json']['sha256']
+    assert 'title_policy' not in raw['assembly'] and 'assembly_identity_sha256' not in raw
+    assert read(view)==result and result['assembly']['title_policy']
+    if language=='hi':
+        assert raw['blocks'][0]['index']==0 and raw['blocks'][0]['kind']=='line'
+        assert result['blocks'][0]['script']=='' and result['blocks'][0]['end_ms']==600
+        assert result['blocks'][1]['index']==1 and result['words'][0]['block']==1
+    before=narration_bytes(directory);calls=list(supplied_narration['decoded'])
+    # A crash after native completion but before saving the Avatar view is safe.
+    view.unlink()
+    assert avatar.narration(run,card)==result and read(view)==result
+    assert narration_bytes(directory)==before and supplied_narration['decoded']==calls
+
+
+@pytest.mark.parametrize('language',('en','hi'))
+@pytest.mark.parametrize('filename',('narration.json','narration-complete.json','scripts.json','attempts/clip-000/01/result.json'))
+def test_avatar_completed_reuse_checks_native_receipt_before_accepting_cached_audio(tmp_path,supplied_narration,language,filename):
+    run,card=narration_run(tmp_path,language);avatar.narration(run,card)
+    directory=run.workspace/'media/avatar_c001_audio';path=directory/filename
+    if filename=='narration-complete.json':
+        value=read(path);value['files']['narration.json']['sha256']='0'*64;save(path,value)
+    else:path.write_bytes(path.read_bytes()+b' ')
+    before=narration_bytes(directory);calls=list(supplied_narration['decoded'])
+    with pytest.raises(media.MediaError,match='Completed narration file set or bytes changed'):
+        avatar.narration(run,card)
+    assert narration_bytes(directory)==before and supplied_narration['decoded']==calls
+
+
+@pytest.mark.parametrize('language',('en','hi'))
+def test_avatar_partial_narration_resumes_native_attempts_and_preserves_completed_clip(tmp_path,supplied_narration,language):
+    run,card=narration_run(tmp_path,language);supplied_narration['interrupt']=2
+    with pytest.raises(KeyboardInterrupt):avatar.narration(run,card)
+    directory=run.workspace/'media/avatar_c001_audio'
+    first=narration_bytes(directory/'attempts/clip-000')
+    assert not (directory/'narration.json').exists()
+    result=avatar.narration(run,card)
+    assert narration_bytes(directory/'attempts/clip-000')==first
+    assert len(supplied_narration['decoded'])==(3 if language=='hi' else 4)
+    assert read(directory/'attempts/clip-001/01/result.json')['status']=='interrupted'
+    assert read(directory/'attempts/clip-001/02/result.json')['status']=='complete'
+    before=narration_bytes(directory);avatar.narration(run,card)
+    assert narration_bytes(directory)==before and result==read(run.workspace/'views/avatar_c001-narration.json')
 
 
 def test_exact_source_snapshots_schema_and_adapted_provenance():

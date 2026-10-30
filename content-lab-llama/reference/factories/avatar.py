@@ -163,38 +163,33 @@ def narration(run, card):
     name = stem(card)+'_audio'
     directory = run.workspace/'media'/name
     try:
-        if (directory/'narration.json').exists():
-            result = read(directory/'narration.json')
-            for row in [*result['clips'], *[clip['source_file'] for clip in result['clips']], result['audio']]:
-                path = (directory/row['file']).resolve()
-                if not path.is_relative_to(directory.resolve()) or sha(path.read_bytes()) != row['sha256']:
-                    raise ValueError('Frozen Avatar narration changed')
+        desc, config = descriptor(run.bundle, card), speech_config(run.bundle)
+        hindi = config.get('language', 'en') == 'hi'
+        spoken = desc['blocks'][1:] if hindi else desc['blocks']
+        blocks = [{'kind': block['kind'], 'display': block['display'], 'script': block['audio']} for block in spoken]
+        slots = run.bundle['declared'].get('speech', {}).get('clips', {}).get(str(card['card_idx']), [])
+        alignment = run.bundle['declared'].get('alignment', {}).get('cards', {}).get(str(card['card_idx']))
+        if alignment is not None and (not slots or not isinstance(alignment, list) or len(alignment) != len(slots)):
+            raise ValueError('Avatar supplied alignment must bind every supplied clip')
+        supplied = {}
+        for i, slot in enumerate(slots):
+            identity = run.bundle['file_identity'][slot]
+            supplied[i] = {'path': run.workspace/'inputs'/identity['file'], 'sha256': identity['sha256']}
+            if alignment is not None: supplied[i]['alignment'] = alignment[i]
+        # The narrator owns its certified files and verifies them on every reuse.
+        # Avatar's title/index projection is a derived view outside that file set.
+        result = deepcopy(media.synthesize(blocks, directory, config, supplied or None, allowed_roots=[run.workspace]))
+        if hindi:
+            for row in result['blocks']: row['index'] += 1
+            for row in result['words']: row['block'] += 1
+            result['blocks'].insert(0, {'index': 0, 'kind': 'title', 'display': desc['title'], 'script': '',
+                                      'start_ms': 0, 'end_ms': 600, 'timing_basis': 'explicit PCM silence'})
+            result['assembly']['title_policy'] = 'display-only title, 600ms PCM silence; supplied line clips and 300ms gaps'
         else:
-            desc, config = descriptor(run.bundle, card), speech_config(run.bundle)
-            hindi = config.get('language', 'en') == 'hi'
-            spoken = desc['blocks'][1:] if hindi else desc['blocks']
-            blocks = [{'kind': block['kind'], 'display': block['display'], 'script': block['audio']} for block in spoken]
-            slots = run.bundle['declared'].get('speech', {}).get('clips', {}).get(str(card['card_idx']), [])
-            alignment = run.bundle['declared'].get('alignment', {}).get('cards', {}).get(str(card['card_idx']))
-            if alignment is not None and (not slots or not isinstance(alignment, list) or len(alignment) != len(slots)):
-                raise ValueError('Avatar supplied alignment must bind every supplied clip')
-            supplied = {}
-            for i, slot in enumerate(slots):
-                identity = run.bundle['file_identity'][slot]
-                supplied[i] = {'path': run.workspace/'inputs'/identity['file'], 'sha256': identity['sha256']}
-                if alignment is not None: supplied[i]['alignment'] = alignment[i]
-            result = media.synthesize(blocks, directory, config, supplied or None, allowed_roots=[run.workspace])
-            if hindi:
-                for row in result['blocks']: row['index'] += 1
-                for row in result['words']: row['block'] += 1
-                result['blocks'].insert(0, {'index': 0, 'kind': 'title', 'display': desc['title'], 'script': '',
-                                          'start_ms': 0, 'end_ms': 600, 'timing_basis': 'explicit PCM silence'})
-                result['assembly']['title_policy'] = 'display-only title, 600ms PCM silence; supplied line clips and 300ms gaps'
-            else:
-                result['assembly']['title_policy'] = 'spoken title block followed by exact native line audio'
-            result['assembly_identity_sha256'] = sha(canonical({'config': config, 'blocks': result['blocks'],
-                        'ordered_source_clip_hashes': [row['source_file']['sha256'] for row in result['clips']]}))
-            save(directory/'narration.json', result)
+            result['assembly']['title_policy'] = 'spoken title block followed by exact native line audio'
+        result['assembly_identity_sha256'] = sha(canonical({'config': config, 'blocks': result['blocks'],
+                    'ordered_source_clip_hashes': [row['source_file']['sha256'] for row in result['clips']]}))
+        save(run.workspace/'views'/(stem(card)+'-narration.json'), result)
         c.stage(run.workspace, stem(card)+'_narration', {'status': 'complete'})
         return result
     except Exception:
