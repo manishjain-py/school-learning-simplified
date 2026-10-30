@@ -12,6 +12,7 @@ REQUIRES_PAGES = False
 PRESERVE_FILE_BYTES = True
 FILE_INPUTS = ('deck', 'checkins', 'practice', 'revise')
 PHASES = ('author', 'review', 'final')
+TEACHING_BATCH_CAP = 4
 ROLES = tuple(f'translate_{stream}_b001_{phase}' for stream in STREAMS for phase in PHASES)
 FAMILIES = {'teaching': 'translation', 'checkin': 'question', 'practice': 'question',
             'feedback': 'feedback', 'revise': 'revise'}
@@ -49,8 +50,12 @@ def validate_inputs(bundle):
 
 def batches(bundle, view):
     size = bundle['metadata'].get('batch_size', 12)
-    return [{'stream': stream, 'batch': i//size+1, 'items': items[i:i+size]}
-            for stream in STREAMS for items in (view['streams'][stream],) for i in range(0, len(items), size)]
+    # Teaching carries line-by-line display/audio text. Bound its serialization
+    # separately while respecting a caller's smaller global batch size.
+    return [{'stream': stream, 'batch': i//limit+1, 'items': items[i:i+limit]}
+            for stream in STREAMS for items in (view['streams'][stream],)
+            for limit in (min(size, TEACHING_BATCH_CAP) if stream == 'teaching' else size,)
+            for i in range(0, len(items), limit)]
 
 
 def role_key(batch, phase):

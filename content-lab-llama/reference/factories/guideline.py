@@ -198,7 +198,7 @@ def recovery_budget(identity, ledger):
 
 def recovery_evidence(workspace, key, role, original, matches, result, notes_pages, policy):
     """Reconstruct each physical request; preserve the final logical lookup."""
-    from ..runtime import model_response_json, recovery_request, request_evidence
+    from ..runtime import model_response_json, recovery_request, request_evidence, technical_feedback
     if not 1 <= len(matches) <= policy['max_additional_attempts']+1:
         raise ValueError('Unexpected recovery attempt count')
     expected_request = original
@@ -224,9 +224,7 @@ def recovery_evidence(workspace, key, role, original, matches, result, notes_pag
                 phase = 'native'
                 parse(role, text, notes_pages)
             except (ValueError, KeyError, TypeError) as error:
-                feedback = {'kind': 'invalid_json' if phase == 'json' else 'native_contract_mismatch'}
-                if isinstance(error, json.JSONDecodeError):
-                    feedback.update(line=error.lineno, column=error.colno)
+                feedback = technical_feedback(error, phase)
                 if previous_result.get('technical_feedback') != feedback:
                     raise ValueError('Technical recovery feedback identity')
             else:

@@ -84,6 +84,109 @@ def file_hashes(path):
     return {str(p.relative_to(path)): sha(p.read_bytes()) for p in path.rglob('*') if p.is_file()}
 
 
+@pytest.mark.parametrize('raw,category,inside,objects,arrays,mismatch,root_closure', [
+    (json.dumps({'artifact': {'text': 'Literal { } [ ] and "quote" and \\slash',
+                             'items': [{'text': 'नमस्ते'}]}})[:-1],
+     'unexpected_eof', False, 1, 0, False, '}'),
+    (' \n{"artifact":{"items":[{"text":"complete"}',
+     'unexpected_eof', False, 2, 1, False, '}'),
+    ('{"artifact":{"text":'+json.dumps('Unclosed { [ and "quote" and \\slash')[:-1],
+     'unexpected_eof', True, 2, 0, False, '}'),
+    ('{"artifact":{"text":"Trailing escape'+chr(92),
+     'unexpected_eof', True, 2, 0, False, '}'),
+    ('{"artifact":{"text":"one" "two"}}',
+     'syntax_error', False, 0, 0, False, None),
+    ('{"artifact":[1}', 'syntax_error', False, 1, 1, True, None),
+    ('{"artifact":{}} {', 'syntax_error', False, 1, 0, False, None),
+    ('{"artifact":{"text":"Invalid literal newline\n',
+     'syntax_error', True, 2, 0, False, '}'),
+    ('', 'unexpected_eof', False, 0, 0, False, None),
+    ('[{"artifact":{}}', 'unexpected_eof', False, 0, 1, False, ']'),
+])
+def test_json_feedback_distinguishes_eof_strings_and_structural_containers(
+        raw, category, inside, objects, arrays, mismatch, root_closure):
+    with pytest.raises(json.JSONDecodeError) as rejected:
+        runtime.model_response_json(raw)
+    error = rejected.value
+    assert runtime.technical_feedback(error, 'json') == {
+        'kind': 'invalid_json', 'line': error.lineno, 'column': error.colno,
+        'offset': error.pos, 'length': len(raw), 'offset_equals_length': error.pos == len(raw),
+        'json_error': category, 'inside_string': inside,
+        'unclosed_containers': {'object': objects, 'array': arrays},
+        'container_mismatch': mismatch, 'expected_root_closure': root_closure}
+
+
+def test_json_feedback_has_fixed_bounded_shape_without_exception_or_source_text():
+    secret = '/private/account/AGENTS.md SECRET-PRIVATE@example.invalid'
+    raw = json.dumps({'artifact': {'text': secret}})[:-1]
+    error = json.JSONDecodeError('Private parser diagnostic '+secret, raw, len(raw))
+    feedback = runtime.technical_feedback(error, 'json')
+    assert feedback['json_error'] == 'unexpected_eof'
+    assert secret not in json.dumps(feedback)
+    assert all(word not in json.dumps(feedback) for word in ('AGENTS.md', 'SECRET', 'artifact', 'parser'))
+    deep = '{"artifact":'+'['*200
+    with pytest.raises(json.JSONDecodeError) as rejected:
+        strict_json(deep)
+    nested_feedback = runtime.technical_feedback(rejected.value, 'json')
+    assert set(nested_feedback) == set(feedback)
+    assert nested_feedback['unclosed_containers'] == {'object': 1, 'array': 200}
+    assert len(json.dumps(nested_feedback)) < 400
+    assert runtime.technical_feedback(ValueError(secret), 'native') == {'kind': 'native_contract_mismatch'}
+
+
+@pytest.mark.parametrize('framing', ['plain', 'fenced', 'eof_fence'])
+def test_eof_feedback_describes_decoder_body_and_same_author_regenerates_whole_response(tmp_path, framing):
+    body = '{"artifact":{"text":"Do not lose this authored {text}."}'
+    bad = {'plain': body, 'fenced': '```json\n'+body+'\n```',
+           'eof_fence': '```json\n'+body}[framing]
+    run = runner(tmp_path, response(bad), response(GOOD))
+    parsed = []
+    def native(text):
+        parsed.append(text)
+        return parse(text)
+    assert run.invoke('author', 'author', REQUEST, native)['output'] == strict_json(GOOD)
+    assert parsed == [GOOD]  # The rejected incomplete body is never parsed as an artifact.
+    failed = read(tmp_path/'attempts/author/001/checkpoint.json')
+    feedback = failed['technical_feedback']
+    assert feedback['json_error'] == 'unexpected_eof'
+    assert feedback['offset'] == feedback['length'] == len(body)
+    assert feedback['offset_equals_length'] is True and feedback['inside_string'] is False
+    assert feedback['unclosed_containers'] == {'object': 1, 'array': 0}
+    assert feedback['expected_root_closure'] == '}'
+    retry, role, _ = run.provider.calls[1]
+    assert role == 'author'
+    assert retry['system'] == REQUEST['system']
+    assert retry['messages'][0]['content'][:-1] == REQUEST['messages'][0]['content']
+    instruction = retry['messages'][0]['content'][-1]['text']
+    assert 'TECHNICAL RESPONSE CORRECTION, SAME ROLE:' in instruction
+    assert 'Regenerate the complete response for this same task as one strict JSON object' in instruction
+    assert 'including all required items and closing delimiters' in instruction
+    assert 'return a continuation or patch' in instruction
+    assert json.loads(instruction.split('\n')[-1]) == {
+        'technical_feedback': feedback, 'previous_response_text': bad}
+    assert read(tmp_path/'attempts/author/001/response.json') == response(bad)
+
+
+def test_repairable_eof_is_never_appended_adopted_or_repeated_after_two_corrections(tmp_path):
+    bad = '{"artifact":{"text":"Complete authored content"}'
+    run = runner(tmp_path, *[response(bad)]*3)
+    failed = invoke(run)
+    assert failed['status'] == 'failed' and 'output' not in failed
+    assert len(run.provider.calls) == 3
+    assert run.exposure() == pytest.approx(3*.000337)
+    for number, (request, role, _) in enumerate(run.provider.calls, 1):
+        assert role == 'author'
+        assert read(tmp_path/'attempts/author'/f'{number:03d}'/'response.json') == response(bad)
+        if number > 1:
+            assert request['messages'][0]['content'][:-1] == REQUEST['messages'][0]['content']
+            assert request['messages'][0]['content'][-1]['text'].count('TECHNICAL RESPONSE CORRECTION, SAME ROLE:') == 1
+    before = file_hashes(tmp_path)
+    resumed = Runner(tmp_path, FACTORY, resume=True)
+    resumed.provider = Sequence()
+    assert invoke(resumed) == failed and resumed.provider.calls == []
+    assert file_hashes(tmp_path) == before
+
+
 @pytest.mark.parametrize('bad', ['{"artifact":{"text":"authored"}', 'Here is the completed artifact.',
                                   '{"artifact":[]}'])
 def test_corrected_response_preserves_all_attempts_costs_author_export_and_resume(tmp_path, bad):

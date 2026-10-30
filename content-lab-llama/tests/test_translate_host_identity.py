@@ -134,9 +134,10 @@ def test_native_failure_corrected_by_same_final_author_then_binds_actual_narrati
     run = runner(tmp_path)
     invoke(run)
     assert report(tmp_path, translate)['status'] == 'complete'
-    assert len(roles) == 16 and roles.count(failed_role) == 2
-    assert all(roles.count(role) == 1 for role in translate.ROLES if role != failed_role)
-    assert len(run.output(failed_role)['artifact']['items']) == 12
+    expected = translate.report_roles(tmp_path)
+    assert len(roles) == len(expected)+1 == 22 and roles.count(failed_role) == 2
+    assert all(roles.count(role) == 1 for role in expected if role != failed_role)
+    assert len(run.output(failed_role)['artifact']['items']) == 4
     # Exercise the real downstream identity/narration adapter, not a duplicate
     # line-count assertion or mocked media helper.
     bundle = deepcopy(run.bundle)
@@ -152,6 +153,6 @@ def test_native_failure_corrected_by_same_final_author_then_binds_actual_narrati
              for path in (tmp_path/folder).rglob('*.json')}
     ledger = canonical(read(run.ledger_path))
     invoke(Runner(tmp_path, translate, resume=True))
-    assert len(roles) == 16 and canonical(read(run.ledger_path)) == ledger
+    assert len(roles) == 22 and canonical(read(run.ledger_path)) == ledger
     assert all((tmp_path/path).read_bytes() == data for path, data in saved.items())
     assert all((tmp_path/'artifacts'/name).exists() for name in PACKS)

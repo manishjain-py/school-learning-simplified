@@ -96,17 +96,18 @@ def test_cli_five_streams_three_packs_final_owner_and_completed_resume(tmp_path)
     assert cli.main(['verify', str(EXAMPLE)]) == 0
     assert cli.main(['run', str(EXAMPLE), '--provider', 'fixture', '--workspace', str(tmp_path)]) == 0
     summary = read(tmp_path/'summary.json')
-    assert summary['status'] == 'complete' and summary['requests'] == 15
+    work = read(tmp_path/'views/batches.json')
+    assert summary['status'] == 'complete' and summary['requests'] == 21
     assert summary['operational_stages']['translate_assembly']['status'] == 'complete'
     assert summary['exposure_usd'] == 0 and not (tmp_path/'ledger.json').exists()
-    assert tuple(summary['roles']) == r.ROLES
+    assert list(summary['roles']) == [r.role_key(batch, phase) for batch in work for phase in r.PHASES]
     assert set(read(tmp_path/'views/projections.json')) == set(r.STREAMS)
     assert read(tmp_path/'metrics/assembly.json')['quality_gate'] is False
     source, blobs = load_manifest(EXAMPLE, r)
     for name, data in blobs.items():
         assert (tmp_path/'inputs'/name).read_bytes() == data
-    for stream in r.STREAMS:
-        prefix = f'translate_{stream}_b001_'
+    for batch in work:
+        prefix = r.role_key(batch, '')
         author = read(tmp_path/'checkpoints'/f'{prefix}author.json')['output']
         review = read(tmp_path/'checkpoints'/f'{prefix}review.json')['output']
         final = read(tmp_path/'checkpoints'/f'{prefix}final.json')['output']
@@ -119,8 +120,8 @@ def test_cli_five_streams_three_packs_final_owner_and_completed_resume(tmp_path)
     assert len(packs['deck_hi.json']['items']) == len(source['declared']['deck']['cards']) + len(source['declared']['checkins']['check_ins'])
     assert len(packs['practice_hi.json']['items']) == len(source['declared']['practice']['questions'])
     assert len(packs['revise_hi.json']['items']) == len(source['declared']['revise']['cards'])
-    translated = {stream: {item['slot']: item for item in
-                  read(tmp_path/'artifacts'/f'translate_{stream}_b001_final.json')['items']}
+    translated = {stream: {item['slot']: item for batch in work if batch['stream'] == stream
+                  for item in read(tmp_path/'artifacts'/f'{r.role_key(batch, "final")}.json')['items']}
                   for stream in r.STREAMS}
     view = project(source)
     pack_rows = [(d['stream'], d['slot'], item) for d, item in
@@ -370,7 +371,7 @@ def test_imperfect_final_fields_are_retained_without_quality_veto_or_rewrite(tmp
     run = runner(tmp_path)
     invoke(run)
     assert report(tmp_path, r)['status'] == 'complete'
-    assert len(run.ledger['calls']) == 15
+    assert len(run.ledger['calls']) == 21
     first = read(tmp_path/'artifacts/deck_hi.json')['items'][0]
     assert first['lines'][0]['display'] == '' and 'title_display' not in first
     final = next(i for i in final_items(run, 'practice') if i.get('options_display') == ['अपूर्ण अंतिम विकल्प'])
@@ -408,8 +409,8 @@ def test_optional_empty_streams_make_valid_empty_packs(tmp_path, mode):
     run = runner(tmp_path, base)
     invoke(run)
     assert report(tmp_path, r)['status'] == 'complete'
-    assert len(run.ledger['calls']) == 3
-    assert [batch['stream'] for batch in read(tmp_path/'views/batches.json')] == ['teaching']
+    assert len(run.ledger['calls']) == 9
+    assert [batch['stream'] for batch in read(tmp_path/'views/batches.json')] == ['teaching']*3
     assert read(tmp_path/'artifacts/practice_hi.json')['items'] == []
     assert read(tmp_path/'artifacts/revise_hi.json')['items'] == []
     assert len(read(tmp_path/'artifacts/deck_hi.json')['items']) == 12
@@ -427,12 +428,12 @@ def test_interrupted_between_roles_resume_and_raw_byte_freeze(tmp_path, monkeypa
     monkeypatch.setattr(run, 'role', stop)
     with pytest.raises(KeyboardInterrupt):
         invoke(run)
-    assert len(run.ledger['calls']) == 10
+    assert len(run.ledger['calls']) == 16
     prior = {p.name: p.read_bytes() for p in (tmp_path/'requests').glob('*.json')}
     resumed = Runner(tmp_path, r, resume=True)
     invoke(resumed)
     assert report(tmp_path, r)['status'] == 'complete'
-    assert len(resumed.ledger['calls']) == len({c['key'] for c in resumed.ledger['calls']}) == 15
+    assert len(resumed.ledger['calls']) == len({c['key'] for c in resumed.ledger['calls']}) == 21
     assert all((tmp_path/'requests'/name).read_bytes() == data for name, data in prior.items())
     frozen = tmp_path/'inputs'/resumed.bundle['file_identity']['deck']['file']
     before = read(frozen)
@@ -454,11 +455,11 @@ def test_interrupted_inflight_call_cannot_resend(tmp_path, monkeypatch):
     run = runner(tmp_path)
     with pytest.raises(KeyboardInterrupt):
         invoke(run)
-    assert len(run.ledger['calls']) == 4
+    assert len(run.ledger['calls']) == 10
     assert report(tmp_path, r)['status'] == 'partial_or_failed'
     with pytest.raises(RuntimeError, match='manual reconciliation required; no repeat'):
         invoke(Runner(tmp_path, r, resume=True))
-    assert len(read(tmp_path/'synthetic-ledger.json')['calls']) == 4
+    assert len(read(tmp_path/'synthetic-ledger.json')['calls']) == 10
 
 
 def test_native_example_lineage_has_exact_predecessor_artifact_bytes():
