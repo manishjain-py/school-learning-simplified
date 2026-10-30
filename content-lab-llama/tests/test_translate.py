@@ -13,7 +13,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import run_factory as cli
 from reference.factories import translate as r
-from reference.factories.translate_fixture import MARKER, payload
+from reference.factories.translate_fixture import MARKER, payload, teaching_wire
 from reference.factories.translate_inputs import project, question_hash
 from reference.inputs import ROOT, canonical, load_manifest, read, save, sha
 from reference.providers import Fixture
@@ -75,8 +75,14 @@ def intercept(monkeypatch, change):
 
     def altered(self, request, *, role, notes_pages):
         result = original(self, request, role=role, notes_pages=notes_pages)
+        data = payload(request)
         value = json.loads(result['output']['message']['content'][0]['text'])
-        change(role, payload(request), value)
+        wire = data['stream'] == 'teaching' and role.endswith('_final')
+        if wire:
+            value = r.decode_teaching_wire(role, json.dumps(value), data)
+        change(role, data, value)
+        if wire:
+            value = teaching_wire(value['artifact'], data['wire_fields'])
         return response(value)
 
     monkeypatch.setattr(Fixture, 'invoke', altered)
@@ -96,22 +102,26 @@ def test_cli_five_streams_three_packs_final_owner_and_completed_resume(tmp_path)
     assert cli.main(['verify', str(EXAMPLE)]) == 0
     assert cli.main(['run', str(EXAMPLE), '--provider', 'fixture', '--workspace', str(tmp_path)]) == 0
     summary = read(tmp_path/'summary.json')
-    assert summary['status'] == 'complete' and summary['requests'] == 15
+    work = read(tmp_path/'views/batches.json')
+    assert summary['status'] == 'complete' and summary['requests'] == 21
     assert summary['operational_stages']['translate_assembly']['status'] == 'complete'
     assert summary['exposure_usd'] == 0 and not (tmp_path/'ledger.json').exists()
-    assert tuple(summary['roles']) == r.ROLES
+    assert list(summary['roles']) == [r.role_key(batch, phase) for batch in work for phase in r.PHASES]
     assert set(read(tmp_path/'views/projections.json')) == set(r.STREAMS)
     assert read(tmp_path/'metrics/assembly.json')['quality_gate'] is False
     source, blobs = load_manifest(EXAMPLE, r)
     for name, data in blobs.items():
         assert (tmp_path/'inputs'/name).read_bytes() == data
-    for stream in r.STREAMS:
-        prefix = f'translate_{stream}_b001_'
+    for batch in work:
+        prefix = r.role_key(batch, '')
         author = read(tmp_path/'checkpoints'/f'{prefix}author.json')['output']
         review = read(tmp_path/'checkpoints'/f'{prefix}review.json')['output']
         final = read(tmp_path/'checkpoints'/f'{prefix}final.json')['output']
         assert all(v['pass'] is False for v in review['verdicts'])
-        assert all(d['action'] == 'declined' for d in final['dispositions'])
+        if batch['stream'] == 'teaching':
+            assert final['transport']['protocol'] == r.TEACHING_WIRE_PROTOCOL
+        else:
+            assert all(d['action'] == 'declined' for d in final['dispositions'])
         assert final['artifact'] != author['artifact']
         assert read(tmp_path/'artifacts'/f'{prefix}final.json') == final['artifact']
     packs = {name: read(tmp_path/'artifacts'/name) for name in PACKS}
@@ -119,8 +129,8 @@ def test_cli_five_streams_three_packs_final_owner_and_completed_resume(tmp_path)
     assert len(packs['deck_hi.json']['items']) == len(source['declared']['deck']['cards']) + len(source['declared']['checkins']['check_ins'])
     assert len(packs['practice_hi.json']['items']) == len(source['declared']['practice']['questions'])
     assert len(packs['revise_hi.json']['items']) == len(source['declared']['revise']['cards'])
-    translated = {stream: {item['slot']: item for item in
-                  read(tmp_path/'artifacts'/f'translate_{stream}_b001_final.json')['items']}
+    translated = {stream: {item['slot']: item for batch in work if batch['stream'] == stream
+                  for item in read(tmp_path/'artifacts'/f'{r.role_key(batch, "final")}.json')['items']}
                   for stream in r.STREAMS}
     view = project(source)
     pack_rows = [(d['stream'], d['slot'], item) for d, item in
@@ -197,12 +207,13 @@ def test_every_question_role_is_answer_free_and_allowlisted(tmp_path, monkeypatc
                 assert set(data['review']) == {'verdicts', 'batch_issues'}
                 assert all(set(v) == {'slot', 'pass', 'reason'} for v in data['review']['verdicts'])
             assert set(data) == allowed
-            assert data['items'] == projected[stream]
+            assert data['items'] == [{k: v for k, v in item.items() if k != 'source_hash'}
+                                     for item in projected[stream]]
             native = base['declared']['checkins']['check_ins'] if stream == 'checkin' else base['declared']['practice']['questions']
             for english, item in zip(native, data['items']):
-                assert set(item) <= {'slot', 'source_hash', 'format', 'question_text', 'instruction', 'statement', 'options'}
-                assert len(item['source_hash']) == 20
-                assert set(item) >= {'slot', 'source_hash', 'format', 'options'}
+                assert set(item) <= {'slot', 'format', 'question_text', 'instruction', 'statement', 'options'}
+                assert 'source_hash' not in item
+                assert set(item) >= {'slot', 'format', 'options'}
                 for field in ('question_text', 'instruction', 'statement'):
                     if field in english:
                         assert item[field] == english[field]
@@ -318,17 +329,13 @@ def test_reordered_final_slots_join_by_identity_and_revise_packs_use_source_idx_
     assert [i['question']['display'] for i in revision] == ['अंतिम revise:2', 'अंतिम revise:9']
 
 
-@pytest.mark.parametrize('defect', ('wrong_hash', 'missing_hash', 'missing', 'extra', 'duplicate', 'invalid_slot'))
-def test_unjoinable_final_retains_all_five_artifacts_and_exports_no_subset(tmp_path, monkeypatch, defect):
+@pytest.mark.parametrize('defect', ('missing', 'extra', 'duplicate', 'invalid_slot'))
+def test_unjoinable_final_stops_at_parse_with_raw_author_retained_and_no_subset(tmp_path, monkeypatch, defect):
     def break_identity(role, data, value):
         if role != 'translate_teaching_b001_final':
             return
         items = value['artifact']['items']
-        if defect == 'wrong_hash':
-            items[0]['source_hash'] = []
-        elif defect == 'missing_hash':
-            items[0].pop('source_hash')
-        elif defect == 'missing':
+        if defect == 'missing':
             items.pop()
         elif defect == 'extra':
             items.append({**items[0], 'slot': 'teaching:unknown'})
@@ -339,24 +346,23 @@ def test_unjoinable_final_retains_all_five_artifacts_and_exports_no_subset(tmp_p
 
     intercept(monkeypatch, break_identity)
     run = runner(tmp_path)
-    with pytest.raises(ValueError, match='operational assembly failed'):
+    with pytest.raises(ValueError, match='required stage unavailable'):
         invoke(run)
-    assert len(run.ledger['calls']) == 15
-    assert all(read(p)['status'] == 'ok' for p in (tmp_path/'checkpoints').glob('*.json'))
-    assert len(list((tmp_path/'artifacts').glob('translate_*_final.json'))) == 5
-    for stream in r.STREAMS:
-        role = f'translate_{stream}_b001_final'
-        assert read(tmp_path/'artifacts'/f'{role}.json') == run.output(role)['artifact']
+    # This fixture has no provider token receipt, so recovery cannot repeat it.
+    assert len(run.ledger['calls']) == 3
+    role = 'translate_teaching_b001_final'
+    assert read(tmp_path/'checkpoints'/f'{role}.json')['status'] == 'failed'
+    raw = read(tmp_path/'responses'/f'{role}.json')
+    assert json.loads(raw['output']['message']['content'][0]['text'])
+    assert not list((tmp_path/'artifacts').glob('translate_*_final.json'))
     assert not any((tmp_path/'artifacts'/name).exists() for name in PACKS)
     summary = report(tmp_path, r)
     assert summary['status'] == 'partial_or_failed'
-    assert all(status == 'ok' for status in summary['roles'].values())
-    assert summary['operational_stages']['translate_assembly']['status'] == 'failed'
-    assert read(tmp_path/'metrics/assembly.json') == {
-        'status': 'failed', 'kind': 'operational_identity_join', 'quality_gate': False, 'final_artifacts_preserved': True}
-    with pytest.raises(ValueError, match='operational assembly failed'):
+    assert summary['roles'][role] == 'failed'
+    assert summary['operational_stages']['translate_assembly']['status'] == 'unavailable'
+    with pytest.raises(ValueError, match='required stage unavailable'):
         invoke(Runner(tmp_path, r, resume=True))
-    assert len(read(tmp_path/'synthetic-ledger.json')['calls']) == 15
+    assert len(read(tmp_path/'synthetic-ledger.json')['calls']) == 3
 
 
 def test_imperfect_final_fields_are_retained_without_quality_veto_or_rewrite(tmp_path, monkeypatch):
@@ -366,19 +372,20 @@ def test_imperfect_final_fields_are_retained_without_quality_veto_or_rewrite(tmp
             item['options_display'] = ['अपूर्ण अंतिम विकल्प']
             item.pop('question_audio')
         elif role == 'translate_teaching_b001_final':
-            value['artifact']['items'][0]['lines'] = []
-            value['artifact']['items'][0].pop('title_display')
+            # Preserve native narration correspondence without judging wording.
+            value['artifact']['items'][0]['lines'][0]['display'] = ''
+            value['artifact']['items'][0]['title_display'] = ''
 
     intercept(monkeypatch, imperfect)
     run = runner(tmp_path)
     invoke(run)
     assert report(tmp_path, r)['status'] == 'complete'
-    assert len(run.ledger['calls']) == 15
+    assert len(run.ledger['calls']) == 21
     first = read(tmp_path/'artifacts/deck_hi.json')['items'][0]
-    assert first['lines'] == [] and 'title_display' not in first
+    assert first['lines'][0]['display'] == '' and first['title_display'] == ''
     final = next(i for i in final_items(run, 'practice') if i.get('options_display') == ['अपूर्ण अंतिम विकल्प'])
     item = next(i for i in read(tmp_path/'artifacts/practice_hi.json')['items']
-                if i['source']['source_question_hash'] == final['source_hash'])
+                if i['source']['question_id'] == final['slot'].split(':', 1)[1])
     assert item['options_display'] == final['options_display'] and 'question_audio' not in item
     assert len(item['english_options']) > len(item['options_display'])
 
@@ -411,8 +418,8 @@ def test_optional_empty_streams_make_valid_empty_packs(tmp_path, mode):
     run = runner(tmp_path, base)
     invoke(run)
     assert report(tmp_path, r)['status'] == 'complete'
-    assert len(run.ledger['calls']) == 3
-    assert [batch['stream'] for batch in read(tmp_path/'views/batches.json')] == ['teaching']
+    assert len(run.ledger['calls']) == 9
+    assert [batch['stream'] for batch in read(tmp_path/'views/batches.json')] == ['teaching']*3
     assert read(tmp_path/'artifacts/practice_hi.json')['items'] == []
     assert read(tmp_path/'artifacts/revise_hi.json')['items'] == []
     assert len(read(tmp_path/'artifacts/deck_hi.json')['items']) == 12
@@ -430,12 +437,12 @@ def test_interrupted_between_roles_resume_and_raw_byte_freeze(tmp_path, monkeypa
     monkeypatch.setattr(run, 'role', stop)
     with pytest.raises(KeyboardInterrupt):
         invoke(run)
-    assert len(run.ledger['calls']) == 10
+    assert len(run.ledger['calls']) == 16
     prior = {p.name: p.read_bytes() for p in (tmp_path/'requests').glob('*.json')}
     resumed = Runner(tmp_path, r, resume=True)
     invoke(resumed)
     assert report(tmp_path, r)['status'] == 'complete'
-    assert len(resumed.ledger['calls']) == len({c['key'] for c in resumed.ledger['calls']}) == 15
+    assert len(resumed.ledger['calls']) == len({c['key'] for c in resumed.ledger['calls']}) == 21
     assert all((tmp_path/'requests'/name).read_bytes() == data for name, data in prior.items())
     frozen = tmp_path/'inputs'/resumed.bundle['file_identity']['deck']['file']
     before = read(frozen)
@@ -457,11 +464,11 @@ def test_interrupted_inflight_call_cannot_resend(tmp_path, monkeypatch):
     run = runner(tmp_path)
     with pytest.raises(KeyboardInterrupt):
         invoke(run)
-    assert len(run.ledger['calls']) == 4
+    assert len(run.ledger['calls']) == 10
     assert report(tmp_path, r)['status'] == 'partial_or_failed'
     with pytest.raises(RuntimeError, match='manual reconciliation required; no repeat'):
         invoke(Runner(tmp_path, r, resume=True))
-    assert len(read(tmp_path/'synthetic-ledger.json')['calls']) == 4
+    assert len(read(tmp_path/'synthetic-ledger.json')['calls']) == 10
 
 
 def test_native_example_lineage_has_exact_predecessor_artifact_bytes():

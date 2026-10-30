@@ -1,5 +1,6 @@
 """Generalized new LangGraph path using the attributed, frozen G1 prompts."""
 import json
+import math
 from types import SimpleNamespace
 from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -158,11 +159,121 @@ def export_evidence(workspace, role, result):
             'artifact_sha256': sha(canonical(artifact)), 'file_sha256': sha(path.read_bytes())}
 
 
+def recovery_budget(identity, ledger):
+    """Validate the new frozen recovery/accounting contract without any call."""
+    from ..providers import validate_config
+    from ..runtime import recovery_policy
+    config = validate_config(identity['config'])
+    current = recovery_policy(config)
+    policy = identity.get('technical_recovery')
+    if (not isinstance(policy, dict) or type(policy.get('version')) is not int or
+            policy not in (current, {**current, 'version': 1}) or
+            ledger.get('technical_recovery') != policy):
+        raise ValueError('Recovery policy identity')
+    paid = config['provider'] == 'bedrock'
+    reservation = ((config['input_token_bound']*config['input_per_million'] +
+                    config['max_output_tokens']*config['output_per_million'])/1_000_000) if paid else 0
+    exposure = 0
+    for call in ledger['calls']:
+        amount = call['reserved_usd']
+        if type(amount) not in (int, float) or not math.isfinite(amount) or amount < 0:
+            raise ValueError('Invalid reservation')
+        if call.get('synthetic') is not (not paid):
+            raise ValueError('Provider accounting identity')
+        if paid and (amount != reservation or exposure+reservation > config['cap_usd']):
+            raise ValueError('Frozen paid reservation or cumulative cap')
+        usage = call.get('usage')
+        settled = isinstance(usage, dict) and all(type(usage.get(k)) is int and usage[k] >= 0
+                                                for k in ('inputTokens', 'outputTokens'))
+        if 'actual_usd' in call:
+            actual = ((usage['inputTokens']*config['input_per_million'] +
+                       usage['outputTokens']*config['output_per_million'])/1_000_000) if paid and settled else 0
+            if (paid and not settled or call['status'] != 'response' or
+                    type(call['actual_usd']) not in (int, float) or call['actual_usd'] != actual):
+                raise ValueError('Settled usage accounting identity')
+            exposure += actual
+        else:
+            if paid and settled:
+                raise ValueError('Settled paid usage missing charge')
+            exposure += amount
+    return policy
+
+
+def recovery_evidence(workspace, key, role, original, matches, result, notes_pages, policy):
+    """Reconstruct each physical request; preserve the final logical lookup."""
+    from ..runtime import model_response_json, recovery_request, request_evidence, technical_feedback
+    if not 1 <= len(matches) <= policy['max_additional_attempts']+1:
+        raise ValueError('Unexpected recovery attempt count')
+    expected_request = original
+    previous_response, previous_result = None, None
+    root = workspace/'attempts'/key
+    if {p.name for p in root.iterdir()} != {f'{n:03d}' for n in range(1, len(matches)+1)}:
+        raise ValueError('Unexpected or interrupted physical attempt evidence')
+    for number, call in enumerate(matches, 1):
+        if type(call.get('attempt')) is not int or call['attempt'] != number or call['role'] != role:
+            raise ValueError('Physical attempt order or role identity')
+        if number > 1:
+            if (previous_result.get('status') != 'failed' or not previous_result.get('retry_eligible') or
+                    previous_response is None or previous_response.get('stopReason') != 'end_turn'):
+                raise ValueError('Physical retry did not follow a settled technical failure')
+            usage = previous_response.get('usage')
+            if not isinstance(usage, dict) or not all(type(usage.get(k)) is int and usage[k] >= 0
+                                                    for k in ('inputTokens', 'outputTokens')):
+                raise ValueError('Physical retry followed unsettled usage')
+            raw = ''.join(item.get('text', '') for item in previous_response['output']['message']['content'])
+            phase = 'json'
+            try:
+                text, _ = model_response_json(raw)
+                phase = 'native'
+                parse(role, text, notes_pages)
+            except (ValueError, KeyError, TypeError) as error:
+                feedback = technical_feedback(error, phase)
+                if previous_result.get('technical_feedback') != feedback:
+                    raise ValueError('Technical recovery feedback identity')
+            else:
+                raise ValueError('Physical retry followed an already usable response')
+            expected_request = recovery_request(original, raw, feedback, version=policy['version'])
+        directory = root/f'{number:03d}'
+        saved_request = read(directory/'request.json')
+        checkpoint = read(directory/'checkpoint.json')
+        if (call['request_sha256'] != sha(canonical(saved_request)) or
+                canonical(saved_request) != canonical(request_evidence(expected_request)) or
+                call.get('checkpoint_sha256') != sha(canonical(checkpoint)) or
+                checkpoint['status'] not in ('ok', 'failed')):
+            raise ValueError('Physical attempt request or checkpoint identity')
+        if number == 1 and canonical(read(workspace/'requests'/f'{key}.json')) != canonical(saved_request):
+            raise ValueError('Original request compatibility view changed')
+        raw_response = None
+        if call['status'] == 'response':
+            raw_response = read(directory/'response.json')
+            if (call.get('response_sha256') != sha(canonical(raw_response)) or
+                    call.get('usage') != raw_response.get('usage') or
+                    call.get('stop_reason') != raw_response.get('stopReason')):
+                raise ValueError('Physical response or usage identity')
+            if number == 1 and canonical(read(workspace/'responses'/f'{key}.json')) != canonical(raw_response):
+                raise ValueError('Original response compatibility view changed')
+            if checkpoint['status'] == 'ok':
+                if raw_response.get('stopReason') != 'end_turn':
+                    raise ValueError('Successful checkpoint from nonfinal response')
+                raw = ''.join(item.get('text', '') for item in raw_response['output']['message']['content'])
+                text, framing = model_response_json(raw)
+                if (canonical(parse(role, text, notes_pages)) != canonical(checkpoint['output']) or
+                        checkpoint.get('response_framing') != framing):
+                    raise ValueError('Successful checkpoint differs from author response')
+        elif (call['status'] != 'ambiguous_or_rejected' or checkpoint['status'] != 'failed' or
+                'response_sha256' in call or (directory/'response.json').exists()):
+            raise ValueError('Unsettled physical attempt identity')
+        previous_response, previous_result = raw_response, checkpoint
+    if canonical(previous_result) != canonical(result):
+        raise ValueError('Latest logical checkpoint differs from final physical attempt')
+
+
 def report_completion(workspace, identity, ledger, results):
     """Guideline-only operational rule, opted into by NEW frozen identities.
 
     Reconstruct requests offline to check image/selection/review dependencies. Never
-    create a provider, reinterpret failed replies, repair exports or mutate evidence.
+    create a provider, repair exports or mutate evidence. New recovery identities
+    also verify every physical attempt and the bounded correction request chain.
     Legacy identities keep the report's original all-final-roles rule.
     """
     if 'completion_contract' not in identity:
@@ -188,6 +299,16 @@ def report_completion(workspace, identity, ledger, results):
                     {'technical_failure': {'role': role, 'status': 'unavailable'}})
         view = SimpleNamespace(bundle=bundle, blobs=blobs, output=output)
         calls = ledger['calls']
+        policy = None
+        if 'technical_recovery' in identity:
+            from ..runtime import recovery_policy
+            policy = recovery_policy(identity['config'])
+            try:
+                policy = recovery_budget(identity, ledger)
+            except (ValueError, RuntimeError, OSError, KeyError, TypeError):
+                # Continue enumerating evidence so an interrupted reservation is
+                # visible in checkpoint statuses as well as aggregate exposure.
+                block('recovery_accounting_identity')
         expected = set()
         for role in ROLES:
             notes, stopped = [], False
@@ -204,18 +325,23 @@ def report_completion(workspace, identity, ledger, results):
                     continue
                 checkpoints[key] = result.get('status', 'invalid') if result else 'interrupted_without_checkpoint'
                 try:
-                    if stopped or len(matches) != 1 or result is None:
+                    if stopped or not matches or result is None:
                         raise ValueError('Unexpected or interrupted request')
-                    call = matches[0]
+                    request_value = request(view, role, declared(view, role), batch, notes, final)
+                    if policy is not None:
+                        recovery_evidence(workspace, key, role, request_value, matches, result,
+                                          None if final else [p['printed_page'] for p in batch], policy)
+                    elif len(matches) != 1:
+                        raise ValueError('Legacy request has multiple physical calls')
+                    call = matches[-1]
                     if (call['role'] != role or call.get('checkpoint_sha256') != sha(canonical(result)) or
                             result['status'] not in ('ok', 'failed') or
                             call['status'] not in ('response', 'ambiguous_or_rejected') or
                             result['status'] == 'ok' and call['status'] != 'response'):
                         raise ValueError('Checkpoint/ledger identity')
                     saved_request = read(workspace/'requests'/f'{key}.json')
-                    if call['request_sha256'] != sha(canonical(saved_request)):
+                    if matches[0]['request_sha256'] != sha(canonical(saved_request)):
                         raise ValueError('Saved request identity')
-                    request_value = request(view, role, declared(view, role), batch, notes, final)
                     evidence = json.loads(json.dumps(request_value, default=lambda data: {'sha256': sha(data), 'bytes': len(data)}))
                     if canonical(evidence) != canonical(saved_request):
                         raise ValueError('Request/dependency identity')
@@ -266,7 +392,8 @@ def report_completion(workspace, identity, ledger, results):
 
 def observations(results):
     notes = ['No post-author content-quality gate ran. Returned envelopes and artifact fields are preserved.',
-             'JSON/transport failures stop or leave partial evidence; automatic format/truncation recovery is not implemented.']
+             'New runs permit bounded same-role technical response correction with settled usage; '
+             'ambiguous transport, missing usage and nonfinal provider stops are never automatically retried.']
     for role in ('coverage', 'accuracy', 'structure'):
         output = results.get(role, {}).get('output', {})
         if output.get('ok') is False:

@@ -5,6 +5,7 @@ import difflib
 import json
 import os
 from pathlib import Path
+import re
 import socket
 import sys
 from PIL import Image
@@ -59,8 +60,19 @@ def local_stubs(monkeypatch):
         directory.mkdir(parents=True, exist_ok=True)
         path = directory/'clip.wav'; path.write_bytes(b'explicit synthetic binary')
         clip = {'file': path.name, 'sha256': sha(path.read_bytes()), 'source_file': {'file':path.name,'sha256':sha(path.read_bytes())}}
-        return {'audio': clip, 'clips': [clip], 'blocks': blocks,
-                'words': [], 'word_timing': 'estimated', 'alignment_verified': False}
+        timeline, words = [], []
+        for index, block in enumerate(blocks):
+            matches = list(re.finditer(r'\S+', block['script']))
+            start = index*10000
+            timeline.append({**block, 'index': index, 'start_ms': start,
+                             'end_ms': start+len(matches)*100})
+            words.extend({'block': index, 'text': match.group(), 'char_start': match.start(),
+                          'char_end': match.end(), 'start_ms': start+j*100, 'end_ms': start+(j+1)*100,
+                          'timing_basis': 'estimated uniform word interpolation', 'alignment_verified': False}
+                         for j, match in enumerate(matches))
+        return {'audio': {**clip, 'duration_ms': timeline[-1]['end_ms']},
+                'clips': [clip], 'blocks': timeline,
+                'words': words, 'word_timing': 'estimated', 'alignment_verified': False}
     monkeypatch.setattr(boards.media, 'synthesize', speech)
 
 

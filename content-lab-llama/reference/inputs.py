@@ -59,6 +59,7 @@ def runtime_identity():
     paths += sorted((ROOT/'prompts').rglob('*.md'))
     paths += sorted((ROOT/'schemas').rglob('*.json'))
     paths += sorted((ROOT/'media').glob('*.mjs'))
+    paths += sorted((ROOT/'media').glob('*.js'))
     paths += [p for p in (ROOT/'media/package.json', ROOT/'media/package-lock.json') if p.exists()]
     packages = [line.split('==')[0] for line in (ROOT/'requirements.lock').read_text().splitlines() if '==' in line]
     return {'files': {str(p.relative_to(ROOT)): sha(p.read_bytes()) for p in paths},

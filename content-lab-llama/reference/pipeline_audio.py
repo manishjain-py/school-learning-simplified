@@ -1,4 +1,4 @@
-"""One frozen local narration execution; completed evidence can be verified/reused."""
+"""Frozen local narration with versioned, bounded per-clip recovery."""
 from pathlib import Path
 import re
 import stat
@@ -101,27 +101,50 @@ def create_audio(bundle, blobs, manifest_bytes, workspace, *, factory):
                     *(f'inputs/{name}' for name in blobs)}
     # All bytes and the selected local tool/runtime identity are durable before
     # speech execution. Even an interrupted/failed execution occupies this run.
-    save(workspace/'identity.json', {'schema': 'local-audio-run/v1', 'factory': 'audio',
+    save(workspace/'identity.json', {'schema': 'local-audio-run/v2', 'factory': 'audio',
          'input_sha256': sha(canonical(bundle)), 'manifest_sha256': sha(manifest_bytes),
          'runtime': runtime_identity(), 'execution': media.runtime_identity(),
-         'frozen_files': _hashes(workspace, frozen_names), 'paid_calls': 0})
+         'frozen_files': _hashes(workspace, frozen_names), 'paid_calls': 0,
+         'recovery': 'local-narration-recovery/v1'})
+    return _execute_audio(bundle, workspace, factory, scripts)
+
+
+def _execute_audio(bundle, workspace, factory, scripts):
+    attempts = workspace/'execution-attempts'
+    attempts.mkdir(exist_ok=True)
+    attempt = attempts/f'{len(list(attempts.iterdir()))+1:03d}'
+    attempt.mkdir()
+    save(attempt/'started.json', {'identity_sha256': sha((workspace/'identity.json').read_bytes()),
+                                'paid_calls': 0})
+    if (workspace/'summary.json').is_file():
+        # Preserve the previous outcome before a resumed execution updates the
+        # latest summary. Per-clip logs/files remain in their original paths.
+        (attempt/'previous-summary.json').write_bytes((workspace/'summary.json').read_bytes())
+    if (workspace/'outputs.json').is_file():
+        (attempt/'previous-outputs.json').write_bytes((workspace/'outputs.json').read_bytes())
     try:
         speech, supplied = factory.narration_inputs(bundle, workspace)
         result = media.synthesize(scripts, workspace/'audio', speech, supplied, allowed_roots=[workspace])
         narration = _narration(workspace, scripts, result)
-        save(workspace/'outputs.json', {'schema': 'local-audio-files/v1', 'files': _hashes(workspace/'audio')})
+        save(attempt/'result.json', {'status': 'complete', 'blocks': len(scripts), 'audio': narration['audio']})
+        save(workspace/'outputs.json', {'schema': 'local-audio-files/v1', 'files': _hashes(workspace/'audio'),
+                                      'execution_files': _hashes(attempts)})
         summary = _summary(workspace, scripts, narration)
         save(workspace/'summary.json', summary)
         return summary
     except Exception as error:
-        save(workspace/'summary.json', {'status': 'failed', 'paid_calls': 0,
-             'kind': 'local_audio_execution', 'error_type': type(error).__name__, 'error': str(error)})
+        failed = {'status': 'failed', 'paid_calls': 0,
+                  'kind': 'local_audio_execution', 'error_type': type(error).__name__, 'error': str(error)}
+        # A recording failure after successful media is distinct from that
+        # already retained execution outcome; do not overwrite its receipt.
+        save(attempt/('closeout-error.json' if (attempt/'result.json').exists() else 'result.json'), failed)
+        save(workspace/'summary.json', failed)
         raise
 
 
-def _completed(bundle, blobs, manifest_bytes, workspace, factory):
+def _verified_inputs(bundle, blobs, manifest_bytes, workspace, factory):
     identity = read(workspace/'identity.json')
-    if not isinstance(identity, dict) or identity.get('schema') != 'local-audio-run/v1' or identity.get('factory') != 'audio':
+    if not isinstance(identity, dict) or identity.get('schema') not in ('local-audio-run/v1', 'local-audio-run/v2') or identity.get('factory') != 'audio':
         raise ValueError('Audio identity lacks the frozen resume contract')
     if identity['runtime'] != runtime_identity() or identity['execution'] != media.runtime_identity():
         raise ValueError('Frozen audio runtime or local tools changed')
@@ -137,9 +160,16 @@ def _completed(bundle, blobs, manifest_bytes, workspace, factory):
     scripts, origins = factory.blocks(frozen)
     if read(workspace/'scripts.json') != scripts or read(workspace/'origins.json') != _origins(frozen, origins):
         raise ValueError('Frozen audio scripts/origins differ from native projection')
+    return identity, scripts
+
+
+def _completed(bundle, blobs, manifest_bytes, workspace, factory):
+    identity, scripts = _verified_inputs(bundle, blobs, manifest_bytes, workspace, factory)
     outputs = read(workspace/'outputs.json')
     if not isinstance(outputs, dict) or outputs.get('schema') != 'local-audio-files/v1' or outputs.get('files') != _hashes(workspace/'audio'):
         raise ValueError('Audio output file hashes or file set changed')
+    if identity['schema'] == 'local-audio-run/v2' and outputs.get('execution_files') != _hashes(workspace/'execution-attempts'):
+        raise ValueError('Audio execution attempt evidence changed')
     narration = _narration(workspace, scripts)
     summary = _summary(workspace, scripts, narration)
     if read(workspace/'summary.json') != summary:
@@ -148,11 +178,11 @@ def _completed(bundle, blobs, manifest_bytes, workspace, factory):
 
 
 def ensure_audio(manifest: Path, workspace: Path) -> dict:
-    """Create once or verify/reuse COMPLETE audio; never repeat incomplete speech.
+    """Verify completed audio, or resume new versioned per-clip execution.
 
     The native manifest explicitly declares every input. Media receives only this
-    frozen workspace as its allowed root. Legacy or partial evidence requires
-    manual reconciliation; no evidence is deleted and no replacement run is made.
+    frozen workspace as its allowed root. Legacy or unmarked partial evidence
+    requires manual reconciliation; no evidence is deleted or relocated.
     """
     import run_audio
 
@@ -166,8 +196,17 @@ def ensure_audio(manifest: Path, workspace: Path) -> dict:
             return {**create_audio(bundle, blobs, manifest_bytes, workspace, factory=run_audio), 'reused': False}
         try:
             summary = read(workspace/'summary.json') if (workspace/'summary.json').is_file() else None
-            if not isinstance(summary, dict) or summary.get('status') != 'complete':
+            if isinstance(summary, dict) and summary.get('status') == 'complete':
+                return {**_completed(bundle, blobs, manifest_bytes, workspace, run_audio), 'reused': True}
+            identity, scripts = _verified_inputs(bundle, blobs, manifest_bytes, workspace, run_audio)
+            audio_root = workspace/'audio'
+            intent = audio_root/'narration-intent.json'
+            if (identity.get('schema') != 'local-audio-run/v2'
+                    or identity.get('recovery') != 'local-narration-recovery/v1'
+                    or (audio_root.exists() and any(audio_root.iterdir()) and not intent.is_file())):
                 raise RuntimeError('Audio workspace is incomplete; manual reconciliation required; no automatic resynthesis')
-            return {**_completed(bundle, blobs, manifest_bytes, workspace, run_audio), 'reused': True}
+            if intent.exists() and read(intent).get('schema') != 'local-narration-recovery/v1':
+                raise ValueError('Partial narration recovery contract changed')
+            return {**_execute_audio(bundle, workspace, run_audio, scripts), 'reused': False, 'resumed': True}
         except (ValueError, KeyError, TypeError, OSError) as error:
             raise RuntimeError(f'Audio reuse refused: {error}; manual reconciliation required') from error

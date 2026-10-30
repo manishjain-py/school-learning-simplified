@@ -9,6 +9,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import html
+import io
 import json
 import math
 import os
@@ -24,10 +25,43 @@ from array import array
 ROOT = Path(__file__).resolve().parents[1]
 MEDIA = ROOT / 'media'
 RATE = 24000
+SPEECH_ATTEMPT_LIMIT = 2
 
 
 class MediaError(RuntimeError):
     pass
+
+
+class BoardTimingError(MediaError):
+    """An unresolved emphasis dependency, with source indices and times only."""
+    def __init__(self, details):
+        self.details = copy.deepcopy(details)
+        super().__init__('Emphasis requires an already completed node')
+
+
+class BoardAnchorError(MediaError):
+    """An unresolved exact phrase occurrence, with numeric source positions only."""
+    def __init__(self, beat_index, block_index, match_count, occurrence):
+        if any(type(value) is not int or not 0 <= value <= 10**12
+               for value in (beat_index, block_index, match_count)):
+            raise ValueError('Invalid board anchor diagnostic')
+        # Never retain the authored phrase, IDs, paths or invalid scalar text.
+        # None preserves the compiler's existing omitted/null default semantics.
+        if occurrence is None:
+            kind = 0
+        elif type(occurrence) is int and abs(occurrence) <= 10**12:
+            kind = 1
+        else:
+            kind = 2
+        self.details = {'beat_index': beat_index, 'narration_block_index': block_index,
+                        'exact_match_count': match_count, 'requested_occurrence_type': kind}
+        if kind == 1:
+            self.details['requested_occurrence'] = occurrence
+        super().__init__('Exact phrase requires a valid narration occurrence')
+
+
+class MediaTimeout(MediaError):
+    """A local process timeout; the process group has already been stopped."""
 
 
 def _json(value):
@@ -54,10 +88,12 @@ def _allowed(path, roots):
 
 
 def _output(path, roots):
+    if Path(path).is_symlink():
+        raise MediaError('Output directories may not be symlinks')
     path = _allowed(path, roots)
-    path.mkdir(parents=True, exist_ok=True)
     if any(p.is_symlink() for p in path.rglob('*')):
         raise MediaError('Output directories may not contain symlinks')
+    path.mkdir(parents=True, exist_ok=True)
     return path
 
 
@@ -77,13 +113,55 @@ def _run(args, timeout=120):
     except subprocess.TimeoutExpired as error:
         # A renderer timeout must also terminate its disposable browser children.
         os.killpg(process.pid, signal.SIGKILL)
-        process.communicate()
-        raise MediaError('Local tool failed: TimeoutExpired; process group terminated') from error
+        stdout, stderr = process.communicate()
+        failure = MediaTimeout('Local tool failed: TimeoutExpired; process group terminated')
+        failure.stdout, failure.stderr = stdout, stderr
+        raise failure from error
     except OSError as error:
         raise MediaError(f'Local tool failed: {type(error).__name__}') from error
+    except BaseException:
+        if process is not None and process.poll() is None:
+            os.killpg(process.pid, signal.SIGKILL)
+            process.communicate()
+        raise
     if process.returncode:
         raise MediaError(f'Local tool {Path(str(args[0])).name} failed: {stderr[-1800:]}')
     return stdout
+
+
+def visual_body_syntax(code):
+    """Parse the exact Pixi viewer body without invoking any authored JavaScript.
+
+    The fixed Node program receives source on stdin, constructs the viewer's
+    function with its exact parameter/wrapper ABI, and never calls that function.
+    False means an actual SyntaxError; local tool failures remain nonrecoverable.
+    """
+    if not isinstance(code, str) or not code.strip():
+        raise ValueError('Visual pixi_code must be a nonblank string')
+    checker = r'''
+let source = '';
+process.stdin.setEncoding('utf8');
+process.stdin.on('data', chunk => { source += chunk; });
+process.stdin.on('end', () => {
+  try {
+    new Function('app', 'PIXI', '"use strict"; return (async()=>{' + source + '\n})();');
+    process.stdout.write('valid');
+  } catch (error) {
+    if (error instanceof SyntaxError) process.stdout.write('syntax_error');
+    else process.exitCode = 1;
+  }
+});
+'''
+    try:
+        result = subprocess.run([_tool('node'), '-e', checker], input=code, text=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+    except subprocess.TimeoutExpired as error:
+        raise MediaTimeout('Visual syntax checker timed out') from error
+    except OSError as error:
+        raise MediaError('Visual syntax checker unavailable') from error
+    if result.returncode or result.stdout not in ('valid', 'syntax_error'):
+        raise MediaError('Visual syntax checker failed')
+    return result.stdout == 'valid'
 
 
 def _descriptor(path, root, **metadata):
@@ -147,6 +225,110 @@ def _decode(source, target):
     return frames, duration_ms, round(rms, 3)
 
 
+def _retain_bytes(path, value):
+    """Never replace evidence during local recovery."""
+    if path.exists():
+        if path.read_bytes() != value:
+            raise MediaError('Frozen narration evidence changed: ' + path.name)
+        return
+    temporary = path.with_name(path.name + '.pending')
+    temporary.write_bytes(value)
+    os.replace(temporary, path)
+
+
+def _retain_json(path, value):
+    _retain_bytes(path, (json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False) + '\n').encode())
+
+
+def _speech_files(root, excluded=()):
+    if root.is_symlink() or any(p.is_symlink() for p in root.rglob('*')):
+        raise MediaError('Narration evidence may not contain symlinks')
+    return {str(p.relative_to(root)): {'sha256': _hash(p), 'bytes': p.stat().st_size}
+            for p in sorted(root.rglob('*')) if p.is_file() and str(p.relative_to(root)) not in excluded}
+
+
+def _saved_clip(out, clip):
+    for descriptor in (clip, clip['source_file']):
+        relative = Path(descriptor['file'])
+        path = out/relative
+        if relative.is_absolute() or '..' in relative.parts or path.is_symlink() or not path.is_file():
+            raise MediaError('Invalid completed speech clip path')
+        if _hash(path) != descriptor['sha256'] or path.stat().st_size != descriptor['bytes']:
+            raise MediaError('Completed speech clip bytes changed')
+    with wave.open(str(out/clip['file']), 'rb') as audio:
+        if (audio.getframerate(), audio.getnchannels(), audio.getsampwidth()) != (RATE, 1, 2):
+            raise MediaError('Completed speech PCM format changed')
+        pcm = audio.readframes(audio.getnframes())
+        duration = audio.getnframes()/RATE*1000
+    if duration != clip['duration_ms']:
+        raise MediaError('Completed speech clip duration changed')
+    return pcm, clip
+
+
+def _speech_clip(out, index, script, script_file, config, origin, provided, intent_sha256):
+    """Two durable attempts maximum; only timeouts/interruption may continue."""
+    attempts = out/'attempts'/f'clip-{index:03d}'
+    attempts.mkdir(parents=True, exist_ok=True)
+    directories = sorted(attempts.iterdir())
+    if [p.name for p in directories] != [f'{n:02d}' for n in range(1, len(directories)+1)] or len(directories) > SPEECH_ATTEMPT_LIMIT:
+        raise MediaError('Invalid speech attempt evidence')
+    expected = {'schema': 'local-speech-attempt/v1', 'intent_sha256': intent_sha256,
+                'index': index, 'script_sha256': hashlib.sha256(script.encode()).hexdigest(),
+                'source': origin, 'attempt_limit': SPEECH_ATTEMPT_LIMIT}
+    for directory in directories:
+        if json.loads((directory/'attempt.json').read_text()) != expected:
+            raise MediaError('Frozen speech attempt identity changed')
+        result_path = directory/'result.json'
+        if not result_path.exists():
+            # The process ended before recording a result. Retain its partial
+            # files and consume the attempt; never overwrite or adopt them.
+            _retain_json(result_path, {'status': 'interrupted', 'retryable': True,
+                                      'files': _speech_files(directory)})
+        result = json.loads(result_path.read_text())
+        if result['files'] != _speech_files(directory, ('result.json',)):
+            raise MediaError('Retained speech attempt files changed')
+        if result['status'] == 'complete':
+            clip = result['clip']
+            if clip['index'] != index or clip['script'] != script or clip['source'] != origin:
+                raise MediaError('Completed speech clip identity changed')
+            return _saved_clip(out, clip)
+        if not result.get('retryable'):
+            raise MediaError('Previous local speech attempt failed; manual reconciliation required')
+    for number in range(len(directories)+1, SPEECH_ATTEMPT_LIMIT+1):
+        directory = attempts/f'{number:02d}'
+        directory.mkdir()
+        _retain_json(directory/'attempt.json', expected)
+        phase = 'speech'
+        try:
+            if provided is not None:
+                source = Path(provided['path'])
+                frozen = directory/('source'+source.suffix)
+                shutil.copyfile(source, frozen)
+            else:
+                frozen = directory/'source.aiff'
+                _run([_tool('say'), '-v', config['voice'], '-r', str(config['rate']),
+                      '-f', script_file, '-o', frozen])
+            phase = 'decode'
+            decoded = directory/'decoded.wav'
+            pcm, duration, rms = _decode(frozen, decoded)
+            clip = {**_descriptor(decoded, out), 'index': index, 'script': script,
+                    'script_sha256': hashlib.sha256(script.encode()).hexdigest(),
+                    'source': origin, 'source_file': _descriptor(frozen, out),
+                    'duration_ms': duration, 'duration_basis': 'decoded PCM samples', 'pcm_rms': rms}
+            _retain_json(directory/'result.json', {'status': 'complete', 'clip': clip,
+                                                  'files': _speech_files(directory)})
+            return pcm, clip
+        except Exception as error:
+            retryable = isinstance(error, MediaTimeout) and phase == 'speech' and provided is None
+            _retain_json(directory/'result.json', {'status': 'failed', 'retryable': retryable,
+                         'phase': phase, 'error_type': type(error).__name__, 'error': str(error),
+                         'stdout': getattr(error, 'stdout', None), 'stderr': getattr(error, 'stderr', None),
+                         'files': _speech_files(directory)})
+            if not retryable:
+                raise
+    raise MediaError(f'Local speech exhausted its {SPEECH_ATTEMPT_LIMIT} retained attempts')
+
+
 def synthesize(lines, output_dir, config=None, supplied_clips=None, *, allowed_roots):
     """Ordered scripts -> frozen clips + measured WAV + estimated word positions.
 
@@ -154,6 +336,8 @@ def synthesize(lines, output_dir, config=None, supplied_clips=None, *, allowed_r
     block indices to {path,sha256}. config: voice, language, rate, gap_ms,
     leading_gap_ms. Returned filenames are relative to output_dir. Failures raise
     MediaError after scripts are retained; no synthesized content is substituted.
+    Versioned per-clip receipts permit bounded local recovery without repeating
+    completed speech. Legacy output directories cannot enter this protocol.
     """
     config = dict(config or {})
     unknown = set(config) - {'voice', 'language', 'rate', 'gap_ms', 'leading_gap_ms'}
@@ -163,7 +347,14 @@ def synthesize(lines, output_dir, config=None, supplied_clips=None, *, allowed_r
     if not isinstance(lines, list) or not lines:
         raise MediaError('Speech requires a nonempty ordered script list')
     blocks = [dict(script=line, display=line, kind='line') if isinstance(line, str) else copy.deepcopy(line) for line in lines]
-    _save(out/'scripts.json', blocks)
+    fresh_output = not any(out.iterdir())
+    intent_path = out/'narration-intent.json'
+    if fresh_output:
+        # Keep exact author scripts even when local voice/config preflight
+        # rejects execution. Such unstarted, unmarked evidence is not retried.
+        _retain_json(out/'scripts.json', blocks)
+    elif not intent_path.is_file():
+        raise MediaError('Existing narration lacks the local recovery contract; manual reconciliation required')
     supplied_clips = supplied_clips or {}
     if set(str(key) for key in supplied_clips) - set(str(i) for i in range(len(blocks))):
         raise MediaError('Supplied clips contain unknown block indices')
@@ -182,6 +373,38 @@ def synthesize(lines, output_dir, config=None, supplied_clips=None, *, allowed_r
         matching = [row for row in inventory if row['voice'] == voice and row['locale'].split('_')[0] == language.split('-')[0].split('_')[0]]
         if not matching:
             raise MediaError('Requested voice/language is not in installed say inventory')
+    sources = {}
+    for index, block in enumerate(blocks):
+        if not isinstance(block, dict) or not isinstance(block.get('script'), str) or not block['script'].strip():
+            raise MediaError('Every speech block requires a nonempty script')
+        provided = supplied_clips.get(index, supplied_clips.get(str(index)))
+        if provided is not None:
+            if not isinstance(provided, dict) or not {'path', 'sha256'} <= set(provided) or set(provided) - {'path', 'sha256', 'alignment'}:
+                raise MediaError('Supplied clip requires path and sha256, optional alignment')
+            source = _allowed(provided['path'], allowed_roots)
+            if _hash(source) != provided['sha256']:
+                raise MediaError('Supplied clip hash mismatch')
+            sources[str(index)] = {'path': str(source), 'sha256': provided['sha256'],
+                                   'alignment': provided.get('alignment')}
+    tools = {name: {'binary_sha256': _hash(Path(_tool(name)).resolve())}
+             for name in ('ffmpeg',) + (('say',) if inventory else ())}
+    effective = {'voice': voice, 'language': language, 'rate': rate, 'gap_ms': gap, 'leading_gap_ms': lead}
+    intent = {'schema': 'local-narration-recovery/v1', 'scripts': blocks, 'config': config,
+              'effective_config': effective, 'supplied_sources': sources, 'tools': tools,
+              'voice_inventory': inventory, 'implementation_sha256': _hash(Path(__file__)),
+              'attempt_limit': SPEECH_ATTEMPT_LIMIT}
+    if not intent_path.exists() and not fresh_output:
+        raise MediaError('Existing narration lacks the local recovery contract; manual reconciliation required')
+    _retain_json(intent_path, intent)
+    intent_hash = _hash(intent_path)
+    complete_path = out/'narration-complete.json'
+    if complete_path.exists():
+        complete = json.loads(complete_path.read_text())
+        if complete != {'schema': 'local-narration-files/v1', 'intent_sha256': intent_hash,
+                        'files': _speech_files(out, ('narration-complete.json',))}:
+            raise MediaError('Completed narration file set or bytes changed')
+        return json.loads((out/'narration.json').read_text())
+    _retain_json(out/'scripts.json', blocks)
     all_pcm = bytearray(b'\0' * (round(lead*RATE/1000)*2))
     clips, words, timeline = [], [], []
     for index, block in enumerate(blocks):
@@ -189,33 +412,19 @@ def synthesize(lines, output_dir, config=None, supplied_clips=None, *, allowed_r
         if not isinstance(script, str) or not script.strip():
             raise MediaError('Every speech block requires a nonempty script')
         script_file = out/f'script-{index:03d}.txt'
-        script_file.write_text(script)
+        _retain_bytes(script_file, script.encode())
         provided = supplied_clips.get(index, supplied_clips.get(str(index)))
         if provided is not None:
-            if not isinstance(provided, dict) or not {'path','sha256'} <= set(provided) or set(provided) - {'path','sha256','alignment'}:
-                raise MediaError('Supplied clip requires path and sha256, optional alignment')
-            source = _allowed(provided['path'], allowed_roots)
-            if _hash(source) != provided['sha256']:
-                raise MediaError('Supplied clip hash mismatch')
-            frozen = out/f'clip-{index:03d}.source{source.suffix}'
-            if source != frozen:
-                shutil.copyfile(source, frozen)
             origin = {'kind': 'supplied', 'input_sha256': provided['sha256']}
         else:
-            frozen = out/f'clip-{index:03d}.aiff'
-            _run([_tool('say'), '-v', voice, '-r', str(rate), '-f', script_file, '-o', frozen])
             origin = {'kind': 'macos-say', 'voice': voice, 'locale': matching[0]['locale'],
                       'rate_words_per_minute': rate, 'inventory_sha256': hashlib.sha256(_json(inventory).encode()).hexdigest()}
             origin['voice_config_sha256'] = hashlib.sha256(_json(origin).encode()).hexdigest()
-        decoded = out/f'clip-{index:03d}.wav'
-        pcm, duration, rms = _decode(frozen, decoded)
+        pcm, clip = _speech_clip(out, index, script, script_file, effective, origin, provided, intent_hash)
+        duration = clip['duration_ms']
         start = len(all_pcm)/2/RATE*1000
         all_pcm.extend(pcm)
         end = len(all_pcm)/2/RATE*1000
-        clip = {**_descriptor(decoded, out), 'index': index, 'script': script,
-                'script_sha256': hashlib.sha256(script.encode()).hexdigest(),
-                'source': origin, 'source_file': _descriptor(frozen, out),
-                'duration_ms': duration, 'duration_basis': 'decoded PCM samples', 'pcm_rms': rms}
         clips.append(clip)
         timeline.append({'index': index, 'kind': block.get('kind', 'line'), 'display': block.get('display', script),
                          'script': script, 'start_ms': start, 'end_ms': end, 'clip_sha256': clip['sha256']})
@@ -249,11 +458,13 @@ def synthesize(lines, output_dir, config=None, supplied_clips=None, *, allowed_r
         if index < len(blocks)-1:
             all_pcm.extend(b'\0' * (round(gap*RATE/1000)*2))
     audio_file = out/'narration.wav'
-    with wave.open(str(audio_file), 'wb') as audio:
+    combined = io.BytesIO()
+    with wave.open(combined, 'wb') as audio:
         audio.setnchannels(1)
         audio.setsampwidth(2)
         audio.setframerate(RATE)
         audio.writeframes(all_pcm)
+    _retain_bytes(audio_file, combined.getvalue())
     result = {'schema': 'local-narration/v1', 'audio': _descriptor(audio_file, out, format='wav',
               duration_ms=len(all_pcm)/2/RATE*1000), 'clips': clips, 'blocks': timeline, 'words': words,
               'segment_timing': 'measured decoded PCM', 'word_timing': ('supplied' if all(w['timing_basis']=='supplied alignment' for w in words) else 'mixed' if any(w['timing_basis']=='supplied alignment' for w in words) else 'estimated'),
@@ -261,8 +472,10 @@ def synthesize(lines, output_dir, config=None, supplied_clips=None, *, allowed_r
               'assembly': {'sample_rate': RATE, 'channels': 1, 'gap_ms': gap, 'leading_gap_ms': lead,
                            'gaps_are_real_pcm': True}, 'config': config,
               'scripts_sha256': _hash(out/'scripts.json'),
-              'tools': {name: {'binary_sha256': _hash(Path(_tool(name)).resolve())} for name in ('ffmpeg',) + (('say',) if inventory else ())}}
-    _save(out/'narration.json', result)
+              'tools': tools}
+    _retain_json(out/'narration.json', result)
+    _retain_json(complete_path, {'schema': 'local-narration-files/v1', 'intent_sha256': intent_hash,
+                               'files': _speech_files(out)})
     return result
 
 
@@ -304,13 +517,15 @@ def compile_board(plan, narration):
             raise MediaError('Path requires self-contained SVG path commands')
         if node['type'] == 'text' and (not isinstance(node['text'], str) or len(node['text']) > 2000):
             raise MediaError('Text node requires a bounded string')
-    cues, draw_end, beat_ids = [], {}, set()
-    for beat in plan.get('beats', []):
+    cues, draw_end, beat_ids, original_beat_indices = [], {}, set(), {}
+    node_indices = {node['id']: index for index, node in enumerate(nodes)}
+    for beat_index, beat in enumerate(plan.get('beats', [])):
         if not isinstance(beat, dict) or not {'id','line','phrase','action','targets'} <= set(beat) or set(beat) - {'id','line','phrase','occurrence','action','targets','hold_ms'}:
             raise MediaError('Invalid beat fields')
         if not isinstance(beat['id'], str) or beat['id'] in beat_ids:
             raise MediaError('Beat ids must be unique strings')
         beat_ids.add(beat['id'])
+        original_beat_indices[beat['id']] = beat_index
         index = beat['line']
         if type(index) is not int or not 0 <= index < len(narration['blocks']):
             raise MediaError('Beat line must be zero-based narration block index')
@@ -321,10 +536,10 @@ def compile_board(plan, narration):
         positions = [m.start() for m in re.finditer(re.escape(phrase), script)]
         occurrence = beat.get('occurrence')
         if occurrence is None and len(positions) != 1:
-            raise MediaError('Repeated or missing exact phrase requires a valid occurrence')
+            raise BoardAnchorError(beat_index, index, len(positions), occurrence)
         occurrence = 1 if occurrence is None else occurrence
         if type(occurrence) is not int or not 1 <= occurrence <= len(positions):
-            raise MediaError('Exact phrase occurrence not found')
+            raise BoardAnchorError(beat_index, index, len(positions), occurrence)
         start_char = positions[occurrence-1]
         anchored = [w for w in narration['words'] if w['block'] == index and w['char_end'] > start_char and w['char_start'] < start_char+len(phrase)]
         if not anchored:
@@ -340,6 +555,27 @@ def compile_board(plan, narration):
                      'end_ms': end, 'hold_ms': hold, 'line': index, 'phrase': phrase, 'occurrence': occurrence,
                      'timing_basis': 'supplied alignment' if all(w['timing_basis']=='supplied alignment' for w in anchored) else 'estimated word positions from measured clip',
                      'alignment_verified': all(w['alignment_verified'] for w in anchored)})
+    target_draws = {}
+    for cue in cues:
+        if cue['action'] == 'draw':
+            for target in cue['targets']:
+                target_draws.setdefault(target, []).append(cue)
+    def timing_details(cue):
+        details = {'beat_index': original_beat_indices[cue['id']],
+            'target_node_indices': [node_indices[target] for target in cue['targets']],
+            'emphasis_start_ms': cue['start_ms'],
+            'target_draws': [{'node_index': node_indices[target],
+                             'beat_index': original_beat_indices[draw['id']], 'end_ms': draw['end_ms']}
+                            for target in cue['targets'] for draw in target_draws.get(target, [])],
+            'missing_draw_target_node_indices': [node_indices[target] for target in cue['targets']
+                                                  if not target_draws.get(target)],
+            'eligible_word_indices': []}
+        if all(len(target_draws.get(target, [])) == 1 for target in cue['targets']):
+            latest = max(target_draws[target][0]['end_ms'] for target in cue['targets'])
+            details['latest_target_draw_end_ms'] = latest
+            details['eligible_word_indices'] = [index for index, word in enumerate(narration['words'])
+                                                if word['start_ms'] >= latest][:8]
+        return details
     cues.sort(key=lambda cue: (cue['start_ms'], cue['id']))
     for cue in cues:
         for target in cue['targets']:
@@ -348,7 +584,7 @@ def compile_board(plan, narration):
                     raise MediaError('Immutable nodes may be drawn once; use emphasis thereafter')
                 draw_end[target] = cue['end_ms']
             elif target not in draw_end or draw_end[target] > cue['start_ms']:
-                raise MediaError('Emphasis requires an already completed node')
+                raise BoardTimingError(timing_details(cue))
     if not cues:
         raise MediaError('Board requires draw/emphasis beats')
     duration = max(narration['audio']['duration_ms'], max(c['end_ms']+c['hold_ms'] for c in cues))
