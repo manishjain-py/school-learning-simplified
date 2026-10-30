@@ -4,6 +4,7 @@ import json
 
 import pytest
 
+from explain_checkin_string_support import strip_checkin_system, SUFFIX as CHECKIN_SUFFIX
 from test_explain import offline, runner, invoke, payload
 from reference.factories import explain
 from reference.inputs import ROOT, canonical, read, sha
@@ -18,6 +19,7 @@ def test_only_research_system_added_to_exact_base_requests_and_projections(tmp_p
     assert set(baseline['request_sha256']) == set(explain.ROLES)
     for role in explain.ROLES:
         request = read(tmp_path/'requests'/f'{role}.json')
+        strip_checkin_system(request)
         assert sha(canonical(payload(request))) == baseline['declared_sha256'][role]
         if role in ('explain_research', 'explain_winner_revision', 'explain_split'):
             assert set(request) == {'messages', 'system'}
@@ -83,8 +85,9 @@ def test_actual_transport_graph_saved_hashes_deterministic_and_completed_resume_
             def converse(self, **kwargs):
                 role = explain.ROLES[len(calls)]
                 calls.append(kwargs)
-                if role in ('explain_research', 'explain_winner_revision', 'explain_split'):
-                    assert kwargs['system'] == [{'text': kwargs['messages'][0]['content'][-1]['text']}]
+                if role in ('explain_research', 'explain_winner_revision', 'explain_split', 'explain_checkins'):
+                    assert kwargs['system'] == [{'text': kwargs['messages'][0]['content'][-1]['text']+
+                        (CHECKIN_SUFFIX if role == 'explain_checkins' else '')}]
                 else:
                     assert 'system' not in kwargs
                 return Fixture().invoke({'messages': kwargs['messages']}, role=role, notes_pages=None)

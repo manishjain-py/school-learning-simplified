@@ -59,7 +59,7 @@ def test_actual_base_source_and_every_reference_prompt_historical_fixture_and_lo
     for excluded, expected in old['prior_tree_sha256'].items():
         assert sha(canonical({k:v for k,v in restored.items() if k != f'reference/factories/{excluded}.py'})) == expected
     assert files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()) == old['prompt_sha256']
-    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p.name != FIXTURE) == old['all_historical_fixtures_sha256']
+    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p.name != 'explain-checkin-string-system-baseline.json' if p.name != FIXTURE) == old['all_historical_fixtures_sha256']
     assert sha((ROOT/'requirements.lock').read_bytes()) == old['requirements_sha256']
 
 

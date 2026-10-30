@@ -1,4 +1,5 @@
 """T29-only historical expectation adaptation; never rewrite old fixtures."""
+from explain_checkin_string_support import restore_explain_base
 from reference.inputs import ROOT, read, sha
 
 FIXTURE = 'guideline-refresher-object-syntax-baseline.json'
@@ -24,6 +25,7 @@ def strip_object_suffix(request):
 
 def restore_guideline_base(hashes):
     """Reconstruct actual pre-T29 Guideline bytes, keeping every other tree member."""
+    hashes = restore_explain_base(hashes)
     source = (ROOT/GUIDELINE).read_text()
     prior = base()['guideline_source']
     assert prior.count(OLD_LINE) == 1 and source.count(NEW_LINES) == 1

@@ -8,6 +8,7 @@ import pytest
 
 from guideline_refresher_object_support import restore_guideline_base
 
+from explain_checkin_string_support import strip_checkin_system, SUFFIX as CHECKIN_SUFFIX
 from test_explain import offline, runner, invoke, payload
 from reference.factories import explain
 from reference.inputs import ROOT, canonical, read, sha
@@ -34,7 +35,7 @@ def capture(run):
         'outside_request_ast_sha256': sha(ast.dump(module).encode()),
         'reference_sha256': restore_guideline_base(files((ROOT/'reference').rglob('*.py'))),
         'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
-        'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
+        'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p.name != 'explain-checkin-string-system-baseline.json'
                                           if p != BASELINE and p.name not in ('translate-teaching-final-nesting-baseline.json',
                                                                           'translate-teaching-title-scalar-baseline.json',
                                                             'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json', 'guideline-refresher-object-syntax-baseline.json')),
@@ -47,6 +48,7 @@ def test_only_initial_splitter_adds_exact_system_all_full_requests_and_declarati
     run = runner(tmp_path)
     invoke(run)
     request = read(tmp_path/'requests'/f'{role}.json')
+    strip_checkin_system(request)
     assert sha(canonical(payload(request))) == baseline['declared_sha256'][role]
     assert sha(canonical(request['messages'])) == baseline['user_blocks_sha256'][role]
     assert len(request['messages']) == 1 and len(request['messages'][0]['content']) == 2
@@ -110,11 +112,12 @@ def test_converse_saved_system_hashes_advisory_reviews_final_authors_and_byte_st
             role = explain.ROLES[len(calls)]
             calls.append(deepcopy(kwargs))
             assert set(kwargs) == {'modelId', 'messages', 'inferenceConfig',
-                                   *({'system'} if role in SYSTEM_ROLES else set())}
+                                   *({'system'} if role in (*SYSTEM_ROLES, 'explain_checkins') else set())}
             assert kwargs['modelId'] == 'synthetic-no-service'
             assert kwargs['inferenceConfig'] == {'maxTokens': 100, 'temperature': .1}
-            if role in SYSTEM_ROLES:
-                assert kwargs['system'] == [{'text': kwargs['messages'][0]['content'][-1]['text']}]
+            if role in (*SYSTEM_ROLES, 'explain_checkins'):
+                assert kwargs['system'] == [{'text': kwargs['messages'][0]['content'][-1]['text']+
+                        (CHECKIN_SUFFIX if role == 'explain_checkins' else '')}]
             return Fixture().invoke({'messages': kwargs['messages']}, role=role, notes_pages=None)
 
     provider = Bedrock({'model': 'synthetic-no-service', 'max_output_tokens': 100})

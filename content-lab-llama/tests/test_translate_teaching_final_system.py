@@ -83,7 +83,7 @@ def capture(workspace):
         'outside_request_ast_sha256': sha(ast.dump(module).encode()),
         'reference_sha256': restore_guideline_base(files((ROOT/'reference').rglob('*.py'))),
         'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
-        'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
+        'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p.name != 'explain-checkin-string-system-baseline.json'
                                           if p.name not in ('translate-teaching-final-system-baseline.json',
                                                             'guideline-refresher-system-baseline.json',
                                                             'explain-splitter-system-baseline.json',
@@ -167,7 +167,7 @@ def capture_sources():
     return {'outside_request_ast_sha256': sha(ast.dump(module).encode()),
         'reference_sha256': restore_guideline_base(files((ROOT/'reference').rglob('*.py'))),
         'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
-        'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
+        'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p.name != 'explain-checkin-string-system-baseline.json'
                                           if p.name not in ('translate-teaching-final-system-baseline.json',
                                                             'guideline-refresher-system-baseline.json',
                                                             'explain-splitter-system-baseline.json',
