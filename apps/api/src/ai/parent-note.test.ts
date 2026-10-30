@@ -82,24 +82,44 @@ test('draft prompt requires a full named lesson note and the actual selected ali
       assert.equal(prompt, prepared.prompt);
       const [system, userSection] = prompt.split('<|start_header_id|>user<|end_header_id|>\n\n');
       const data = JSON.parse(userSection.split('<|eot_id|>')[0]);
-      assert.match(system, /75–90 words in five or six natural sentences/);
-      assert.match(system, /preserve EVERY substantive clause of the actual observation/);
-      assert.match(system, /"is unsure why" must remain unsure, not become "observed" or "understood"/);
+      assert.match(system, /80–90 words in six useful, natural sentences/);
+      assert.match(system, /Preserve EVERY substantive observation clause/);
+      assert.match(system, /Describe an objective need as a need, not an invented feeling, wish or belief/);
+      assert.match(system, /Use two concrete details from the selected card when available/);
       assert.match(system, /Name chapter.title as the chapter and selectedCardTitle as the card; never call the card a chapter/);
       assert.match(system, /FUTURE invitations for home learning/);
       assert.match(system, /Never say "we discussed", "we covered", "we learnt" or their Hindi equivalents unless the observation explicitly records that past event/);
-      assert.match(system, /Privacy applies to the text field/);
+      assert.match(system, /Privacy applies to text/);
       assert.match(system, /sourceCards is required metadata: copy exact supplied source aliases there/);
-      assert.match(system, /selected lesson as a separate invitation; do not invent a causal connection/);
+      assert.match(system, /When the selected card addresses the observation, follow up directly on that same idea/);
+      assert.match(system, /Only when its topic differs/);
       assert.match(system, /If no safe activity or discussion can be grounded in the selected card/);
       assert(!system.includes('If the observation cannot be addressed from these cards'));
       assert(system.includes(`sourceCards MUST include "${item.alias}"`));
-      const example = JSON.parse(system.match(/Style example response: (\{[^\n]+\})/)![1]);
-      assert.deepEqual(example.sourceCards, [item.alias]);
-      assert(example.text.split(/\s+/).length >= 80 && example.text.split(/\s+/).length <= 90);
-      assert(example.text.includes('[chapter title]') && example.text.includes('[card title]'));
-      assert(!/Our Earth|Animal Life|orange|lamp|संतरा|लैम्प/.test(example.text));
-      assert.match(system, /Copy its length and future-facing style, NOT those child claims/);
+      const examples = JSON.parse(system.match(/Worked examples: (\[[^\n]+\])/)![1]);
+      assert.equal(examples.length, 2);
+      for (const example of examples) {
+        assert.deepEqual(example.output.sourceCards, [item.alias]);
+        assert.equal(example.input.selectedSource, item.alias);
+        assert.equal(example.input.cards[0].alias, item.alias);
+        assert.equal(example.input.cards[0].title, example.input.selectedCardTitle);
+        assert(example.input.cards[0].lines.length >= 2);
+        assert(example.output.text.split(/\s+/).length >= 80 && example.output.text.split(/\s+/).length <= 90);
+        assert(example.output.text.includes(example.input.chapter.title));
+        assert(example.output.text.includes(example.input.selectedCardTitle));
+        assert(!/\[chapter title\]|\[card title\]|इस सवाल को अभी खुला रखें|separate invitation|महसूस/.test(example.output.text));
+      }
+      assert.match(system, /They are NOT lesson sources for the actual request/);
+      if (language === 'hi') {
+        assert(examples[0].output.text.includes('खाद्य शृंखला'));
+        assert(examples[0].output.text.includes('अभी स्पष्ट नहीं है'));
+        assert(examples[1].output.text.includes('अभ्यास पूरा किया है और घटाव में अभी थोड़ा अभ्यास चाहिए'));
+        assert(!examples[0].output.text.includes('चक्र'));
+      } else {
+        assert(examples[0].output.text.includes('is unsure'));
+        assert(examples[1].output.text.includes('completed the calculation practice, and subtraction still needs a little practice'));
+      }
+      assert.equal(data.requestKind, 'actual_parent_note');
       assert.equal(data.selectedSource, item.alias);
       assert.equal(data.selectedCardTitle, selected.title);
       assert.equal(data.cards.find((card: { alias: string }) => card.alias === data.selectedSource).title, selected.title);
