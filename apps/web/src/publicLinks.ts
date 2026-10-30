@@ -1,3 +1,3 @@
-/** Public entry links; update the watch URL when the final demo video is published. */
-export const DEMO_WATCH_URL = '/media/demo/364fbe3f0e064ce5/index.html';
+/** Public product guide and demo video. */
+export const DEMO_WATCH_URL = '/media/film/53a9b75e369d2916/index.html';
 export const GUIDE_URL = 'https://github.com/manishjain-py/school-learning-simplified/blob/main/GUIDE.md';
