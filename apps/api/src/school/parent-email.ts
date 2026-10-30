@@ -4,7 +4,7 @@ import { SendEmailCommand, SESv2Client } from '@aws-sdk/client-sesv2';
 import type { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { SchoolError, classPK, fail, get, id, json, normalizeEmail, put, queryPage, requireClassStaff, schoolPK, version, write, type RecordValue, type Student, type VerifiedAccount } from './index.js';
 
-export const EMAIL_CUTOFF = '2026-11-09T18:30:00.000Z'; // Midnight starting 10 Nov IST; not the longer AI window.
+export const EMAIL_CUTOFF = '2026-11-20T18:30:00.000Z'; // Midnight starting 21 Nov IST; retain the historical cumulative ledger below.
 export const EMAIL_BUDGET_KEY = { PK: 'PARENT_EMAIL_BUDGET#2026-10-29_2026-11-09', SK: 'PROJECT' };
 export const EMAIL_ATTEMPT_LIMIT = 3;
 export const EMAIL_PROJECT_LIMIT = 100;
@@ -192,7 +192,7 @@ function dto(record: ParentEmailNotification, currentRevision: number, config: S
   const status = currentStatus(record, currentRevision, at);
   const code = status === 'unknown' ? 'SEND_UNKNOWN' : status === 'superseded' ? 'SUPERSEDED' : record.code;
   const canRetry = ['pending', 'not_sent'].includes(status) && record.retryable && record.attempts < EMAIL_ATTEMPT_LIMIT && !configIssue(config, record.recipient, at);
-  return { id: record.id, revision: record.revision, recipient: record.recipient, status, message: messages[code] || messages.STORAGE_UNAVAILABLE, canRetry, hasPreview: status === 'accepted', ...(record.acceptedAt ? { acceptedAt: record.acceptedAt } : {}) };
+  return { id: record.id, revision: record.revision, recipient: record.recipient, status, attempts: record.attempts, message: messages[code] || messages.STORAGE_UNAVAILABLE, canRetry, hasPreview: status === 'accepted', ...(record.acceptedAt ? { acceptedAt: record.acceptedAt } : {}) };
 }
 
 /** Sends only on post-publication dispatch or explicit staff retry; reads remain read-only. */

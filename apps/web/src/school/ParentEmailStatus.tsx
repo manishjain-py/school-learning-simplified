@@ -4,7 +4,7 @@ import type { Config } from '../types';
 import { friendlySchoolTimestamp } from './dates';
 
 type Status = 'pending' | 'sending' | 'accepted' | 'not_sent' | 'unknown' | 'superseded';
-type Notification = { id: string; revision: number; recipient: string; status: Status; message: string; canRetry: boolean; hasPreview: boolean; acceptedAt?: string };
+type Notification = { id: string; revision: number; recipient: string; status: Status; message: string; attempts?: number; canRetry: boolean; hasPreview: boolean; acceptedAt?: string };
 type Preview = { subject: string; html: string; acceptedAt: string };
 const labels: Record<Status, string> = { pending: 'Email not sent yet', sending: 'Sending email', accepted: 'Accepted for sending', not_sent: 'Email not sent', unknown: 'Sending outcome unknown', superseded: 'Replaced by a newer update' };
 const errorMessage = (issue: unknown) => issue instanceof Error ? issue.message : 'Email status could not be opened. Please refresh it.';
@@ -55,15 +55,16 @@ export function ParentEmailStatus({ config, userId, updatePath, revision, timeZo
     }
   }
 
-  return <section className="parent-email-status" aria-label="Parent email status">
-    <div className="parent-email-heading"><h4>Parent email</h4><button className="text-button" type="button" disabled={busy || loading} onClick={() => setRefresh(value => value + 1)}>Refresh email status</button></div>
+  return <details className="parent-email-status" aria-label="Email delivery">
+    <summary>Email delivery</summary>
+    <div className="parent-email-heading"><h4>Delivery records</h4><button className="text-button" type="button" disabled={busy || loading} onClick={() => setRefresh(value => value + 1)}>Refresh email status</button></div>
     {loading && <p className="school-help" role="status">Checking email status…</p>}
     {error && <p className="form-error" role="alert">{error}</p>}
     {actionError && <p className="form-error" role="alert">{actionError}</p>}
     {!loading && !error && notifications.length === 0 && <p className="school-help">No email notification is recorded for this update. The family update is available in the app.</p>}
     {!loading && !error && notifications.map(item => <div className={`parent-email-recipient email-${item.status}`} key={`${item.revision}:${item.id}`}>
       <strong>{labels[item.status] || 'Email status unavailable'}</strong><span className="parent-email-address">{item.recipient}</span>
-      <small>Update revision {item.revision}{item.acceptedAt ? ` · ${friendlySchoolTimestamp(item.acceptedAt, timeZone)}` : ''}</small>
+      <small>Update revision {item.revision}{typeof item.attempts === 'number' ? ` · ${item.attempts} recorded ${item.attempts === 1 ? 'attempt' : 'attempts'}` : ''}{item.acceptedAt ? ` · ${friendlySchoolTimestamp(item.acceptedAt, timeZone)}` : ''}</small>
       <p>{item.message}</p>
       {item.status === 'accepted' && <p className="school-help">The email provider accepted this message for sending. Inbox delivery is not confirmed.</p>}
       {item.status === 'unknown' && <p className="school-help">This message will not be sent again automatically.</p>}
@@ -77,5 +78,5 @@ export function ParentEmailStatus({ config, userId, updatePath, revision, timeZo
       <p><strong>{preview.subject}</strong></p><p className="school-help">Accepted for sending {friendlySchoolTimestamp(preview.acceptedAt, timeZone)}. This is the saved email content.</p>
       <iframe title="Saved parent email" sandbox="" referrerPolicy="no-referrer" srcDoc={`<!doctype html><meta http-equiv="Content-Security-Policy" content="${previewCsp}"><meta name="referrer" content="no-referrer">${preview.html}`} />
     </section>}
-  </section>;
+  </details>;
 }
