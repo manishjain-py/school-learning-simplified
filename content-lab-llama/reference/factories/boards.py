@@ -116,7 +116,13 @@ def timing_view(value):
             return {k: safe(v) for k, v in row.items() if k not in
                     ('file', 'path', 'source_path', 'output_dir', 'voice_inventory', 'tools', 'command', 'source')}
         return row
-    return safe(value)
+    result = safe(value)
+    # Expose the exact ordinal used by numeric correction feedback, so authors
+    # can identify an eligible word without counting a long JSON array.
+    if isinstance(result, dict) and isinstance(result.get('words'), list):
+        result['words'] = [{**word, 'word_index': index}
+                           for index, word in enumerate(result['words'])]
+    return result
 
 
 def render(run, role, card, audio):

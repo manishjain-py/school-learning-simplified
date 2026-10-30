@@ -109,7 +109,7 @@ def technical_feedback(error, phase):
             feedback['requirement'] += (
                 ' Diagnostic beat/node indices are zero-based positions in the previous rejected '
                 'response artifact.beats and artifact.nodes; word indices refer to the original '
-                'task_inputs.narration.words. Correct the identified emphasis beat. Eligible word indices '
+                'task_inputs.narration.words (explicit word_index). Correct the identified emphasis beat. Eligible word indices '
                 'identify supplied words starting after all target draws finish: choose their exact '
                 'text with the corresponding block/occurrence, or another valid later anchor. '
                 'Missing-draw targets need a preceding draw. If no later anchor exists, author a '

@@ -16,6 +16,18 @@ from reference.providers import Fixture
 from reference.runtime import Runner, report, technical_feedback
 
 
+def test_task_timing_words_expose_diagnostic_ordinals_without_mutating_narration():
+    speech = narration()
+    original = deepcopy(speech)
+    speech['tools'] = {'command': '/private/not-for-model'}
+    view = boards.timing_view(speech)
+    assert view['words'] == [{**word, 'word_index': index}
+                             for index, word in enumerate(original['words'])]
+    assert speech['words'] == original['words']
+    assert all('word_index' not in word for word in speech['words'])
+    assert 'tools' not in view and '/private/' not in json.dumps(view)
+
+
 def rejected(value, speech=None):
     before = deepcopy(value)
     with pytest.raises(media.BoardTimingError) as failure:
