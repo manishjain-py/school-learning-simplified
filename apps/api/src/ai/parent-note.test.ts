@@ -69,7 +69,7 @@ test('draft prompt requires a full named lesson note and the actual selected ali
     { chapter: 'Our Earth', index: 53, alias: 'source_003', observation: 'Anika completed her Our Earth practice set before today’s test. Map reading still needs a little practice.' },
     { chapter: 'Animal Life', index: 32, alias: 'source_001', observation: 'Anika asked to revisit how animals are grouped by food.' },
     { chapter: 'Animal Life', index: 104, alias: 'source_001', observation: 'Anika asked to revisit the order of a food chain.' },
-    { chapter: 'Animal Life', index: 134, alias: 'source_001', observation: 'Anika asked to revisit where young animals come from.' },
+    { chapter: 'Animal Life', index: 134, alias: 'source_001', observation: 'Anika is unsure why a parent bird sits over its chicks.' },
   ];
   for (const item of cases) for (const language of ['en', 'hi'] as const) {
     const chapter = catalog.chapters.find((entry: { title: string }) => entry.title === item.chapter);
@@ -82,16 +82,26 @@ test('draft prompt requires a full named lesson note and the actual selected ali
       assert.equal(prompt, prepared.prompt);
       const [system, userSection] = prompt.split('<|start_header_id|>user<|end_header_id|>\n\n');
       const data = JSON.parse(userSection.split('<|eot_id|>')[0]);
-      assert.match(system, /70–90 words in FOUR short, complete sentences/);
-      assert.match(system, /name the selected chapter AND selected card naturally/);
+      assert.match(system, /75–90 words in five or six natural sentences/);
+      assert.match(system, /preserve EVERY substantive clause of the actual observation/);
+      assert.match(system, /"is unsure why" must remain unsure, not become "observed" or "understood"/);
+      assert.match(system, /Name chapter.title as the chapter and selectedCardTitle as the card; never call the card a chapter/);
+      assert.match(system, /FUTURE invitations for home learning/);
+      assert.match(system, /Never say "we discussed", "we covered", "we learnt" or their Hindi equivalents unless the observation explicitly records that past event/);
       assert.match(system, /Privacy applies to the text field/);
       assert.match(system, /sourceCards is required metadata: copy exact supplied source aliases there/);
       assert.match(system, /selected lesson as a separate invitation; do not invent a causal connection/);
       assert.match(system, /If no safe activity or discussion can be grounded in the selected card/);
       assert(!system.includes('If the observation cannot be addressed from these cards'));
       assert(system.includes(`sourceCards MUST include "${item.alias}"`));
-      assert(system.includes(JSON.stringify({ text: '<four complete sentences, 70–90 words total>', sourceCards: [item.alias] })));
+      const example = JSON.parse(system.match(/Style example response: (\{[^\n]+\})/)![1]);
+      assert.deepEqual(example.sourceCards, [item.alias]);
+      assert(example.text.split(/\s+/).length >= 80 && example.text.split(/\s+/).length <= 90);
+      assert(example.text.includes('[chapter title]') && example.text.includes('[card title]'));
+      assert(!/Our Earth|Animal Life|orange|lamp|संतरा|लैम्प/.test(example.text));
+      assert.match(system, /Copy its length and future-facing style, NOT those child claims/);
       assert.equal(data.selectedSource, item.alias);
+      assert.equal(data.selectedCardTitle, selected.title);
       assert.equal(data.cards.find((card: { alias: string }) => card.alias === data.selectedSource).title, selected.title);
       assert.equal(data.chapter.title, item.chapter);
       assert.equal(data.observation, item.observation.replace('Anika', 'student_001'));
