@@ -179,7 +179,7 @@ export async function draftParentNote(input: ParentNoteInput, dependencies: { le
   const { requestKey, fingerprint } = prepared; const now = dependencies.now || new Date();
   if (!(dependencies.enabled ?? process.env.SCHOOL_AI_ENABLED === 'true')) return empty(requestKey, 'failed', 'AI_NOT_ENABLED', 'Llama drafting is unavailable. You can still write the note manually.');
   if (!Number.isFinite(now.getTime()) || now < new Date(BUDGET_START) || now >= new Date(BUDGET_END)) return empty(requestKey, 'failed', 'AI_BUDGET_WINDOW', 'The current AI funding window is closed. You can still write the note manually.');
-  const reservation = { requestKey, fingerprint, actorId: input.actorId, now };
+  const reservation = { requestKey, fingerprint, actorId: input.actorId, schoolId: input.schoolId, operation: 'draft' as const, now };
   let ledger: UsageLedger<ParentNoteResult>;
   try {
     ledger = dependencies.ledger || new DynamoUsageLedger<ParentNoteResult>(process.env.TABLE_NAME || '', undefined, empty);

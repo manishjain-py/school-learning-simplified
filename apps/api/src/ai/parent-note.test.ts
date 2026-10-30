@@ -34,6 +34,19 @@ function memoryLedger() {
   return { ledger, results, claimed, steps };
 }
 
+test('parent drafting reserves its canonical school and draft operation before inference', async () => {
+  let calls = 0;
+  const result = await draftParentNote(input, { enabled: true, now, ledger: {
+    claim: async value => {
+      assert.equal(value.schoolId, input.schoolId); assert.equal(value.operation, 'draft');
+      assert.equal(value.actorId, input.actorId);
+      return { claimed: false, result: empty(value.requestKey, 'failed', 'DEMO_SCHOOL_AI_LIMIT', 'Demo draft limit reached.', true) };
+    },
+    complete: async () => { throw new Error('No reservation to complete'); },
+  }, invoke: async () => { calls++; return model()(); } });
+  assert.equal(result.code, 'DEMO_SCHOOL_AI_LIMIT'); assert.equal(calls, 0);
+});
+
 test('canonical lamp/orange grounding includes adult help in both languages and no private IDs/names', () => {
   for (const language of ['en', 'hi'] as const) {
     const prepared = prepareParentNote({ ...input, language, cards: lesson(language).cards });
@@ -293,7 +306,7 @@ test('project and actor caps reject draft reservation atomically and default int
     else {
       // An interpreter reservation creates the same actor/day bucket used by the new draft path.
       const legacy = new DynamoUsageLedger('sls-hackathon-2026-data', fixture.db);
-      const reservation: Reservation = { requestKey: 'legacy-request', fingerprint: 'same', actorId: input.actorId, now };
+      const reservation: Reservation = { requestKey: 'legacy-request', fingerprint: 'same', actorId: input.actorId, schoolId: input.schoolId, operation: 'note', now };
       assert.deepEqual(await legacy.claim(reservation), { claimed: true });
       const actor = [...fixture.records.keys()].find(key => key.startsWith('AI_ACTOR#'))!; fixture.records.get(actor).requests = 25;
       const changed = await legacy.claim({ ...reservation, fingerprint: 'different' });
@@ -306,7 +319,7 @@ test('project and actor caps reject draft reservation atomically and default int
 });
 test('interrupted attempts retain reservations; explicit retry uses a new namespaced request', async () => {
   const fixture = dynamoFixture(); const prepared = prepareParentNote(input);
-  await fixture.ledger.claim({ requestKey: prepared.requestKey, fingerprint: prepared.fingerprint, actorId: input.actorId, now: new Date(now.getTime() - 61_000) });
+  await fixture.ledger.claim({ requestKey: prepared.requestKey, fingerprint: prepared.fingerprint, actorId: input.actorId, schoolId: input.schoolId, operation: 'draft', now: new Date(now.getTime() - 61_000) });
   let calls = 0; const invoke = async () => { calls++; return model()(); };
   const interrupted = await draftParentNote(input, { enabled: true, now, ledger: fixture.ledger, invoke });
   assert.equal(interrupted.code, 'ATTEMPT_INTERRUPTED'); assert.equal(interrupted.retryable, true); assert.equal(calls, 0);

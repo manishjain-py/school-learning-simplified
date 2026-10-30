@@ -1,7 +1,6 @@
 import { uiText, uiError } from './uiCopy';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { ArrowRight, BookOpen, LogOut, ShieldCheck } from 'lucide-react';
-import { GlobalSignOutCommand } from '@aws-sdk/client-cognito-identity-provider';
+import { ArrowRight, BookOpen, LogOut } from 'lucide-react';
 import { AuthDialog } from './AuthDialog';
 import { SchoolWorkspace } from './school/SchoolWorkspace';
 import { parentUpdateLinkKey, parseParentUpdateLink } from './school/parentUpdateLink';
@@ -12,7 +11,8 @@ import { LessonView } from './LessonView';
 import { PracticeView } from './PracticeView';
 import { ReviseView } from './ReviseView';
 import { ReportCardView } from './reports/ReportCardView';
-import { ApiError, clearSession, identityClient, request, session } from './api';
+import { ApiError, clearSession, request, session, signOutOnThisDevice } from './api';
+import { DEMO_WATCH_URL, GUIDE_URL } from './publicLinks';
 import type { Catalog, Config, Language, LearningMode, User } from './types';
 import type { Workspaces } from './school/types';
 
@@ -116,9 +116,11 @@ export default function App() {
     try { await beforeLeave.current?.(); }
     catch (issue) { setSessionNotice((issue as Error).message || 'Your answers could not save. Try again before signing out.'); return; }
     beforeLeave.current = null;
-    const token = session()?.accessToken; accountGeneration.current += 1; clearSession(); setUser(null); setAccountStatus('signedout'); setAccountError('');
+    accountGeneration.current += 1;
+    const revocation = signOutOnThisDevice(config);
+    setUser(null); setAccountStatus('signedout'); setAccountError('');
     await navigate(isSchool ? (parentUpdateLink.kind !== 'none' ? path : '/school') : '/'); setSessionNotice('You are signed out on this device.');
-    if (config && token) { try { await identityClient(config).send(new GlobalSignOutCommand({ AccessToken: token })); } catch { /* Local session is already removed. */ } }
+    await revocation;
   }
   const preferences = useStudentPreferences(config, user);
   const language: Language = preferences.profile.language || 'en';
@@ -162,7 +164,16 @@ export default function App() {
     if (parentReportMatch && user) return <ReportCardView key={`${user.id}:${parentReportMatch.slice(1).join(':')}`} config={config} user={user} navigate={navigate} parent={{ schoolId: parentReportMatch[1], classId: parentReportMatch[2], childId: parentReportMatch[3] }} />;
     if (isSchool) return <SchoolWorkspace key={`${user?.id || 'signedout'}:${parentUpdateLinkKey(parentUpdateLink)}`} config={config} user={user} parentUpdateLink={parentUpdateLink} onSignIn={() => setAuthMode('signin')} />;
     if (isLearner) {
-      if (!user) return <main className="account-entry page-width"><span className="section-symbol"><ShieldCheck size={29} /></span><p className="eyebrow">{copy("YOUR LEARNING SPACE")}</p><h1>{copy("A little learning")}<br />{copy("starts here.")}</h1><p>{copy("Sign up or sign in to make this space yours. Then choose your class and learning language, and pick up where you left off.")}</p><div className="account-actions"><button className="button primary large" onClick={() => setAuthMode('signup')}>{copy("Sign up")}<ArrowRight size={18} /></button><button className="button secondary large" onClick={() => setAuthMode('signin')}>{copy("Sign in")}</button></div><p className="account-standalone">{copy("Learn independently or connect with your school using your own account.")}</p><a className="account-school" href="/school" onClick={event => { event.preventDefault(); navigate('/school'); }}>{copy("School staff or parent? Open your school workspace")}<ArrowRight size={16} /></a></main>;
+      if (!user) return <main className="account-entry page-width">
+        <p className="eyebrow">Built with Llama</p>
+        <h1>{copy("School and home,")}<br />{copy("connected.")}</h1>
+        <p className="entry-pitch">{copy("A teacher writes one note. Meta’s Llama turns it into clear next steps for learning at home.")}</p>
+        <nav className="entry-links" aria-label="Explore School Learning Simplified"><a href={DEMO_WATCH_URL}>{copy("Watch the demo")}<ArrowRight size={16} /></a><a href={GUIDE_URL}>{copy("How to try it")}<ArrowRight size={16} /></a></nav>
+        <p>{copy("Sign up or sign in to make this space yours. Then choose your class and learning language, and pick up where you left off.")}</p>
+        <div className="account-actions"><button className="button primary large" onClick={() => setAuthMode('signup')}>{copy("Sign up")}<ArrowRight size={18} /></button><button className="button secondary large" onClick={() => setAuthMode('signin')}>{copy("Sign in")}</button></div>
+        <p className="account-standalone">{copy("Learn independently or connect with your school using your own account.")}</p>
+        <a className="account-school" href="/school" onClick={event => { event.preventDefault(); navigate('/school'); }}>{copy("School staff or parent? Open your school workspace")}<ArrowRight size={16} /></a>
+      </main>;
       if (pathname === '/report' && !preferences.loading && !preferences.error && preferences.profile.completed) return <ReportCardView key={user.id} config={config} user={user} preferredLanguage={language} navigate={navigate} />;
       if (learningMatch && !preferences.loading && !preferences.error && preferences.profile.completed) return <>{recommendationId !== undefined && <div className="recommendation-banner page-width">{copy("This activity was opened from classroom guidance. Its new progress is recorded for your teacher.")} <a href="/" onClick={event => { event.preventDefault(); navigate('/'); }}>{copy("Latest recommendations")}</a></div>}{learningPage()}</>;
       const experience = <StudentExperience config={config} user={user} catalog={catalog} catalogError={catalogError} onRetryCatalog={() => setRetry(retry + 1)} path={pathname} search={path.includes('?') ? path.slice(path.indexOf('?')) : ''} navigate={navigate} onSignIn={() => setAuthMode('signin')} preferences={preferences} guidance={<GuidanceHome key={user.id} config={config} user={user} language={language} navigate={navigate} />} />;

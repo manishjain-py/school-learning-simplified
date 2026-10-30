@@ -1,4 +1,4 @@
-import { CognitoIdentityProviderClient, InitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider';
+import { CognitoIdentityProviderClient, InitiateAuthCommand, RevokeTokenCommand } from '@aws-sdk/client-cognito-identity-provider';
 import type { Config } from './types';
 import { checkRequestSignal, createGetRequestQueue } from './getRequestQueue';
 
@@ -21,6 +21,19 @@ export function saveSession(accessToken: string, refreshToken: string, expiresIn
   sessionStorage.setItem(key, JSON.stringify(value)); return value;
 }
 export function clearSession() { sessionStorage.removeItem(key); }
+/** Clear this browser session immediately; revoke only its captured refresh token. */
+export async function signOutOnThisDevice(config: Config | null): Promise<void> {
+  const saved = session();
+  clearSession();
+  if (!saved || !config?.userPoolClientId) return;
+  const client = new CognitoIdentityProviderClient({ region: config.region, maxAttempts: 1 });
+  try {
+    await client.send(new RevokeTokenCommand({ ClientId: config.userPoolClientId, Token: saved.refreshToken }), { abortSignal: AbortSignal.timeout(5_000) });
+  } catch {
+    // Local sign-out is complete even offline. Never fall back to global sign-out
+    // or clear a new account that signed in while this request was in flight.
+  } finally { client.destroy(); }
+}
 export function identityClient(config: Config) { return new CognitoIdentityProviderClient({ region: config.region }); }
 async function accessToken(config: Config): Promise<string> {
   const saved = session();
