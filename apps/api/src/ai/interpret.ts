@@ -156,7 +156,7 @@ export async function interpretTeacherLog(input: InterpretationInput, dependenci
   const { requestKey, fingerprint } = prepared; const now = dependencies.now || new Date();
   if (!(dependencies.enabled ?? process.env.SCHOOL_AI_ENABLED === 'true')) return emptyResult(requestKey, 'failed', 'AI_NOT_ENABLED', 'Learning guidance is not connected yet.');
   if (now < new Date(BUDGET_START) || now >= new Date(BUDGET_END)) return emptyResult(requestKey, 'failed', 'AI_BUDGET_WINDOW', 'The current AI funding window is closed. Learning content remains available.');
-  const reservation = { requestKey, fingerprint, actorId: input.actorId, now };
+  const reservation = { requestKey, fingerprint, actorId: input.actorId, schoolId: input.schoolId, operation: 'note' as const, now };
   let ledger: UsageLedger;
   try {
     ledger = dependencies.ledger || new DynamoUsageLedger(process.env.TABLE_NAME || '');

@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { ArrowRight, BookOpen, Check, GraduationCap, HeartHandshake, ListChecks, Plus, RefreshCw, School as SchoolIcon, Users, X } from 'lucide-react';
 import { ApiError, request } from '../api';
+import { GUIDE_URL } from '../publicLinks';
 import type { Config, User } from '../types';
 import type { FamilyProfile, LinkedChild, MutationResult, RosterStudent, SchoolClass, SchoolDetail, Teacher, Workspaces } from './types';
 import './school.css';
@@ -67,7 +68,7 @@ export function SchoolWorkspace({ config, user, onSignIn, parentUpdateLink = { k
   return <main className="school-workspace page-width">
     <div className="school-heading"><div><p className="eyebrow">SCHOOL & HOME, TOGETHER</p><h1>A place to grow together.</h1><p>Connect your classroom and family with the right school records.</p></div><span className="school-heading-icon"><GraduationCap size={38} strokeWidth={1.4} /></span></div>
     {!user ? <section className="school-welcome">
-      <div><span className="school-label">YOUR SCHOOL WORKSPACE</span><h2>Start with a connection.</h2><p>Register a school, manage your classes or see your family’s school links. Use your own email account and verify it to get started.</p><button className="button primary" onClick={onSignIn}>Sign in or create an account<ArrowRight size={17} /></button><a className="school-library-link" href="/">Keep exploring the learning library</a></div>
+      <div><span className="school-label">YOUR SCHOOL WORKSPACE</span><h2>Start with a connection.</h2><p>Register a school, manage your classes or see your family’s school links. Use your own email account and verify it to get started.</p><button className="button primary" onClick={onSignIn}>Sign in or create an account<ArrowRight size={17} /></button><div className="school-entry-links"><a href={GUIDE_URL}>How to try it<ArrowRight size={16} /></a><a href="/">Student sign-up or sign-in<ArrowRight size={16} /></a></div></div>
       <div className="school-welcome-steps"><div><SchoolIcon size={22} /><span><strong>Schools</strong>Register your workspace and add teachers and classes.</span></div><div><Users size={22} /><span><strong>Students</strong>Sign in with the verified email your school records.</span></div><div><HeartHandshake size={22} /><span><strong>Parents</strong>Use your separate, verified parent email to link your children.</span></div></div>
     </section> : <>
       <div className="school-account-bar"><span><Check size={15} />Verified account<span className="school-account-email">{user.email}</span></span><button className="text-button" onClick={refresh} aria-label="Refresh school connections"><RefreshCw size={14} />Refresh</button></div>
