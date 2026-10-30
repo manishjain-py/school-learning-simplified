@@ -4,6 +4,8 @@ import json
 
 import pytest
 
+from guideline_refresher_object_support import SUFFIX
+
 from test_guideline_batches import runner, task_data
 from test_guideline_completion import offline
 from reference.factories import guideline as factory
@@ -59,9 +61,9 @@ def test_exact_git_base_request_after_removing_only_inspection_system(tmp_path, 
         {'image': {'format': page['format'], 'source': {'bytes': run.blobs[page['file']]}}})]
     assert len(content) == 1 + 2*len(batch) + int(final)
     if final:
-        # T22 adds only the unchanged refresher final contract to native system.
+        # T22 contract plus exact T29 suffix; original user contract stays unchanged.
         if role == 'refresher':
-            assert request.pop('system') == [{'text': content[-1]['text']}]
+            assert request.pop('system') == [{'text': content[-1]['text']+SUFFIX}]
         assert set(request) == {'messages'}
     else:
         assert set(request) == {'messages', 'system'}
@@ -91,7 +93,7 @@ def test_actual_transport_graph_hashes_include_system_and_completed_resume_no_ca
                 assert kwargs['system'] == [{'text': inspection_text(labels)}]
                 request['system'] = kwargs['system']
             elif role == 'refresher':
-                assert kwargs['system'] == [{'text': kwargs['messages'][0]['content'][-1]['text']}]
+                assert kwargs['system'] == [{'text': kwargs['messages'][0]['content'][-1]['text']+SUFFIX}]
                 request['system'] = kwargs['system']
             else:
                 assert 'system' not in kwargs
@@ -117,7 +119,7 @@ def test_actual_transport_graph_hashes_include_system_and_completed_resume_no_ca
             legacy = deepcopy(request); legacy.pop('system')
             assert sha(canonical(legacy)) != call['request_sha256']
         elif call['key'] == 'refresher':
-            assert request['system'] == [{'text': request['messages'][0]['content'][-1]['text']}]
+            assert request['system'] == [{'text': request['messages'][0]['content'][-1]['text']+SUFFIX}]
         else:
             assert 'system' not in request
         assert call['actual_usd'] == call['reserved_usd'] == 0

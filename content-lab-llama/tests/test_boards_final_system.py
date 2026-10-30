@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from guideline_refresher_object_support import restore_guideline_base
+
 from test_visuals_boards import make_run, offline, local_stubs
 from test_visuals_pixi_body_contract import request_cases as visual_cases, evidence
 from reference.factories import boards, visuals, media_common as c
@@ -68,8 +70,8 @@ def capture():
     module.body = [n for n in module.body if not (isinstance(n, ast.FunctionDef) and n.name == 'request')]
     return {'requests': rows, 'frames': {key: sha(canonical(evidence(req))) for key, req in frame_cases()},
             'outside_request_ast_sha256': sha(ast.dump(module).encode()),
-            'reference_sha256': {str(p.relative_to(ROOT)): sha(p.read_bytes())
-                                for p in sorted((ROOT/'reference').rglob('*.py'))},
+            'reference_sha256': restore_guideline_base({str(p.relative_to(ROOT)): sha(p.read_bytes())
+                                for p in sorted((ROOT/'reference').rglob('*.py'))}),
             'prompt_sha256': {str(p.relative_to(ROOT)): sha(p.read_bytes())
                              for p in sorted((ROOT/'prompts').rglob('*')) if p.is_file()},
             'historical_fixtures_sha256': {p.name: sha(p.read_bytes()) for p in sorted((ROOT/'tests/fixtures').glob('*.json'))
@@ -79,7 +81,7 @@ def capture():
                                                            'explain-splitter-system-baseline.json',
                                                            'translate-teaching-final-nesting-baseline.json',
                                                            'translate-teaching-title-scalar-baseline.json',
-                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json')},
+                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json', 'guideline-refresher-object-syntax-baseline.json')},
             'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 

@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from guideline_refresher_object_support import restore_guideline_base
+
 from test_translate import runner, invoke, offline, PACKS, intercept
 from test_translate_teaching_final_system import request_cases
 from translate_practice_review_support import (
@@ -64,13 +66,13 @@ def test_exact_base_ast_outside_request_bytes_prompts_fixtures_lock_and_prior_tr
     after.body.remove(new_request)
     assert sha(ast.dump(after).encode())==old['outside_request_ast_sha256']
     files=lambda paths:{str(p.relative_to(ROOT)):sha(p.read_bytes()) for p in sorted(paths)}
-    current=files((ROOT/'reference').rglob('*.py'))
+    current=restore_guideline_base(files((ROOT/'reference').rglob('*.py')))
     changed='reference/factories/translate.py'
     assert current[changed]!=old['reference_sha256'][changed]
     restored={**current,changed:sha(old['translate_source'].encode())}
     assert restored==old['reference_sha256']
     assert files(p for p in (ROOT/'prompts').rglob('*') if p.is_file())==old['prompt_sha256']
-    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p!=BASELINE)==old['all_historical_fixtures_sha256']
+    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p!=BASELINE and p.name!='guideline-refresher-object-syntax-baseline.json')==old['all_historical_fixtures_sha256']
     assert sha((ROOT/'requirements.lock').read_bytes())==old['requirements_sha256']
     for excluded,expected in old['prior_tree_sha256'].items():
         assert sha(canonical({k:v for k,v in restored.items() if k!=f'reference/factories/{excluded}.py'}))==expected

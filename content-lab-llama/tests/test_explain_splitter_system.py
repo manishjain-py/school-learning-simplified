@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from guideline_refresher_object_support import restore_guideline_base
+
 from test_explain import offline, runner, invoke, payload
 from reference.factories import explain
 from reference.inputs import ROOT, canonical, read, sha
@@ -30,12 +32,12 @@ def capture(run):
         'declared_sha256': {role: sha(canonical(payload(q))) for role, q in requests.items()},
         'user_blocks_sha256': {role: sha(canonical(q['messages'])) for role, q in requests.items()},
         'outside_request_ast_sha256': sha(ast.dump(module).encode()),
-        'reference_sha256': files((ROOT/'reference').rglob('*.py')),
+        'reference_sha256': restore_guideline_base(files((ROOT/'reference').rglob('*.py'))),
         'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
         'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
                                           if p != BASELINE and p.name not in ('translate-teaching-final-nesting-baseline.json',
                                                                           'translate-teaching-title-scalar-baseline.json',
-                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json')),
+                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json', 'guideline-refresher-object-syntax-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 

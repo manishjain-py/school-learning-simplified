@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from guideline_refresher_object_support import SUFFIX, FIXTURE as OBJECT_FIXTURE, restore_guideline_base
+
 from test_guideline_batches import runner, task_data
 from test_guideline_inspection_system import LABELS, CASES, case_inputs, evidence, inspection_text
 from test_guideline_completion import offline
@@ -23,10 +25,10 @@ def source_snapshot():
     module.body = [n for n in module.body if not (isinstance(n, ast.FunctionDef) and n.name == 'request')]
     files = lambda paths: {str(p.relative_to(ROOT)): sha(p.read_bytes()) for p in sorted(paths)}
     return {'outside_request_ast_sha256': sha(ast.dump(module).encode()),
-            'reference_sha256': files((ROOT/'reference').rglob('*.py')),
+            'reference_sha256': restore_guideline_base(files((ROOT/'reference').rglob('*.py'))),
             'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
             'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
-                                              if p.name not in (FIXTURE, 'explain-splitter-system-baseline.json',
+                                              if p.name not in (OBJECT_FIXTURE, FIXTURE, 'explain-splitter-system-baseline.json',
                                                                 'translate-teaching-final-nesting-baseline.json',
                                                                 'translate-teaching-title-scalar-baseline.json',
                                                             'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json')),
@@ -76,7 +78,7 @@ def test_exact_base_requests_declarations_images_and_notes(tmp_path, monkeypatch
     if final and role == 'refresher':
         assert set(req) == {'messages', 'system'}
         system = req.pop('system')
-        assert system == [{'text': content[-1]['text']}]
+        assert system == [{'text': content[-1]['text']+SUFFIX}]
         for prohibited in ('DECLARED_TASK_SENTINEL', 'OWN-NOTES', 'OPERATOR_SENTINEL', 'AGENTS.md', 'SKILL.md', str(ROOT), str(tmp_path)):
             assert prohibited not in json.dumps(system)
     elif final:
@@ -118,7 +120,7 @@ def test_actual_optional_transport_saved_hashes_exports_and_zero_request_resume(
             calls.append(deepcopy(kwargs))
             labels = LABELS[turn*3:turn*3+3] if turn < 2 else None
             expected = ([{'text': inspection_text(labels)}] if labels is not None else
-                        [{'text': kwargs['messages'][0]['content'][-1]['text']}] if role == 'refresher' else None)
+                        [{'text': kwargs['messages'][0]['content'][-1]['text']+SUFFIX}] if role == 'refresher' else None)
             req = {'messages': kwargs['messages']}
             assert set(kwargs) == {'modelId', 'messages', 'inferenceConfig', *({'system'} if expected is not None else set())}
             assert kwargs['inferenceConfig'] == {'maxTokens': 100, 'temperature': .1}
@@ -144,7 +146,7 @@ def test_actual_optional_transport_saved_hashes_exports_and_zero_request_resume(
         assert call['checkpoint_sha256'] == sha(canonical(read(run.workspace/'checkpoints'/f'{call["key"]}.json')))
         assert call['reserved_usd'] == call['actual_usd'] == 0
         if call['key'] == 'refresher':
-            assert req['system'] == [{'text': req['messages'][0]['content'][-1]['text']}]
+            assert req['system'] == [{'text': req['messages'][0]['content'][-1]['text']+SUFFIX}]
             legacy = deepcopy(req); legacy.pop('system')
             assert sha(canonical(legacy)) != call['request_sha256']
     before = {str(p.relative_to(run.workspace)): p.read_bytes() for p in run.workspace.rglob('*') if p.is_file()}

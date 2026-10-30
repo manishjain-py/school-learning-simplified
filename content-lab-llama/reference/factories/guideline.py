@@ -71,7 +71,9 @@ def request(run, role, declared, batch, notes, final):
     if not final:
         result['system'] = [{'text': inspection_contract}]
     elif role == 'refresher':
-        result['system'] = [{'text': content[-1]['text']}]
+        result['system'] = [{'text': content[-1]['text']+'\nJSON syntax clarification: Enclose every array item '
+            'that is an object in its own opening { and closing }. Put field-name/colon pairs inside '
+            'that object, never directly in an array.'}]
     return result
 
 

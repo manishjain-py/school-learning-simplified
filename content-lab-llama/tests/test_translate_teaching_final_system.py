@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from guideline_refresher_object_support import restore_guideline_base
+
 from translate_practice_review_support import strip_practice_review_system
 
 from test_translate import runner, invoke, offline, PACKS, EXAMPLE
@@ -79,7 +81,7 @@ def capture(workspace):
     files = lambda paths: {str(p.relative_to(ROOT)): sha(p.read_bytes()) for p in sorted(paths)}
     return {'requests': requests, 'scenarios': scenarios,
         'outside_request_ast_sha256': sha(ast.dump(module).encode()),
-        'reference_sha256': files((ROOT/'reference').rglob('*.py')),
+        'reference_sha256': restore_guideline_base(files((ROOT/'reference').rglob('*.py'))),
         'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
         'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
                                           if p.name not in ('translate-teaching-final-system-baseline.json',
@@ -87,7 +89,7 @@ def capture(workspace):
                                                             'explain-splitter-system-baseline.json',
                                                             'translate-teaching-final-nesting-baseline.json',
                                                             'translate-teaching-title-scalar-baseline.json',
-                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json')),
+                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json', 'guideline-refresher-object-syntax-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 
@@ -163,7 +165,7 @@ def capture_sources():
     module.body = [n for n in module.body if not (isinstance(n, ast.FunctionDef) and n.name == 'request')]
     files = lambda paths: {str(p.relative_to(ROOT)): sha(p.read_bytes()) for p in sorted(paths)}
     return {'outside_request_ast_sha256': sha(ast.dump(module).encode()),
-        'reference_sha256': files((ROOT/'reference').rglob('*.py')),
+        'reference_sha256': restore_guideline_base(files((ROOT/'reference').rglob('*.py'))),
         'prompt_sha256': files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()),
         'historical_fixtures_sha256': files(p for p in (ROOT/'tests/fixtures').glob('*.json')
                                           if p.name not in ('translate-teaching-final-system-baseline.json',
@@ -171,7 +173,7 @@ def capture_sources():
                                                             'explain-splitter-system-baseline.json',
                                                             'translate-teaching-final-nesting-baseline.json',
                                                             'translate-teaching-title-scalar-baseline.json',
-                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json')),
+                                                            'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json', 'guideline-refresher-object-syntax-baseline.json')),
         'requirements_sha256': sha((ROOT/'requirements.lock').read_bytes())}
 
 

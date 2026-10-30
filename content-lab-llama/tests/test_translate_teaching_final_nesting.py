@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from guideline_refresher_object_support import restore_guideline_base
+
 from translate_practice_review_support import strip_practice_review_ast
 
 from test_translate import runner, invoke, offline, PACKS, intercept
@@ -71,7 +73,7 @@ def test_full_immutable_base_matrix_preserves_prefix_user_blocks_and_declaration
 def test_only_request_changed_and_exact_source_restoration_reconstructs_prior_trees():
     old = baseline()
     files = lambda paths: {str(p.relative_to(ROOT)): sha(p.read_bytes()) for p in sorted(paths)}
-    current = files((ROOT/'reference').rglob('*.py'))
+    current = restore_guideline_base(files((ROOT/'reference').rglob('*.py')))
     changed = 'reference/factories/translate.py'
     assert current[changed] != old['reference_sha256'][changed]
     restored = {**current, changed: sha(old['translate_source'].encode())}
@@ -93,7 +95,7 @@ def test_only_request_changed_and_exact_source_restoration_reconstructs_prior_tr
     module.body = [n for n in module.body if not (isinstance(n, ast.FunctionDef) and n.name == 'request')]
     assert sha(ast.dump(module).encode()) == old['outside_request_ast_sha256']
     assert files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()) == old['prompt_sha256']
-    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE and p.name not in ('translate-teaching-title-scalar-baseline.json', 'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json')) == old['all_historical_fixtures_sha256']
+    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE and p.name not in ('translate-teaching-title-scalar-baseline.json', 'translate-teaching-line-string-baseline.json', 'translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json', 'guideline-refresher-object-syntax-baseline.json')) == old['all_historical_fixtures_sha256']
     assert sha((ROOT/'requirements.lock').read_bytes()) == old['requirements_sha256']
     prior = {'practice': 'c09def3c7971e5a12c7379d47bafe413052262022ad34a35c81de533410a940a',
              'revise': '71ca33469e8a381b1e563f02c7494a248285b4a1fd646b50623254718d112b39',
