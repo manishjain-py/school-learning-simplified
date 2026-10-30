@@ -135,24 +135,25 @@ test('reservation precedes inference; duplicate and failed reserve cannot call; 
   const timeout = await interpretTeacherLog({ ...input, attempt: 2 }, { ...options, invoke: async () => { throw new Error('timeout'); } });
   assert.equal(reserved, true); assert.equal(timeout.unresolved[0].code, 'MODEL_UNAVAILABLE'); assert.equal(timeout.model.usageKnown, false);
 });
-test('extended funding window accepts the old cutoff and final millisecond, then closes before reservation', async () => {
+test('Funding window accepts both former cutoffs and the final millisecond, then closes before reservation', async () => {
   const events: string[] = [];
   const ledger: UsageLedger = {
     claim: async ({ now }) => { events.push(`reserve:${now.toISOString()}`); return { claimed: true }; },
     complete: async () => { events.push('complete'); },
   };
   const invoke = async () => { events.push('invoke'); return { generation: envelope(modelItem()), inputTokens: 500, outputTokens: 100, stopReason: 'stop' }; };
-  for (const timestamp of ['2026-11-09T18:30:00.000Z', '2026-11-11T18:29:59.999Z']) {
+  for (const timestamp of ['2026-11-09T18:30:00.000Z', '2026-11-11T18:30:00.000Z', '2026-11-20T18:29:59.999Z']) {
     const now = new Date(timestamp);
     const result = await interpretTeacherLog({ ...input, localDate: schoolLocalDate(now, input.timeZone) }, { enabled: true, now, ledger, invoke });
     assert.equal(result.status, 'ready', timestamp);
   }
   assert.deepEqual(events, [
     'reserve:2026-11-09T18:30:00.000Z', 'invoke', 'complete',
-    'reserve:2026-11-11T18:29:59.999Z', 'invoke', 'complete',
+    'reserve:2026-11-11T18:30:00.000Z', 'invoke', 'complete',
+    'reserve:2026-11-20T18:29:59.999Z', 'invoke', 'complete',
   ]);
   const completedEvents = [...events];
-  for (const timestamp of ['2026-11-11T18:30:00.000Z', '2026-11-12T00:00:00.000Z']) {
+  for (const timestamp of ['2026-11-20T18:30:00.000Z', '2026-11-21T00:00:00.000Z']) {
     const result = await interpretTeacherLog(input, { enabled: true, now: new Date(timestamp), ledger, invoke });
     assert.equal(result.status, 'failed', timestamp);
     assert.equal(result.unresolved[0].code, 'AI_BUDGET_WINDOW', timestamp);
@@ -166,7 +167,7 @@ test('disabled, funding-window, attempt, input bounds and truncated response fai
   const ledger: UsageLedger = { claim: async () => ({ claimed: true }), complete: async () => {} };
   const options = { enabled: true, ledger, invoke, now: new Date('2026-10-27T12:00:00Z') };
   assert.equal((await interpretTeacherLog(input, { ...options, enabled: false })).unresolved[0].code, 'AI_NOT_ENABLED');
-  assert.equal((await interpretTeacherLog(input, { ...options, now: new Date('2026-11-11T18:30:00Z') })).unresolved[0].code, 'AI_BUDGET_WINDOW');
+  assert.equal((await interpretTeacherLog(input, { ...options, now: new Date('2026-11-20T18:30:00Z') })).unresolved[0].code, 'AI_BUDGET_WINDOW');
   assert.equal((await interpretTeacherLog({ ...input, attempt: 4 }, options)).unresolved[0].code, 'INVALID_AI_INPUT');
   assert.equal((await interpretTeacherLog({ ...input, note: 'x'.repeat(3001) }, options)).unresolved[0].code, 'INVALID_AI_INPUT');
   assert.equal(calls, 0);

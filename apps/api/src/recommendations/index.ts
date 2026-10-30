@@ -4,11 +4,12 @@ import { DynamoDBDocumentClient, GetCommand, QueryCommand, TransactWriteCommand,
 import type { APIGatewayProxyEventV2WithJWTAuthorizer } from 'aws-lambda';
 import { interpretTeacherLog, type GuidanceCandidate, type InterpretationResult } from '../ai/index.js';
 import { schoolLocalDate } from '../ai/dates.js';
-import { SchoolError, linkedFamily, requireClassStaff, requireFamilyChild, listClassRosterForGuidance, type VerifiedAccount, type ChildLink } from '../school/index.js';
+import { SchoolError, linkedFamily, requireClassStaff, requireFamilyChild, listClassRosterForGuidance, type VerifiedAccount, type ChildLink, type Student } from '../school/index.js';
 import { getSchoolLog, saveLogGuidance, type SchoolLog } from '../school/communication.js';
 import { recommendationCatalog, recommendationContent } from './content.js';
 import { pairTestGuidance } from './test-plans.js';
 import { reportOriginRow } from '../reports/origins.js';
+import { libraryResultsReader } from './library-results.js';
 
 type Row = Record<string, any>;
 type Mode = 'learn' | 'practice' | 'revise';
@@ -223,17 +224,24 @@ async function activitySummary(record: Recommendation, row: Row) {
 async function teacherResults(user: VerifiedAccount, schoolId: string, classId: string, logId: string) {
   await requireClassStaff(user, schoolId, classId); const log = await getSchoolLog(schoolId, classId, logId);
   if (log.authorId !== user.id) return fail(403, 'LOG_AUTHOR_REQUIRED', 'Learning outcomes are available to the teacher who wrote this note.');
-  const roster = (await query(`CLASS#${schoolId}#${classId}`, 'STUDENT#')).filter(student => student.active); const snapshots = await query(`GUIDANCE#${schoolId}#${classId}`, `LOG#${logId}#V#`); const recommendations = [];
+  const roster = (await query(`CLASS#${schoolId}#${classId}`, 'STUDENT#')).filter(student => student.active) as Student[]; const snapshots = await query(`GUIDANCE#${schoolId}#${classId}`, `LOG#${logId}#V#`); const recommendations = [];
+  const library = libraryResultsReader(schoolId, classId);
   for (const snapshot of snapshots) for (const id of snapshot.allRecommendationIds || []) {
     const record = await recommendation(id); const activities = await query(recPK(id), 'ACTIVITY#'); const learners = [];
+    if (record.schoolId !== schoolId || record.classId !== classId || record.logId !== logId) continue;
     for (const student of roster) {
       if (record.audience.type === 'student' && record.audience.studentId !== student.id) continue;
       const rows = activities.filter(row => row.studentId === student.id && row.studentEmailHash === hash(student.studentEmail));
-      learners.push({ studentId: student.id, name: student.name, results: rows.length ? await Promise.all(rows.map(row => activitySummary(record, row))) : [{ status: 'not_started' }] });
+      const results = await Promise.all(rows.map(async row => ({ ...await activitySummary(record, row), source: 'recommendation' as const })));
+      const latestLibrary = await library.summary(student, record.chapterId, record.mode);
+      const recorded = [...results, ...(latestLibrary ? [latestLibrary] : [])];
+      learners.push({ studentId: student.id, name: student.name, results: recorded.length ? recorded : [{ status: 'not_started' }] });
     }
     recommendations.push({ ...safeRecommendation(record), version: record.version, superseded: !await active(record), learners });
   }
   const snapshot = await get<Snapshot>(snapshotKey(log));
+  await library.verify();
+  await requireClassStaff(user, schoolId, classId);
   return { version: log.version, guidance: snapshot ? guidanceState(snapshot) : log.guidance, recommendations };
 }
 function body(event: APIGatewayProxyEventV2WithJWTAuthorizer) { try { const raw = event.isBase64Encoded ? Buffer.from(event.body || '', 'base64').toString() : event.body || '{}'; if (raw.length > 2000) throw new Error(); const data = JSON.parse(raw); if (!data || Array.isArray(data) || typeof data !== 'object') throw new Error(); return data as Row; } catch { return fail(400, 'INVALID_REQUEST', 'This learning request could not be read.'); } }

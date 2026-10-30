@@ -124,16 +124,49 @@ test('disabled, empty-allowlist, invalid-sender and closed-window paths make no 
   }
 });
 
+test('Email window retains consumed reservations through 20 Nov IST and closes before account lookup or dispatch', async () => {
+  assert.deepEqual(EMAIL_BUDGET_KEY, { PK: 'PARENT_EMAIL_BUDGET#2026-10-29_2026-11-09', SK: 'PROJECT' });
+  for (const timestamp of ['2026-11-09T18:30:00.000Z', '2026-11-11T18:30:00.000Z', '2026-11-20T18:29:59.999Z']) {
+    const f = fixture(); f.state.now = new Date(timestamp); f.state.budget = 5;
+    await f.dispatch();
+    assert.equal(f.stored().status, 'accepted', timestamp); assert.equal(f.stored().attempts, 1);
+    assert.equal(f.state.accountCalls.length, 1); assert.equal(f.state.sends.length, 1); assert.equal(f.state.budget, 6);
+  }
+  for (const timestamp of ['2026-11-20T18:30:00.000Z', '2026-11-21T00:00:00.000Z']) {
+    const f = fixture(); f.state.now = new Date(timestamp); f.state.budget = 5;
+    await f.dispatch();
+    assert.equal(f.stored().status, 'not_sent', timestamp); assert.equal(f.stored().code, 'EMAIL_WINDOW');
+    assert.equal(f.stored().attempts, 0); assert.equal(f.state.budget, 5);
+    assert.equal(f.state.accountCalls.length, 0); assert.equal(f.state.sends.length, 0);
+    assert.equal((await f.list())[0].canRetry, false); await assert.rejects(f.retry(), rejects('EMAIL_NOT_RETRYABLE'));
+  }
+});
+
 test('accepted sends use current verified exact-address account and return only scoped delivery DTO', async () => {
   const f = fixture(); await f.dispatch();
   assert.deepEqual(f.state.accountCalls, [{ email: 'parent@example.test', pool: 'us-east-2_fixture' }]);
   assert.equal(f.state.sends.length, 1); assert.equal(f.state.budget, 1); assert.equal(f.stored().attempts, 1);
   assert.equal(f.stored().recipientAccountId, parentId); assert.equal(f.stored().status, 'accepted');
-  const [summary] = await f.list(); assert.equal(summary.status, 'accepted'); assert.equal(summary.canRetry, false); assert.equal(summary.hasPreview, true);
+  const [summary] = await f.list(); assert.equal(summary.status, 'accepted'); assert.equal(summary.attempts, 1); assert.equal(summary.canRetry, false); assert.equal(summary.hasPreview, true);
   for (const privateKey of ['html', 'text', 'subject', 'publisher', 'recipientAccountId', 'messageId', 'childFingerprint']) assert.equal(privateKey in summary, false);
   const preview = await f.preview(); assert.equal(preview.html, f.state.sends[0].html); assert.equal(preview.subject, f.state.sends[0].subject);
   assert(summary.message.includes('Inbox delivery is not confirmed')); await assert.rejects(f.retry(), rejects('EMAIL_NOT_RETRYABLE'));
   await f.dispatch(); await f.list(); await f.preview(); assert.equal(f.state.sends.length, 1);
+});
+
+test('delivery details expose saved attempt counts without rewriting unknown or exhausted notifications', async () => {
+  for (const saved of [
+    { status: 'unknown' as const, code: 'SEND_UNKNOWN', attempts: 1, retryable: false },
+    { status: 'not_sent' as const, code: 'SERVICE_REJECTED', attempts: 3, retryable: true },
+  ]) {
+    const f = fixture(); Object.assign(f.stored(), saved); f.state.budget = 5;
+    f.state.now = new Date('2026-11-15T09:00:00.000Z');
+    const before = JSON.stringify([...f.records]);
+    const [summary] = await f.list();
+    assert.equal(summary.status, saved.status); assert.equal(summary.attempts, saved.attempts); assert.equal(summary.canRetry, false);
+    assert.equal(JSON.stringify([...f.records]), before); assert.equal(f.state.budget, 5);
+    assert.equal(f.state.accountCalls.length, 0); assert.equal(f.state.sends.length, 0);
+  }
 });
 
 test('missing/unverified/disabled/renamed/unfinished/malformed accounts do not send or guess another alias', async () => {

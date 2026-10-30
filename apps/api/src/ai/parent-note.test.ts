@@ -267,6 +267,25 @@ test('shared atomic ledger deduplicates concurrent drafts and preserves consumed
   const changed = await draftParentNote({ ...input, observation: 'Anika asked about rotation.' }, { ledger: fixture.ledger, invoke, now, enabled: true });
   assert.equal(changed.code, 'REQUEST_CHANGED'); assert.equal(calls, 1);
 });
+test('Draft window consumes the existing allowance through 20 Nov IST and closes without a reservation', async () => {
+  for (const timestamp of ['2026-11-09T18:30:00.000Z', '2026-11-11T18:30:00.000Z', '2026-11-20T18:29:59.999Z']) {
+    const fixture = dynamoFixture(); let calls = 0;
+    fixture.records.set(fixture.projectKey, { reservedMicroUsd: 520_000, requests: 26 });
+    const result = await draftParentNote(input, { enabled: true, now: new Date(timestamp), ledger: fixture.ledger, invoke: async () => { calls++; return model()(); } });
+    assert.equal(result.status, 'ready', timestamp); assert.equal(calls, 1);
+    assert.equal(fixture.records.get(fixture.projectKey).reservedMicroUsd, 540_000);
+    assert.equal(fixture.records.get(fixture.projectKey).requests, 27);
+    assert.deepEqual([...fixture.records.keys()].filter(key => key.startsWith('AI_BUDGET#')), ['AI_BUDGET#2026-10-27_2026-11-09|PROJECT']);
+  }
+  for (const timestamp of ['2026-11-20T18:30:00.000Z', '2026-11-21T00:00:00.000Z']) {
+    const fixture = dynamoFixture(); let calls = 0;
+    fixture.records.set(fixture.projectKey, { reservedMicroUsd: 520_000, requests: 26 });
+    const before = JSON.stringify([...fixture.records]);
+    const result = await draftParentNote(input, { enabled: true, now: new Date(timestamp), ledger: fixture.ledger, invoke: async () => { calls++; return model()(); } });
+    assert.equal(result.code, 'AI_BUDGET_WINDOW', timestamp); assert.equal(result.retryable, false);
+    assert.equal(calls, 0); assert.equal(JSON.stringify([...fixture.records]), before);
+  }
+});
 test('project and actor caps reject draft reservation atomically and default interpreter result stays unchanged', async () => {
   for (const cap of ['project', 'actor']) {
     const fixture = dynamoFixture(); let calls = 0;
