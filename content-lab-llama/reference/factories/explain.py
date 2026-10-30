@@ -235,6 +235,10 @@ def request(run, role, declared, batch, notes, final):
     request = {'messages': [{'role': 'user', 'content': content}]}
     if role in ('explain_research', 'explain_winner_revision', 'explain_split'):
         request['system'] = [{'text': content[-1]['text']}]
+    elif role == 'explain_checkins':
+        request['system'] = [{'text': content[-1]['text']+'\nJSON syntax clarification: Close each JSON string '
+            'with its double quote before the following structural comma or delimiter. Encode a newline '
+            'inside a string as \\n, never as a literal line-feed character.'}]
     return request
 
 

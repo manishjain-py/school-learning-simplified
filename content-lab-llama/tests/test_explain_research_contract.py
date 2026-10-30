@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+from explain_checkin_string_support import strip_checkin_system, SUFFIX as CHECKIN_SUFFIX
 from test_explain import offline, runner, invoke, payload
 from reference.factories import explain
 from reference.inputs import ROOT, canonical, read, sha
@@ -20,6 +21,7 @@ def test_historical_first_blocks_match_after_removing_only_appended_blocks(tmp_p
     assert set(baseline['request_sha256']) == set(explain.ROLES)
     for role in explain.ROLES:
         request = read(tmp_path/'requests'/f'{role}.json')
+        strip_checkin_system(request)
         assert sha(canonical(payload(request))) == baseline['declared_sha256'][role]
         content = request['messages'][0]['content']
         assert len(content) == 2

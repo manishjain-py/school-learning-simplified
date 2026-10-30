@@ -2,6 +2,8 @@
 import ast
 import json
 from pathlib import Path
+from explain_checkin_string_support import EXPLAIN
+from guideline_refresher_object_support import restore_guideline_base
 
 import pytest
 
@@ -14,7 +16,11 @@ from reference.runtime import Runner, model_response_json, report
 
 
 def tree_hash(paths):
-    return sha(canonical({str(p.relative_to(ROOT)): sha(p.read_bytes()) for p in sorted(paths)}))
+    hashes = {str(p.relative_to(ROOT)): sha(p.read_bytes()) for p in sorted(paths)}
+    # Reference baselines come from earlier checkpoints; prompt maps remain byte-exact.
+    if EXPLAIN in hashes:
+        hashes = restore_guideline_base(hashes)
+    return sha(canonical(hashes))
 
 
 def capture(workspace, *, appended):

@@ -94,7 +94,7 @@ def test_only_request_changes_and_actual_base_bytes_reconstruct_prior_trees():
     module.body = [n for n in module.body if not (isinstance(n, ast.FunctionDef) and n.name == 'request')]
     assert sha(ast.dump(module).encode()) == old['outside_request_ast_sha256']
     assert files(p for p in (ROOT/'prompts').rglob('*') if p.is_file()) == old['prompt_sha256']
-    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p != BASELINE and p.name not in ('translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json', 'guideline-refresher-object-syntax-baseline.json')) == old['all_historical_fixtures_sha256']
+    assert files(p for p in (ROOT/'tests/fixtures').glob('*.json') if p.name != 'explain-checkin-string-system-baseline.json' if p != BASELINE and p.name not in ('translate-teaching-identity-string-baseline.json', 'translate-practice-review-system-baseline.json', 'guideline-refresher-object-syntax-baseline.json')) == old['all_historical_fixtures_sha256']
     assert sha((ROOT/'requirements.lock').read_bytes()) == old['requirements_sha256']
     for excluded, expected in old['prior_tree_sha256'].items():
         assert sha(canonical({k:v for k,v in restored.items() if k != f'reference/factories/{excluded}.py'})) == expected

@@ -74,7 +74,7 @@ def capture():
                                 for p in sorted((ROOT/'reference').rglob('*.py'))}),
             'prompt_sha256': {str(p.relative_to(ROOT)): sha(p.read_bytes())
                              for p in sorted((ROOT/'prompts').rglob('*')) if p.is_file()},
-            'historical_fixtures_sha256': {p.name: sha(p.read_bytes()) for p in sorted((ROOT/'tests/fixtures').glob('*.json'))
+            'historical_fixtures_sha256': {p.name: sha(p.read_bytes()) for p in sorted((ROOT/'tests/fixtures').glob('*.json')) if p.name != 'explain-checkin-string-system-baseline.json'
                                          if p.name not in ('boards-final-system-baseline.json',
                                                            'translate-teaching-final-system-baseline.json',
                                                            'guideline-refresher-system-baseline.json',
