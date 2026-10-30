@@ -36,10 +36,10 @@ def parse_declared(role, text, declared, notes_pages=None):
         raise ValueError('Board plan has wrong original R3 card_idx')
     try:
         media.compile_board(plan, declared['narration'])
+    except media.BoardTimingError as error:
+        from ..runtime import NativeContractError
+        raise NativeContractError('board_emphasis_after_draw', details=error.details) from error
     except media.MediaError as error:
-        if str(error) == 'Emphasis requires an already completed node':
-            from ..runtime import NativeContractError
-            raise NativeContractError('board_emphasis_after_draw') from error
         raise ValueError('Board native plan is not executable') from error
     return value
 

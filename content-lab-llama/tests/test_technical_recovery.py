@@ -620,3 +620,57 @@ def test_visual_syntax_feedback_is_fixed_and_keeps_rejected_code_out_of_system()
     assert retry['system'][:-1] == REQUEST['system']
     assert 'required executable JavaScript body syntax' in retry['system'][-1]['text']
     assert 'private' not in retry['system'][-1]['text']
+
+
+def numeric_board_details():
+    return {'beat_index': 2, 'target_node_indices': [1, 2], 'emphasis_start_ms': 4700.5,
+            'target_draws': [{'node_index': 1, 'beat_index': 1, 'end_ms': 7500.25},
+                             {'node_index': 2, 'beat_index': 1, 'end_ms': 7500.25}],
+            'missing_draw_target_node_indices': [], 'latest_target_draw_end_ms': 7500.25,
+            'eligible_word_indices': [22, 23]}
+
+
+def test_numeric_board_feedback_promotes_only_validated_indices_and_times():
+    details = numeric_board_details()
+    error = runtime.NativeContractError('board_emphasis_after_draw', details=details)
+    details['target_draws'][0]['end_ms'] = 0  # Constructor retains its own safe copy.
+    error.args = ('PRIVATE_NODE_ID private source phrase /private/path',)
+    feedback = runtime.technical_feedback(error, 'native')
+    assert feedback['details'] == numeric_board_details()
+    assert 'zero-based positions' in feedback['requirement']
+    retry = runtime.recovery_request(REQUEST, 'PRIVATE_RAW_AUTHORED_PLAN', feedback)
+    assert retry['system'][:-1] == REQUEST['system']
+    assert 'PRIVATE' not in retry['system'][-1]['text']
+    assert json.loads(retry['system'][-1]['text'].split('\n')[-1])['technical_feedback'] == feedback
+    assert 'PRIVATE_RAW_AUTHORED_PLAN' in retry['messages'][-1]['content'][-1]['text']
+
+
+@pytest.mark.parametrize('defect', ('node_id', 'string_index', 'boolean_index', 'nan_time',
+                                  'negative_time', 'unknown_target', 'wrong_latest',
+                                  'contradictory_missing', 'too_many_anchors', 'unknown_row_field'))
+def test_native_numeric_diagnostics_reject_arbitrary_text_and_invalid_values(defect):
+    details = numeric_board_details()
+    if defect == 'node_id': details['node_id'] = 'PRIVATE_NODE_ID'
+    elif defect == 'string_index': details['beat_index'] = 'private'
+    elif defect == 'boolean_index': details['target_node_indices'] = [True, 2]
+    elif defect == 'nan_time': details['emphasis_start_ms'] = float('nan')
+    elif defect == 'negative_time': details['emphasis_start_ms'] = -1
+    elif defect == 'unknown_target': details['target_draws'][0]['node_index'] = 100
+    elif defect == 'wrong_latest': details['latest_target_draw_end_ms'] = 1
+    elif defect == 'contradictory_missing': details['missing_draw_target_node_indices'] = [1]
+    elif defect == 'too_many_anchors': details['eligible_word_indices'] = list(range(9))
+    else: details['target_draws'][0]['source'] = '/private/path'
+    with pytest.raises(ValueError, match='Invalid native execution diagnostic'):
+        runtime.NativeContractError('board_emphasis_after_draw', details=details)
+
+
+def test_missing_draw_numeric_diagnostic_has_no_fabricated_later_anchor():
+    details = numeric_board_details()
+    details['target_draws'].pop()
+    details['missing_draw_target_node_indices'] = [2]
+    details.pop('latest_target_draw_end_ms')
+    details['eligible_word_indices'] = []
+    feedback = runtime.technical_feedback(
+        runtime.NativeContractError('board_emphasis_after_draw', details=details), 'native')
+    assert feedback['details'] == details
+    assert 'latest_target_draw_end_ms' not in feedback['details']

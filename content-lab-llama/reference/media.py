@@ -32,6 +32,13 @@ class MediaError(RuntimeError):
     pass
 
 
+class BoardTimingError(MediaError):
+    """An unresolved emphasis dependency, with source indices and times only."""
+    def __init__(self, details):
+        self.details = copy.deepcopy(details)
+        super().__init__('Emphasis requires an already completed node')
+
+
 class MediaTimeout(MediaError):
     """A local process timeout; the process group has already been stopped."""
 
@@ -489,13 +496,15 @@ def compile_board(plan, narration):
             raise MediaError('Path requires self-contained SVG path commands')
         if node['type'] == 'text' and (not isinstance(node['text'], str) or len(node['text']) > 2000):
             raise MediaError('Text node requires a bounded string')
-    cues, draw_end, beat_ids = [], {}, set()
-    for beat in plan.get('beats', []):
+    cues, draw_end, beat_ids, original_beat_indices = [], {}, set(), {}
+    node_indices = {node['id']: index for index, node in enumerate(nodes)}
+    for beat_index, beat in enumerate(plan.get('beats', [])):
         if not isinstance(beat, dict) or not {'id','line','phrase','action','targets'} <= set(beat) or set(beat) - {'id','line','phrase','occurrence','action','targets','hold_ms'}:
             raise MediaError('Invalid beat fields')
         if not isinstance(beat['id'], str) or beat['id'] in beat_ids:
             raise MediaError('Beat ids must be unique strings')
         beat_ids.add(beat['id'])
+        original_beat_indices[beat['id']] = beat_index
         index = beat['line']
         if type(index) is not int or not 0 <= index < len(narration['blocks']):
             raise MediaError('Beat line must be zero-based narration block index')
@@ -525,6 +534,27 @@ def compile_board(plan, narration):
                      'end_ms': end, 'hold_ms': hold, 'line': index, 'phrase': phrase, 'occurrence': occurrence,
                      'timing_basis': 'supplied alignment' if all(w['timing_basis']=='supplied alignment' for w in anchored) else 'estimated word positions from measured clip',
                      'alignment_verified': all(w['alignment_verified'] for w in anchored)})
+    target_draws = {}
+    for cue in cues:
+        if cue['action'] == 'draw':
+            for target in cue['targets']:
+                target_draws.setdefault(target, []).append(cue)
+    def timing_details(cue):
+        details = {'beat_index': original_beat_indices[cue['id']],
+            'target_node_indices': [node_indices[target] for target in cue['targets']],
+            'emphasis_start_ms': cue['start_ms'],
+            'target_draws': [{'node_index': node_indices[target],
+                             'beat_index': original_beat_indices[draw['id']], 'end_ms': draw['end_ms']}
+                            for target in cue['targets'] for draw in target_draws.get(target, [])],
+            'missing_draw_target_node_indices': [node_indices[target] for target in cue['targets']
+                                                  if not target_draws.get(target)],
+            'eligible_word_indices': []}
+        if all(len(target_draws.get(target, [])) == 1 for target in cue['targets']):
+            latest = max(target_draws[target][0]['end_ms'] for target in cue['targets'])
+            details['latest_target_draw_end_ms'] = latest
+            details['eligible_word_indices'] = [index for index, word in enumerate(narration['words'])
+                                                if word['start_ms'] >= latest][:8]
+        return details
     cues.sort(key=lambda cue: (cue['start_ms'], cue['id']))
     for cue in cues:
         for target in cue['targets']:
@@ -533,7 +563,7 @@ def compile_board(plan, narration):
                     raise MediaError('Immutable nodes may be drawn once; use emphasis thereafter')
                 draw_end[target] = cue['end_ms']
             elif target not in draw_end or draw_end[target] > cue['start_ms']:
-                raise MediaError('Emphasis requires an already completed node')
+                raise BoardTimingError(timing_details(cue))
     if not cues:
         raise MediaError('Board requires draw/emphasis beats')
     duration = max(narration['audio']['duration_ms'], max(c['end_ms']+c['hold_ms'] for c in cues))

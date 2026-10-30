@@ -4,6 +4,7 @@ from copy import deepcopy
 import fcntl
 import html
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -36,11 +37,55 @@ NATIVE_CONSTRAINTS = {
 
 class NativeContractError(ValueError):
     """Allowlisted execution constraint, never arbitrary parser/task text."""
-    def __init__(self, constraint):
+    def __init__(self, constraint, *, details=None):
         if constraint not in NATIVE_CONSTRAINTS:
             raise ValueError('Unknown native execution constraint')
         self.constraint = constraint
+        self.details = native_details(constraint, details)
         super().__init__(constraint)
+
+
+def native_details(constraint, details):
+    """Only fixed-schema numeric diagnostics may reach the native system block."""
+    if details is None:
+        return None
+    def invalid():
+        raise ValueError('Invalid native execution diagnostic')
+    required = {'beat_index', 'target_node_indices', 'emphasis_start_ms',
+                'target_draws', 'missing_draw_target_node_indices', 'eligible_word_indices'}
+    if (constraint != 'board_emphasis_after_draw' or not isinstance(details, dict) or
+            not required <= set(details) or set(details)-required-{'latest_target_draw_end_ms'}):
+        invalid()
+    def index(value):
+        return type(value) is int and value >= 0
+    def number(value):
+        return type(value) in (int, float) and 0 <= value <= 1e12 and math.isfinite(value)
+    def indices(value, maximum=10000):
+        return (isinstance(value, list) and len(value) <= maximum and all(index(v) for v in value)
+                and len(value) == len(set(value)))
+    if (not index(details['beat_index']) or not indices(details['target_node_indices']) or
+            not details['target_node_indices'] or not number(details['emphasis_start_ms']) or
+            not indices(details['missing_draw_target_node_indices']) or
+            not indices(details['eligible_word_indices'], 8)):
+        invalid()
+    draws = details['target_draws']
+    targets = set(details['target_node_indices'])
+    if (not isinstance(draws, list) or len(draws) > 10000 or not all(
+            isinstance(row, dict) and set(row) == {'node_index', 'beat_index', 'end_ms'} and
+            index(row['node_index']) and row['node_index'] in targets and
+            index(row['beat_index']) and number(row['end_ms']) for row in draws) or
+            set(details['missing_draw_target_node_indices']) !=
+            targets-{row['node_index'] for row in draws}):
+        invalid()
+    if 'latest_target_draw_end_ms' in details:
+        latest = details['latest_target_draw_end_ms']
+        if (not number(latest) or details['missing_draw_target_node_indices'] or
+                any(sum(row['node_index'] == target for row in draws) != 1 for target in targets) or
+                latest != max(row['end_ms'] for row in draws)):
+            invalid()
+    elif details['eligible_word_indices']:
+        invalid()
+    return deepcopy(details)
 
 
 def recovery_policy(config):
@@ -58,6 +103,18 @@ def technical_feedback(error, phase):
     if phase == 'native' and isinstance(error, NativeContractError):
         feedback.update(constraint=error.constraint,
                         requirement=NATIVE_CONSTRAINTS[error.constraint])
+        details = native_details(error.constraint, error.details)
+        if details is not None:
+            feedback['details'] = details
+            feedback['requirement'] += (
+                ' Diagnostic beat/node indices are zero-based positions in the previous rejected '
+                'response artifact.beats and artifact.nodes; word indices refer to the original '
+                'task_inputs.narration.words. Correct the identified emphasis beat. Eligible word indices '
+                'identify supplied words starting after all target draws finish: choose their exact '
+                'text with the corresponding block/occurrence, or another valid later anchor. '
+                'Missing-draw targets need a preceding draw. If no later anchor exists, author a '
+                'valid alternative timing or omit that optional emphasis while retaining scene '
+                'content. Return the entire plan, not a patch; the host does not move your cues.')
     if not isinstance(error, json.JSONDecodeError):
         return feedback
     # Inspect the rejected decoder document lexically. This does not parse a
