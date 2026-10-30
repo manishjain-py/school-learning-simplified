@@ -39,6 +39,27 @@ class BoardTimingError(MediaError):
         super().__init__('Emphasis requires an already completed node')
 
 
+class BoardAnchorError(MediaError):
+    """An unresolved exact phrase occurrence, with numeric source positions only."""
+    def __init__(self, beat_index, block_index, match_count, occurrence):
+        if any(type(value) is not int or not 0 <= value <= 10**12
+               for value in (beat_index, block_index, match_count)):
+            raise ValueError('Invalid board anchor diagnostic')
+        # Never retain the authored phrase, IDs, paths or invalid scalar text.
+        # None preserves the compiler's existing omitted/null default semantics.
+        if occurrence is None:
+            kind = 0
+        elif type(occurrence) is int and abs(occurrence) <= 10**12:
+            kind = 1
+        else:
+            kind = 2
+        self.details = {'beat_index': beat_index, 'narration_block_index': block_index,
+                        'exact_match_count': match_count, 'requested_occurrence_type': kind}
+        if kind == 1:
+            self.details['requested_occurrence'] = occurrence
+        super().__init__('Exact phrase requires a valid narration occurrence')
+
+
 class MediaTimeout(MediaError):
     """A local process timeout; the process group has already been stopped."""
 
@@ -515,10 +536,10 @@ def compile_board(plan, narration):
         positions = [m.start() for m in re.finditer(re.escape(phrase), script)]
         occurrence = beat.get('occurrence')
         if occurrence is None and len(positions) != 1:
-            raise MediaError('Repeated or missing exact phrase requires a valid occurrence')
+            raise BoardAnchorError(beat_index, index, len(positions), occurrence)
         occurrence = 1 if occurrence is None else occurrence
         if type(occurrence) is not int or not 1 <= occurrence <= len(positions):
-            raise MediaError('Exact phrase occurrence not found')
+            raise BoardAnchorError(beat_index, index, len(positions), occurrence)
         start_char = positions[occurrence-1]
         anchored = [w for w in narration['words'] if w['block'] == index and w['char_end'] > start_char and w['char_start'] < start_char+len(phrase)]
         if not anchored:

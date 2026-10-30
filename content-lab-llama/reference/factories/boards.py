@@ -36,6 +36,9 @@ def parse_declared(role, text, declared, notes_pages=None):
         raise ValueError('Board plan has wrong original R3 card_idx')
     try:
         media.compile_board(plan, declared['narration'])
+    except media.BoardAnchorError as error:
+        from ..runtime import NativeContractError
+        raise NativeContractError('board_exact_phrase_occurrence', details=error.details) from error
     except media.BoardTimingError as error:
         from ..runtime import NativeContractError
         raise NativeContractError('board_emphasis_after_draw', details=error.details) from error
@@ -69,6 +72,21 @@ def request(run, role, declared, batch, notes, final):
             'Preserve the existing dispositions/note envelope; keep reasoning and explanations inside the allowed JSON fields. '
             'Do not include a preamble, postscript, heading, Markdown fence or file-write receipt. '
             'Review is advisory; this final author revision is authoritative content with no later content-quality review or veto.')}]
+    if role.startswith('boards_c') and role.endswith(('_author', '_final')):
+        request.setdefault('system', []).append({'text': (
+            'Return one complete strict JSON object with no outside text: '
+            '{"artifact":<complete native board plan>,"dispositions":[],"note":"..."}. '
+            'Keep the supplied card_idx, native fields and types. For each beat, line is the '
+            'zero-based narration block index and phrase must copy exact contiguous text from '
+            'that block\'s supplied script, including its literal spelling and punctuation. '
+            'occurrence counts exact phrase matches inside that selected script, starting at 1; '
+            'it is not a beat number. If the phrase matches once, omit occurrence or use 1. '
+            'If it matches more than once, select an existing occurrence explicitly. Multiple '
+            'beats may reference the same occurrence. A first reveal uses draw; emphasize only '
+            'after every targeted node\'s draw phrase has finished in narration time '
+            '(draw end_ms <= emphasis start_ms). Anchoring draw and emphasis to the same phrase '
+            'overlaps them; beat array order does not move cues. Return the entire authored plan; a justified hold with '
+            'empty nodes and beats remains valid. Review remains advisory.')})
     return request
 
 

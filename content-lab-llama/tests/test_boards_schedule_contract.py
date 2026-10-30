@@ -142,7 +142,11 @@ def test_other_native_execution_failures_are_fixed_value_errors_without_private_
     with pytest.raises(ValueError) as rejected:
         boards.parse_declared('boards_c002_final', json.dumps(value),
                               {'card': {'card_idx': 2}, 'narration': narration()})
-    assert type(rejected.value) is ValueError
+    if defect == 'missing_phrase':
+        assert type(rejected.value) is NativeContractError
+        assert rejected.value.constraint == 'board_exact_phrase_occurrence'
+    else:
+        assert type(rejected.value) is ValueError
     assert 'PRIVATE_' not in str(rejected.value)
 
 

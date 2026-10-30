@@ -32,6 +32,14 @@ NATIVE_CONSTRAINTS = {
         'draw end_ms must be <= the emphasis start_ms. Beat array order does not change '
         'phrase-resolved times. Choose valid supplied phrase anchors for the same plan; '
         'do not emphasize a node during its draw interval or at that draw interval\'s start.'),
+    'board_exact_phrase_occurrence': (
+        'Each beat phrase must be exact contiguous text copied from the supplied narration '
+        'script selected by its zero-based line. occurrence is a one-based integer counting '
+        'exact phrase matches inside that selected script, not beat order. Multiple beats '
+        'may reference the same occurrence. If exact_match_count is 1, omit occurrence or use 1. '
+        'If it is greater than 1, explicitly select an occurrence from 1 to that count. If it '
+        'is 0, copy an exact contiguous phrase from the supplied script; do not paraphrase, '
+        'normalize spelling or change the narration. Return the entire author plan, not a patch.'),
 }
 
 
@@ -51,6 +59,25 @@ def native_details(constraint, details):
         return None
     def invalid():
         raise ValueError('Invalid native execution diagnostic')
+    if constraint == 'board_exact_phrase_occurrence':
+        required = {'beat_index', 'narration_block_index', 'exact_match_count',
+                    'requested_occurrence_type'}
+        if (not isinstance(details, dict) or not required <= set(details) or
+                set(details)-required-{'requested_occurrence'} or any(
+                    type(details[key]) is not int or not 0 <= details[key] <= 10**12
+                    for key in required) or not 0 <= details['requested_occurrence_type'] <= 2):
+            invalid()
+        kind = details['requested_occurrence_type']
+        if kind == 1:
+            value = details.get('requested_occurrence')
+            if (type(value) is not int or not -10**12 <= value <= 10**12 or
+                    1 <= value <= details['exact_match_count']):
+                invalid()
+        elif 'requested_occurrence' in details:
+            invalid()
+        if kind == 0 and details['exact_match_count'] == 1:
+            invalid()
+        return deepcopy(details)
     required = {'beat_index', 'target_node_indices', 'emphasis_start_ms',
                 'target_draws', 'missing_draw_target_node_indices', 'eligible_word_indices'}
     if (constraint != 'board_emphasis_after_draw' or not isinstance(details, dict) or
@@ -106,6 +133,17 @@ def technical_feedback(error, phase):
         details = native_details(error.constraint, error.details)
         if details is not None:
             feedback['details'] = details
+        if details is not None and error.constraint == 'board_exact_phrase_occurrence':
+            feedback['requirement'] += (
+                ' Diagnostic beat_index is the zero-based position in the previous rejected '
+                'response artifact.beats; narration_block_index is the zero-based position '
+                'in task_inputs.narration.blocks. requested_occurrence_type codes are '
+                '0=omitted or null, 1=integer (requested_occurrence gives its value), '
+                '2=invalid type or integer outside the diagnostic range. '
+                'Only integer occurrences from 1 to exact_match_count select a match. '
+                'Keep the other valid beats and all authored node content; the host does not '
+                'replace phrases, choose occurrences or move cues.')
+        elif details is not None:
             feedback['requirement'] += (
                 ' Diagnostic beat/node indices are zero-based positions in the previous rejected '
                 'response artifact.beats and artifact.nodes; word indices refer to the original '
@@ -172,6 +210,8 @@ def recovery_request(original, text, feedback, *, version=2):
         correction_scope = 'serialization, required field types and supplied item identities'
         if feedback.get('constraint') == 'board_emphasis_after_draw':
             correction_scope += ' and the identified native execution timing constraint'
+        elif feedback.get('constraint') == 'board_exact_phrase_occurrence':
+            correction_scope += ' and the identified exact narration phrase/occurrence anchor constraint'
         elif feedback.get('constraint') == 'visual_executable_body':
             correction_scope += ' and the required executable JavaScript body syntax'
         request.setdefault('system', []).append({'text': (
