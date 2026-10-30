@@ -87,7 +87,10 @@ def test_default_graph_keeps_final_authority_host_provenance_narration_and_zero_
             data = payload(request)
             assert [item['slot'] for item in data['items']] == [item['slot'] for item in batch['items']]
             assert all('source_hash' not in item for item in data['items'])
-            assert request['system'][-1] == {'text': translate.HOST_IDENTITY_CONTRACT}
+            expected_contract = (translate.TEACHING_FINAL_CONTRACT
+                                 if stream == 'teaching' and phase == 'final'
+                                 else translate.HOST_IDENTITY_CONTRACT)
+            assert request['system'][-1] == {'text': expected_contract}
         role = translate.role_key(batch, 'final')
         final = run.output(role)
         assert all(disposition['action'] == 'declined' for disposition in final['dispositions'])
