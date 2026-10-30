@@ -13,6 +13,12 @@ from .providers import Bedrock, Fixture, validate_config
 
 
 NATIVE_CONSTRAINTS = {
+    'teaching_text_fields': (
+        'Return one flat JSON object with exactly every key in the declared teaching output-field '
+        'mapping. Each key appears once and every value is a JSON string. Do not add artifact, '
+        'items, lines, notes or other nested objects or arrays. Include every title, display and '
+        'audio field; required spoken audio values must be nonblank. Keep all authored wording '
+        'and provide the whole response, not a patch or subset.'),
     'visual_executable_body': (
         'pixi_code must be valid JavaScript statements inside the supplied async function body. '
         'Return executable scene setup, not a bare anonymous function declaration or a whole '

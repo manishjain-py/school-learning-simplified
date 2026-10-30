@@ -6,7 +6,7 @@ import pytest
 
 from test_translate import EXAMPLE, invoke, offline, runner
 from reference.factories import translate
-from reference.factories.translate_fixture import payload
+from reference.factories.translate_fixture import payload, teaching_wire
 from reference.inputs import ROOT, load_manifest, read, strict_json
 from reference.providers import Bedrock, Fixture
 from reference.runtime import Runner, report
@@ -49,7 +49,7 @@ def test_one_schema_contract_and_complete_inline_task_without_hash_obligations(t
     instructions = (request['system'][0]['text']+'\n'+
                     request['messages'][0]['content'][0]['text'].split('Declared task data:\n')[0])
     assert instructions.count('Teaching final response contract') == 1
-    assert 'exactly one root member, artifact' in instructions
+    assert 'Return ONE FLAT JSON OBJECT' in instructions
     assert 'Never generate, copy, infer or\nreturn source_hash' in instructions
     assert 'no audit, dispositions or explanation' in instructions
     for obsolete in ('copy opaque hash', '<translation fields>', '...audit fields',
@@ -57,6 +57,8 @@ def test_one_schema_contract_and_complete_inline_task_without_hash_obligations(t
                      'LOCAL TRANSPORT CONTRACT:', 'Final response contract:'):
         assert obsolete not in instructions
     data = payload(request)
+    assert data['wire_fields'] == translate.teaching_wire_mapping(
+        translate.role_key({'stream': 'teaching', 'batch': number}, 'final'), teaching_task)['fields']
     assert data['items'] == [{k: v for k, v in item.items() if k != 'source_hash'}
                              for item in teaching_task['items']]
     assert data['draft'] == {'schema_version': 2, 'items': [
@@ -96,24 +98,22 @@ def test_task_text_and_private_environment_cannot_enter_canonical_system(teachin
 def test_literal_example_is_complete_strict_json_and_explicitly_syntax_only(teaching_task):
     _, request = request_for(teaching_task)
     system = request['system'][0]['text']
-    examples = [line for line in system.splitlines() if line.startswith('{"artifact":')]
+    examples = [line for line in system.splitlines() if line.startswith('{"t1":')]
     assert len(examples) == 1
     example = strict_json(examples[0])
     assert json.loads(examples[0]) == example
-    assert set(example) == {'artifact'}
-    assert set(example['artifact']) == {'schema_version', 'items'}
-    assert example['artifact']['schema_version'] == 2
-    example_item = example['artifact']['items'][0]
-    assert set(example_item) == {'slot', 'title_display', 'lines'}
-    assert set(example_item['lines'][0]) == {'display', 'audio'}
-    assert '"पाठ"' in example_item['lines'][0]['display']
+    assert set(example) == {'t1', 'd1_1', 'a1_1'}
+    assert all(isinstance(value, str) for value in example.values())
+    assert '"पाठ"' in example['d1_1']
     assert 'Syntax-only complete JSON example' in system
     assert 'not supplied output' in system and 'replacement content' in system
-    assert example_item['slot'] not in [item['slot'] for item in teaching_task['items']]
     # This literal is also accepted by the real native parser when its slot and
     # source-line count belong to an explicitly separate illustrative task.
-    declared = {'stream': 'teaching', 'items': [{'slot': example_item['slot'], 'lines': [{}]}]}
-    assert translate.parse_declared('translate_teaching_b001_final', examples[0], declared) == example
+    declared = {'stream': 'teaching', 'items': [{'slot': 'illustrative-slot', 'lines': [{}]}]}
+    value = translate.parse_declared('translate_teaching_b001_final', examples[0], declared)
+    assert value['wire'] == example
+    assert value['artifact']['items'] == [{'slot': 'illustrative-slot', 'title_display': example['t1'],
+                                          'lines': [{'display': example['d1_1'], 'audio': example['a1_1']}]}]
 
 
 def final_value(task):
@@ -124,13 +124,14 @@ def final_value(task):
         for item in task['items']]}}
 
 
-def test_native_artifact_only_response_is_accepted_without_quality_veto(teaching_task):
+def test_flat_wire_response_is_accepted_without_quality_veto(teaching_task):
     role, _ = request_for(teaching_task)
     value = final_value(teaching_task)
-    raw = json.dumps(value, ensure_ascii=False)
+    raw = json.dumps(teaching_wire(value['artifact'], translate.teaching_wire_mapping(role, teaching_task)['fields']),
+                     ensure_ascii=False)
     accepted = translate.parse_declared(role, raw, teaching_task)
-    assert accepted == value
-    assert set(accepted) == {'artifact'}
+    assert accepted['artifact'] == value['artifact']
+    assert set(accepted) == {'artifact', 'wire', 'transport'}
     assert accepted['artifact']['items'][0]['lines'][0] == {
         'display': '', 'audio': '  अंतिम term की अपनी आवाज़  '}
 
@@ -155,7 +156,8 @@ def test_native_json_and_complete_join_still_fail_without_repair(teaching_task, 
         items[0]['lines'][0]['audio'] = ' \n '
     elif defect == 'object_display':
         items[0]['lines'][0]['display'] = {'wrong': 'native type'}
-    raw = json.dumps(value, ensure_ascii=False)
+    raw = json.dumps(teaching_wire(value['artifact'], translate.teaching_wire_mapping(role, teaching_task)['fields']),
+                     ensure_ascii=False)
     if defect == 'root_eof':
         raw = raw[:-1]
     with pytest.raises(ValueError):
@@ -173,7 +175,7 @@ def test_teaching_cap_and_other_stream_batch_sizes_remain_independent(size, teac
         assert len(batches[0]['items']) == min(13, teaching_limit if stream == 'teaching' else size)
 
 
-def test_native_converse_forwards_request_and_artifact_only_final_survives_graph_and_resume(tmp_path):
+def test_native_converse_forwards_flat_wire_and_native_derivative_survives_graph_and_resume(tmp_path):
     run = runner(tmp_path)
     work = translate.batches(run.bundle, translate.project(run.bundle))
     roles = [translate.role_key(batch, phase) for batch in work for phase in translate.PHASES]
@@ -192,11 +194,12 @@ def test_native_converse_forwards_request_and_artifact_only_final_survives_graph
                 assert request['system'] == [{'text': translate.TEACHING_FINAL_CONTRACT}]
                 task = payload(request)
                 assert task['review']['verdicts'] and all(not v['pass'] for v in task['review']['verdicts'])
-                # Exercise the requested artifact-only envelope through the real
+                # Exercise the requested flat wire through the real
                 # provider, parser, export, trusted joins and completed resume.
                 value = final_value(task)
                 final_responses[role] = value
-                response['output']['message']['content'][0]['text'] = json.dumps(value, ensure_ascii=False)
+                response['output']['message']['content'][0]['text'] = json.dumps(
+                    teaching_wire(value['artifact'], task['wire_fields']), ensure_ascii=False)
             return response
 
     provider = Bedrock({'model': 'inert-no-service', 'max_output_tokens': 8192})
@@ -213,7 +216,7 @@ def test_native_converse_forwards_request_and_artifact_only_final_survives_graph
     assert set(final_responses) == {role for role in roles
                                     if role.startswith('translate_teaching_') and role.endswith('_final')}
     for role, value in final_responses.items():
-        assert run.output(role) == value
+        assert run.output(role)['artifact'] == value['artifact']
         assert read(tmp_path/'artifacts'/f'{role}.json') == value['artifact']
         task = payload(read(tmp_path/'requests'/f'{role}.json'))
         review_role = role.rsplit('_', 1)[0]+'_review'

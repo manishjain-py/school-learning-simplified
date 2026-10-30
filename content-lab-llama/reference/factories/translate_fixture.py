@@ -24,6 +24,8 @@ def output(role, request):
                 for f in ('explanation_display', 'hint_display', 'success_display', 'reveal_display'):
                     if f in item: item[f] = 'अंतिम '+MARKER
             else: item['answer']['display'] = 'अंतिम '+MARKER
+        if stream == 'teaching':
+            return teaching_wire(artifact, data['wire_fields'])
         return {'artifact': artifact, 'dispositions': [{'slot': v['slot'], 'action': 'declined', 'reason': MARKER}
                                                       for v in data['review']['verdicts']], 'note': MARKER}
     items = []
@@ -47,3 +49,29 @@ def output(role, request):
                        answer={'display': 'नमूना '+MARKER, 'audio': 'नमूना '+MARKER})
         items.append(row)
     return {'artifact': {'schema_version': 2, 'items': items}, 'note': MARKER}
+
+
+def teaching_wire(artifact, fields):
+    """Synthetic provider encoder; the real parser still requires the flat wire."""
+    values = {}
+    by_slot = {item['slot']: item for item in artifact['items'] if isinstance(item.get('slot'), str)}
+    for field in fields:
+        item = by_slot.get(field['slot'])
+        if item is None:
+            continue
+        if 'line_index' in field:
+            lines = item.get('lines', [])
+            if not isinstance(lines, list) or field['line_index'] >= len(lines):
+                continue
+            item = lines[field['line_index']]
+        if field['field'] in item:
+            values[field['key']] = item[field['field']]
+    # Preserve synthetic native identity/line defects as invalid wire evidence,
+    # rather than silently manufacturing a valid subset for test interceptors.
+    if len(by_slot) != len(artifact['items']) or set(by_slot) != {field['slot'] for field in fields}:
+        values['unexpected_slot'] = 'SYNTHETIC INVALID IDENTITY'
+    if any(isinstance(item.get('lines'), list) and len(item['lines']) !=
+           sum(field['slot'] == item.get('slot') and field['field'] == 'audio' for field in fields)
+           for item in artifact['items']):
+        values['unexpected_line_count'] = 'SYNTHETIC INVALID LINE COUNT'
+    return values

@@ -11,6 +11,7 @@ from reference.factories.translate_fixture import payload
 from reference.factories.translate_inputs import project
 from reference.inputs import canonical, load_manifest, read
 from reference.providers import Fixture
+from reference.factories.translate_fixture import teaching_wire
 from reference.runtime import Runner, report
 
 
@@ -40,7 +41,7 @@ def test_unsolicited_model_hash_stays_raw_and_never_overwrites_host_provenance(t
 
     def altered(self, request, *, role, notes_pages):
         response = original(self, request, role=role, notes_pages=notes_pages)
-        if not role.endswith('_final'):
+        if not role.endswith('_final') or role.startswith('translate_teaching_'):
             return response
         value = json.loads(response['output']['message']['content'][0]['text'])
         for item in value['artifact']['items']:
@@ -58,8 +59,13 @@ def test_unsolicited_model_hash_stays_raw_and_never_overwrites_host_provenance(t
         role = f'translate_{stream}_b001_final'
         exported = read(tmp_path/'artifacts'/f'{role}.json')
         raw = read(tmp_path/'responses'/f'{role}.json')
-        assert exported == json.loads(raw['output']['message']['content'][0]['text'])['artifact']
-        assert all(item['source_hash'] == model_hash and 'author_note' in item for item in exported['items'])
+        if stream == 'teaching':
+            assert exported == run.output(role)['artifact']
+            assert run.output(role)['wire'] == json.loads(raw['output']['message']['content'][0]['text'])
+            assert all('source_hash' not in item for item in exported['items'])
+        else:
+            assert exported == json.loads(raw['output']['message']['content'][0]['text'])['artifact']
+            assert all(item['source_hash'] == model_hash and 'author_note' in item for item in exported['items'])
     deck = read(tmp_path/'artifacts/deck_hi.json')['items']
     descriptors = {d['slot']: d for stream in ('teaching', 'checkin') for d in view['descriptors'][stream]}
     for ordering, item in zip(view['deck_order'], deck):
@@ -85,7 +91,7 @@ def test_complete_slot_join_is_required_at_role_parse(defect):
         items[0]['slot'] = []
     value = {'artifact': {'schema_version': 2, 'items': items}}
     with pytest.raises(ValueError, match='identity join failed'):
-        translate.parse_declared(translate.role_key(batch, 'final'), json.dumps(value), batch)
+        translate.parse_declared(translate.role_key(batch, 'author'), json.dumps(value), batch)
 
 
 def test_native_line_binding_does_not_judge_translated_wording():
@@ -95,11 +101,11 @@ def test_native_line_binding_does_not_judge_translated_wording():
         {'slot': item['slot'], 'lines': [{'display': '', 'audio': '  Author text unchanged.  '}
                                       for _ in item['lines']], 'title_display': ''}
         for item in batch['items']]}}
-    assert translate.parse_declared(translate.role_key(batch, 'final'), json.dumps(value), batch) == value
+    assert translate.parse_declared(translate.role_key(batch, 'author'), json.dumps(value), batch) == value
     invalid = deepcopy(value)
     invalid['artifact']['items'][0]['lines'] = [{'display': 'Text', 'audio': {'invalid': 'type'}}]
     with pytest.raises(ValueError, match='teaching lines'):
-        translate.parse_declared(translate.role_key(batch, 'final'), json.dumps(invalid), batch)
+        translate.parse_declared(translate.role_key(batch, 'author'), json.dumps(invalid), batch)
 
 
 @pytest.mark.parametrize('defect', ['missing_slot', 'missing_lines', 'empty_lines', 'extra_line',
@@ -114,7 +120,8 @@ def test_native_failure_corrected_by_same_final_author_then_binds_actual_narrati
         response = original(self, request, role=role, notes_pages=notes_pages)
         response['usage'] = {'inputTokens': 100, 'outputTokens': 20}
         if role == failed_role and roles.count(role) == 1:
-            value = json.loads(response['output']['message']['content'][0]['text'])
+            data = payload(request)
+            value = translate.decode_teaching_wire(role, response['output']['message']['content'][0]['text'], data)
             items = value['artifact']['items']
             if defect == 'missing_slot':
                 items.pop()
@@ -130,7 +137,8 @@ def test_native_failure_corrected_by_same_final_author_then_binds_actual_narrati
                 items[0]['lines'][0].pop('display')
             else:
                 items[0]['lines'][0]['audio'] = ' \n '
-            response['output']['message']['content'][0]['text'] = json.dumps(value, ensure_ascii=False)
+            response['output']['message']['content'][0]['text'] = json.dumps(
+                teaching_wire(value['artifact'], data['wire_fields']), ensure_ascii=False)
         return response
 
     monkeypatch.setattr(Fixture, 'invoke', settled)

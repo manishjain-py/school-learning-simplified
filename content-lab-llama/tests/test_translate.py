@@ -13,7 +13,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import run_factory as cli
 from reference.factories import translate as r
-from reference.factories.translate_fixture import MARKER, payload
+from reference.factories.translate_fixture import MARKER, payload, teaching_wire
 from reference.factories.translate_inputs import project, question_hash
 from reference.inputs import ROOT, canonical, load_manifest, read, save, sha
 from reference.providers import Fixture
@@ -75,8 +75,14 @@ def intercept(monkeypatch, change):
 
     def altered(self, request, *, role, notes_pages):
         result = original(self, request, role=role, notes_pages=notes_pages)
+        data = payload(request)
         value = json.loads(result['output']['message']['content'][0]['text'])
-        change(role, payload(request), value)
+        wire = data['stream'] == 'teaching' and role.endswith('_final')
+        if wire:
+            value = r.decode_teaching_wire(role, json.dumps(value), data)
+        change(role, data, value)
+        if wire:
+            value = teaching_wire(value['artifact'], data['wire_fields'])
         return response(value)
 
     monkeypatch.setattr(Fixture, 'invoke', altered)
@@ -112,7 +118,10 @@ def test_cli_five_streams_three_packs_final_owner_and_completed_resume(tmp_path)
         review = read(tmp_path/'checkpoints'/f'{prefix}review.json')['output']
         final = read(tmp_path/'checkpoints'/f'{prefix}final.json')['output']
         assert all(v['pass'] is False for v in review['verdicts'])
-        assert all(d['action'] == 'declined' for d in final['dispositions'])
+        if batch['stream'] == 'teaching':
+            assert final['transport']['protocol'] == r.TEACHING_WIRE_PROTOCOL
+        else:
+            assert all(d['action'] == 'declined' for d in final['dispositions'])
         assert final['artifact'] != author['artifact']
         assert read(tmp_path/'artifacts'/f'{prefix}final.json') == final['artifact']
     packs = {name: read(tmp_path/'artifacts'/name) for name in PACKS}
@@ -344,7 +353,7 @@ def test_unjoinable_final_stops_at_parse_with_raw_author_retained_and_no_subset(
     role = 'translate_teaching_b001_final'
     assert read(tmp_path/'checkpoints'/f'{role}.json')['status'] == 'failed'
     raw = read(tmp_path/'responses'/f'{role}.json')
-    assert json.loads(raw['output']['message']['content'][0]['text'])['artifact']['items']
+    assert json.loads(raw['output']['message']['content'][0]['text'])
     assert not list((tmp_path/'artifacts').glob('translate_*_final.json'))
     assert not any((tmp_path/'artifacts'/name).exists() for name in PACKS)
     summary = report(tmp_path, r)
@@ -365,7 +374,7 @@ def test_imperfect_final_fields_are_retained_without_quality_veto_or_rewrite(tmp
         elif role == 'translate_teaching_b001_final':
             # Preserve native narration correspondence without judging wording.
             value['artifact']['items'][0]['lines'][0]['display'] = ''
-            value['artifact']['items'][0].pop('title_display')
+            value['artifact']['items'][0]['title_display'] = ''
 
     intercept(monkeypatch, imperfect)
     run = runner(tmp_path)
@@ -373,7 +382,7 @@ def test_imperfect_final_fields_are_retained_without_quality_veto_or_rewrite(tmp
     assert report(tmp_path, r)['status'] == 'complete'
     assert len(run.ledger['calls']) == 21
     first = read(tmp_path/'artifacts/deck_hi.json')['items'][0]
-    assert first['lines'][0]['display'] == '' and 'title_display' not in first
+    assert first['lines'][0]['display'] == '' and first['title_display'] == ''
     final = next(i for i in final_items(run, 'practice') if i.get('options_display') == ['अपूर्ण अंतिम विकल्प'])
     item = next(i for i in read(tmp_path/'artifacts/practice_hi.json')['items']
                 if i['source']['question_id'] == final['slot'].split(':', 1)[1])

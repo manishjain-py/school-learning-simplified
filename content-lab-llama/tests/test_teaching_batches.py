@@ -93,7 +93,10 @@ def test_default_graph_keeps_final_authority_host_provenance_narration_and_zero_
             assert request['system'][-1] == {'text': expected_contract}
         role = translate.role_key(batch, 'final')
         final = run.output(role)
-        assert all(disposition['action'] == 'declined' for disposition in final['dispositions'])
+        if stream == 'teaching':
+            assert final['transport']['protocol'] == translate.TEACHING_WIRE_PROTOCOL
+        else:
+            assert all(disposition['action'] == 'declined' for disposition in final['dispositions'])
         assert read(tmp_path/'artifacts'/f'{role}.json') == final['artifact']
         if stream == 'teaching':
             translated.update({item['slot']: item for item in final['artifact']['items']})
