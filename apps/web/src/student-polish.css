@@ -1,0 +1,113 @@
+/* Shared values for the student-screen design polish. */
+:root {
+  --student-label-size: 11px;
+  --student-label-weight: 500;
+  --back-navigation-gap: 8px;
+  --back-navigation-inset: 16px;
+}
+
+/* The same label treatment follows learners through library, modes and reports. */
+#root :is(.eyebrow, .student-kicker, .card-kicker, .chapter-meta,
+  .student-chapter-copy > span, .student-subject small, .practice-toolbar > span) {
+  font-size: var(--student-label-size);
+  font-weight: var(--student-label-weight);
+}
+
+#root :is(.lesson-page, .report-page) {
+  padding-top: var(--back-navigation-inset);
+}
+
+#root :is(.lesson-page > .back-link, .student-area > .student-back) {
+  min-height: 44px;
+  padding: 8px 0;
+  margin-top: 0;
+  margin-bottom: var(--back-navigation-gap);
+}
+
+#root .student-back + :is(.student-page-heading, .chapter-workspace-heading) {
+  margin-top: 0;
+}
+
+#root .report-navigation {
+  margin-top: 0;
+  margin-bottom: var(--back-navigation-gap);
+}
+
+#root .back-link + .mode-tabs {
+  margin-top: 0;
+}
+
+/* A short page keeps its footer at the viewport bottom; long pages scroll normally. */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+#main {
+  flex: 1 0 auto;
+}
+
+.site-header,
+.site-footer {
+  flex-shrink: 0;
+}
+
+.site-header .nav-link.nav-school,
+.site-header .header-account.header-signout {
+  color: var(--green);
+  gap: 6px;
+  min-height: 44px;
+  font-weight: 500;
+}
+
+.site-header .nav-link.nav-school > svg,
+.site-header .header-account.header-signout > svg {
+  flex-shrink: 0;
+}
+
+.site-header .header-account.header-signout {
+  border: 0;
+  border-radius: 0;
+  padding: 8px 0;
+  background: transparent;
+  font-size: 12px;
+}
+
+.site-header .header-account.header-signout:hover:not(:disabled) {
+  background: transparent;
+  transform: none;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.site-footer.page-width {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 6px;
+  padding-top: 24px;
+  padding-bottom: 30px;
+}
+
+.site-footer.page-width .footer-name {
+  margin: 0;
+  color: #597158;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.site-footer.page-width .footer-note {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .site-header .header-account.header-signout {
+    font-size: 11px;
+  }
+}
