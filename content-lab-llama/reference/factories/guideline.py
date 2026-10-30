@@ -164,8 +164,11 @@ def recovery_budget(identity, ledger):
     from ..providers import validate_config
     from ..runtime import recovery_policy
     config = validate_config(identity['config'])
-    policy = recovery_policy(config)
-    if identity.get('technical_recovery') != policy or ledger.get('technical_recovery') != policy:
+    current = recovery_policy(config)
+    policy = identity.get('technical_recovery')
+    if (not isinstance(policy, dict) or type(policy.get('version')) is not int or
+            policy not in (current, {**current, 'version': 1}) or
+            ledger.get('technical_recovery') != policy):
         raise ValueError('Recovery policy identity')
     paid = config['provider'] == 'bedrock'
     reservation = ((config['input_token_bound']*config['input_per_million'] +
@@ -229,7 +232,7 @@ def recovery_evidence(workspace, key, role, original, matches, result, notes_pag
                     raise ValueError('Technical recovery feedback identity')
             else:
                 raise ValueError('Physical retry followed an already usable response')
-            expected_request = recovery_request(original, raw, feedback)
+            expected_request = recovery_request(original, raw, feedback, version=policy['version'])
         directory = root/f'{number:03d}'
         saved_request = read(directory/'request.json')
         checkpoint = read(directory/'checkpoint.json')
@@ -301,7 +304,7 @@ def report_completion(workspace, identity, ledger, results):
             from ..runtime import recovery_policy
             policy = recovery_policy(identity['config'])
             try:
-                recovery_budget(identity, ledger)
+                policy = recovery_budget(identity, ledger)
             except (ValueError, RuntimeError, OSError, KeyError, TypeError):
                 # Continue enumerating evidence so an interrupted reservation is
                 # visible in checkpoint statuses as well as aggregate exposure.

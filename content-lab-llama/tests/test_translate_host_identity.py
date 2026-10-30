@@ -25,7 +25,10 @@ def test_all_stream_requests_use_slots_without_host_digests(tmp_path):
         assert all('source_hash' not in item for item in data['items'])
         if 'draft' in data:
             assert all('source_hash' not in item for item in data['draft']['items'])
-        assert request['system'][-1] == {'text': translate.HOST_IDENTITY_CONTRACT}
+        if data['stream'] == 'teaching' and path.stem.endswith('_final'):
+            assert request['system'] == [{'text': translate.TEACHING_FINAL_CONTRACT}]
+        else:
+            assert request['system'][-1] == {'text': translate.HOST_IDENTITY_CONTRACT}
         encoded = json.dumps(request, ensure_ascii=False)
         assert not any(digest in encoded for digest in hashes)
     assert read(tmp_path/'views/reference-identity.json')['identity_protocol'] == translate.IDENTITY_PROTOCOL
