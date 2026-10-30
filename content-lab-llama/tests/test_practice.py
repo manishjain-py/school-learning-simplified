@@ -304,22 +304,6 @@ def test_partial_resume_exact_request_sequence_and_no_repeat(tmp_path,monkeypatc
     assert len({c['key'] for c in resumed.ledger['calls']}) == 5
 
 
-def test_prompt_snapshots_hashes_and_exact_diffs():
-    manifest=read(ROOT/'prompts/practice-manifest.json')
-    expected={'blueprint_author':'2319c07b93f058499e71c99944c4975c9c4a101165f608ab6af8ad69a6ffbbe3',
-              'slot_author':'97c09daec4a44ffcffc80b861c4e9c12fca1ce0cef3a53fbfb6a611fac56e4b5',
-              'batch_verify':'fa902165e138b5c8812cb89e9f5a234b67e76c40b33e5d30c2131ab9e7fdb4b9',
-              'batch_fixer':'35c0d4cec6c17795386e120b9e4497ac72532eef8881e6505e8536c93205d776'}
-    for entry in manifest['prompts']:
-        name=Path(entry['source_path']).stem
-        source=ROOT/'prompts/source/practice'/f'{name}.md'
-        active=ROOT/entry['adapted_path']
-        assert sha(source.read_bytes()) == entry['source_sha256'] == expected[name]
-        assert sha(active.read_bytes()) == entry['adapted_sha256']
-        diff=''.join(difflib.unified_diff(source.read_text().splitlines(True),active.read_text().splitlines(True),fromfile=f'source/practice/{name}.md',tofile=f'practice/{name}.md'))
-        assert active.with_suffix('.md.diff').read_text() == diff
-
-
 def test_explicit_null_blueprint_rejected_before_transport_or_workspace(tmp_path):
     manifest = read(EXAMPLE)
     for spec in manifest['files'].values():

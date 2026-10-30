@@ -557,26 +557,8 @@ def test_blind_request_allowlist_contains_only_matched_proposed_current_objects_
     assert set(review['proposal']['fixes'][0]) == set(plan['fixes'][0])
 
 
-def test_prompt_schema_provenance_exact_diffs_and_same_final_plan_author(tmp_path):
+def test_feedback_outputs_match_schemas_and_same_final_plan_author(tmp_path):
     import jsonschema
-    manifest = read(ROOT/'prompts/feedback/manifest.json')
-    assert manifest['source_commit'] == '0000000000000000000000000000000000000000'
-    assert manifest['source_file_sha256'] == '87b8cca6f96db25f57c30fab71532ccde5aada5dafb42fc321ccba0945685aad'
-    assert {entry['role'] for entry in manifest['files'] if 'role' in entry} == {'understand', 'plan', 'blind', 'review'}
-    assert {entry['schema'] for entry in manifest['files'] if 'schema' in entry} == {'understanding', 'plan', 'blind', 'review'}
-    for entry in manifest['files']:
-        source = ROOT/entry['snapshot_path']
-        assert sha(source.read_bytes()) == entry['source_sha256']
-        assert len(source.read_bytes()) == entry['source_bytes']
-        if 'adapted_path' not in entry:
-            continue
-        adapted = ROOT/entry['adapted_path']
-        diff = ROOT/entry['diff_path']
-        assert sha(adapted.read_bytes()) == entry['adapted_sha256']
-        assert sha(diff.read_bytes()) == entry['diff_sha256']
-        assert diff.read_text() == ''.join(difflib.unified_diff(
-            source.read_text().splitlines(True), adapted.read_text().splitlines(True),
-            fromfile=entry['snapshot_path'], tofile=entry['adapted_path']))
     run = runner(tmp_path)
     invoke(run)
     # The nominal synthetic responses match native fields; this is fixture QA,

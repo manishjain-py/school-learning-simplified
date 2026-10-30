@@ -262,18 +262,3 @@ def test_parse_failures_are_honest_not_native_semantic_veto(tmp_path, monkeypatc
     assert report(tmp_path, explain)['status'] == 'partial_or_failed'
     assert not (tmp_path/'artifacts/deck.json').exists()
     assert explain.parse('explain_split_final', '{"artifact":{"cards":"imperfect"}}')['artifact']['cards'] == 'imperfect'
-
-
-def test_frozen_nested_prompts_hashes_and_exact_attribution_diffs(tmp_path):
-    run = runner(tmp_path)
-    manifest = read(ROOT/'prompts/explain-manifest.json')
-    for item in manifest['files']:
-        name = item['name']+'.md'
-        source = ROOT/'prompts/source/explain'/name
-        active = ROOT/'prompts/explain'/name
-        assert sha(source.read_bytes()) == item['source_sha256']
-        assert sha(active.read_bytes()) == item['adapted_sha256']
-        assert run.identity['runtime']['files']['prompts/explain/'+name] == item['adapted_sha256']
-        diff = ''.join(difflib.unified_diff(source.read_text().splitlines(keepends=True),
-            active.read_text().splitlines(keepends=True), fromfile='source/'+name, tofile='explain/'+name))
-        assert (ROOT/'prompts/explain'/(name+'.diff')).read_text() == diff

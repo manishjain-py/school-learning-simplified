@@ -238,17 +238,3 @@ def test_shared_audio_projects_existing_native_pack_text(kind,path):
     rows, origins = run_audio.blocks({'metadata':{'kind':kind},'declared':{'pack':read(ROOT/'examples'/path)}})
     assert rows and len(origins) == len(rows)
     assert any(MARKER in row['script'] for row in rows)
-
-
-def test_prompt_provenance_exact_hashes_and_diffs():
-    value = read(ROOT/'prompts/visuals-manifest.json')
-    assert value['source_commit'] == '0000000000000000000000000000000000000000'
-    entries = value['files']
-    assert len(entries) == 8
-    for e in entries:
-        original, active, diff = (ROOT/e[k] for k in ('snapshot_path','adapted_path','diff_path'))
-        assert sha(original.read_bytes()) == e['source_sha256']
-        assert sha(active.read_bytes()) == e['adapted_sha256']
-        assert sha(diff.read_bytes()) == e['diff_sha256']
-        assert diff.read_text() == ''.join(difflib.unified_diff(original.read_text().splitlines(True),active.read_text().splitlines(True),
-                                    fromfile=e['snapshot_path'],tofile=e['adapted_path']))

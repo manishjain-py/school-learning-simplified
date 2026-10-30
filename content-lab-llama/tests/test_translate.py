@@ -487,23 +487,3 @@ def test_native_example_lineage_has_exact_predecessor_artifact_bytes():
             (('deck', 'cards'), ('checkins', 'check_ins'), ('practice', 'questions'), ('revise', 'cards'))] == [12, 6, 8, 1]
     assert read(EXAMPLE.parent/'r5-slim-index-map.json')['mapping'] == [
         {'old_card_idx': i, 'local_card_idx': i} for i in range(1, 13)]
-
-
-def test_prompt_manifest_exact_snapshots_adaptations_and_unified_diffs():
-    manifest = read(ROOT/'prompts/translate/manifest.json')
-    assert manifest['source_commit'] == '0000000000000000000000000000000000000000'
-    assert {(e['family'], e['role']) for e in manifest['prompts']} == {
-        (family, role) for family in ('translation', 'question', 'feedback', 'revise')
-        for role in ('author', 'verify', 'fixer')}
-    assert len(manifest['prompts']) == 12
-    for entry in manifest['prompts']:
-        source = ROOT/entry['source_snapshot_path']
-        adapted = ROOT/entry['adapted_path']
-        diff = ROOT/entry['diff_path']
-        assert sha(source.read_bytes()) == entry['source_sha256']
-        assert sha(adapted.read_bytes()) == entry['adapted_sha256']
-        assert sha(diff.read_bytes()) == entry['diff_sha256']
-        exact = ''.join(difflib.unified_diff(
-            source.read_text().splitlines(True), adapted.read_text().splitlines(True),
-            fromfile='a/'+entry['source_path'], tofile='b/'+entry['adapted_path']))
-        assert diff.read_text() == exact

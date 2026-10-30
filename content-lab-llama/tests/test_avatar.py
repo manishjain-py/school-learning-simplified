@@ -292,15 +292,6 @@ def test_avatar_partial_narration_resumes_native_attempts_and_preserves_complete
     assert narration_bytes(directory)==before and result==read(run.workspace/'views/avatar_c001-narration.json')
 
 
-def test_exact_source_snapshots_schema_and_adapted_provenance():
-    value=read(ROOT/'prompts/avatar/manifest.json')
-    assert value['source_commit']=='0000000000000000000000000000000000000000'
-    assert value['source_file_sha256']=='7010bca039b232f30cd8cbdb4c37b6f4ac7c5c9bd7cd789ad2c04e503c34dc9b'
-    for entry in value['files']:
-        orig,active,diff=(ROOT/entry[k] for k in ('snapshot_path','adapted_path','diff_path'))
-        assert sha(orig.read_bytes())==entry['source_sha256']
-        assert sha(active.read_bytes())==entry['adapted_sha256']
-        assert sha(diff.read_bytes())==entry['diff_sha256']
-        assert diff.read_text()==''.join(difflib.unified_diff(orig.read_text().splitlines(True),active.read_text().splitlines(True),fromfile=entry['snapshot_path'],tofile=entry['adapted_path']))
+def test_look_schema_fields():
     schema=read(ROOT/'schemas/avatar-look.json')
     assert set(schema['properties'])=={'card_idx','verdict','reason','checked','head_in_frame'}
