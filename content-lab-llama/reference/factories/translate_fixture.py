@@ -28,7 +28,7 @@ def output(role, request):
                                                       for v in data['review']['verdicts']], 'note': MARKER}
     items = []
     for source in data['items']:
-        row = {k: source[k] for k in ('slot', 'source_hash')}
+        row = {'slot': source['slot']}
         if stream == 'teaching':
             row.update(title_display='नमूना '+MARKER, lines=[{'display': 'नमूना '+MARKER, 'audio': 'नमूना '+MARKER} for _ in source['lines']])
         elif stream in ('checkin', 'practice'):

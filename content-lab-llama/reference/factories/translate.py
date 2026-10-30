@@ -21,6 +21,19 @@ FIELDS = {'teaching': ('title_display', 'lines'),
           'feedback': ('explanation_display', 'correct_answer_display', 'hint_display', 'hint_audio',
                        'success_display', 'success_audio', 'reveal_display', 'reveal_audio'),
           'revise': ('question', 'answer')}
+IDENTITY_PROTOCOL = 'host-source-provenance-v1'
+HOST_IDENTITY_CONTRACT = (
+    'Local identity protocol '+IDENTITY_PROTOCOL+': this supersedes earlier instructions ONLY about '
+    'copying source_hash values. The host retains every source digest outside model task data. '
+    'Do not generate, copy, infer or return source_hash. Each translation item must copy its supplied '
+    'slot exactly. Return every supplied slot exactly once, with no added or omitted slots. '
+    'The host joins the complete set of slots to its frozen source descriptors and attaches source '
+    'provenance separately; the model does not author that provenance. Retain the existing translation '
+    'fields, advisory review and final-author ownership. Return one complete strict JSON object. '
+    'For teaching items, lines must contain exactly one translated line per supplied source line, in '
+    'source order. Every line needs display text and nonblank spoken audio text so the existing local '
+    'narration can bind that line. Preserve your translated wording; this adds no language-quality check. '
+    'This is a transport identity contract, not a content-quality review.')
 
 
 def validate_inputs(bundle):
@@ -51,8 +64,18 @@ def candidate_view(artifact, stream):
     not a filter of final items or a post-author repair.
     """
     return {'schema_version': artifact['schema_version'], 'items': [
-        {k: item[k] for k in ('slot', 'source_hash', *FIELDS[stream]) if k in item}
+        {k: item[k] for k in ('slot', *FIELDS[stream]) if k in item}
         for item in artifact['items']]}
+
+
+def model_data(declared):
+    """Exclude host digests without altering frozen source descriptors or authors."""
+    data = dict(declared)
+    data['items'] = [{k: v for k, v in item.items() if k != 'source_hash'}
+                     for item in declared['items']]
+    if 'draft' in data:
+        data['draft'] = candidate_view(data['draft'], data['stream'])
+    return data
 
 
 def request(run, role, declared, batch, notes, final):
@@ -131,7 +154,7 @@ def request(run, role, declared, batch, notes, final):
         'role\'s existing instructions. Preserve the existing native schema and advisory targets. Return the '
         'content itself, not a description of producing it.')
     request = {'messages': [{'role': 'user', 'content': [{'text': prompt+'\n\nLOCAL TRANSPORT CONTRACT:\n'+contract+
-        '\nDeclared task data:\n'+json.dumps({'task_inputs': declared}, ensure_ascii=False)}, {'text': final_contract}]}]}
+        '\nDeclared task data:\n'+json.dumps({'task_inputs': model_data(declared)}, ensure_ascii=False)}, {'text': final_contract}]}]}
     if stream == 'teaching' and phase == 'final':
         request['system'] = [{'text': final_contract+
             '\nOutput scope: task_inputs, source/input objects, draft, review and pre_revision_diagnostics '
@@ -167,6 +190,9 @@ def request(run, role, declared, batch, notes, final):
             'envelope.'}]
     if stream == 'practice' and phase == 'review':
         request['system'] = [{'text': final_contract}]
+    # Keep the historical role instructions intact. This new, explicit protocol
+    # removes only opaque digest copying from the model's responsibilities.
+    request.setdefault('system', []).append({'text': HOST_IDENTITY_CONTRACT})
     return request
 
 
@@ -191,6 +217,49 @@ def parse(role, text, notes_pages=None):
     return value
 
 
+def parse_declared(role, text, declared, notes_pages=None):
+    """Validate a complete technical join before a role checkpoint succeeds.
+
+    Raw output is returned unchanged. Only identity and native value types are
+    checked here. Teaching lines must also bind the exact source lines required
+    by downstream narration. No translated wording, option count or review
+    verdict is judged. The same role may correct a technical failure via Runner's
+    bounded response recovery.
+    """
+    value = parse(role, text, notes_pages)
+    if role.endswith('_review'):
+        return value
+    stream = declared['stream']
+    items = value['artifact']['items']
+    join_items(items, declared['items'], stream)
+    source = {item['slot']: item for item in declared['items']}
+    for item in items:
+        if stream == 'teaching':
+            lines = item.get('lines')
+            if not isinstance(lines, list) or len(lines) != len(source[item['slot']]['lines']):
+                raise ValueError('Translate teaching lines must bind every source line exactly')
+            if not all(isinstance(line, dict) and isinstance(line.get('audio'), str)
+                       and line['audio'].strip() for line in lines):
+                raise ValueError('Translate teaching lines require nonblank spoken audio text')
+        for field in FIELDS[stream]:
+            if field not in item:
+                continue
+            content = item[field]
+            if field == 'lines':
+                valid = isinstance(content, list) and all(
+                    isinstance(line, dict) and all(isinstance(line.get(k), str) for k in ('display', 'audio'))
+                    for line in content)
+            elif field in ('options_display', 'options_audio'):
+                valid = isinstance(content, list) and all(isinstance(option, str) for option in content)
+            elif field in ('question', 'answer'):
+                valid = isinstance(content, dict) and all(isinstance(content.get(k), str) for k in ('display', 'audio'))
+            else:
+                valid = isinstance(content, str)
+            if not valid:
+                raise ValueError('Translate native field type mismatch for '+stream+': '+field)
+    return value
+
+
 def required(run, role):
     value = run.output(role)
     if 'technical_failure' in value:
@@ -210,8 +279,6 @@ def diagnostics(source, artifact, stream):
         if not src:
             findings.append('Draft has unbound source slot.')
             continue
-        if item.get('source_hash') != src['source_hash']:
-            findings.append('Draft opaque hash differs from source.')
         if stream in ('checkin', 'practice'):
             for f in ('options_display', 'options_audio'):
                 if not isinstance(item.get(f), list) or len(item[f]) != len(src['options']):
@@ -222,16 +289,19 @@ def diagnostics(source, artifact, stream):
 
 
 def join_items(items, descriptors, stream):
-    """All-or-fail identity join. Content fields are never quality-filtered."""
+    """All-or-fail slot join; source provenance comes only from the host.
+
+    Unsolicited model source_hash fields remain in exact author exports, but
+    never supply or overwrite provenance in the assembled derivative.
+    """
     expected = {d['slot']: d for d in descriptors}
+    if len(expected) != len(descriptors):
+        raise ValueError('Assembly identity join failed for '+stream+': duplicate host slot')
     joined = {}
     for item in items:
         slot = item.get('slot')
         if not isinstance(slot, str) or slot not in expected or slot in joined:
             raise ValueError('Assembly identity join failed for '+stream+': unknown/duplicate slot')
-        desc = expected[slot]
-        if item.get('source_hash') != desc['source_hash']:
-            raise ValueError('Assembly identity join failed for '+stream+': source hash mismatch')
         joined[slot] = {k: item[k] for k in FIELDS[stream] if k in item}
     if set(joined) != set(expected):
         raise ValueError('Assembly identity join failed for '+stream+': missing source slot; no subset export')
@@ -278,6 +348,7 @@ def graph(run):
     save(run.workspace/'views/interleaved-index-map.json', view['index_map'])
     save(run.workspace/'views/batches.json', work)
     save(run.workspace/'views/reference-identity.json', {
+        'identity_protocol': IDENTITY_PROTOCOL,
         'source_file_sha256': {k: v['sha256'] for k, v in run.bundle['file_identity'].items()},
         'projection_sha256': sha(canonical(view['streams'])), 'descriptor_sha256': sha(canonical(view['descriptors'])),
         'whole_input_sha256': run.identity['input_sha256'], 'revise_fingerprint': view['revise_fingerprint']})

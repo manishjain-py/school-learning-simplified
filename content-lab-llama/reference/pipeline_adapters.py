@@ -242,7 +242,9 @@ def build(stage, inputs, workspace):
     elif stage == 'revise':
         files = {'guideline': guideline(), 'deck': original()}
     elif stage == 'translate':
-        metadata.update(language='hi', batch_size=50)
+        # Match the native translator's bounded default rather than combining up
+        # to fifty teaching cards into one final-author serialization request.
+        metadata.update(language='hi', batch_size=12)
         files = {'deck': original(), 'checkins': _artifact(workspace, 'explain', 'artifacts/check-ins.json'),
                  'practice': practice(), 'revise': revise()}
     elif stage == 'visuals' or stage.startswith('boards_'):

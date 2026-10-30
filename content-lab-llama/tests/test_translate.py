@@ -197,12 +197,13 @@ def test_every_question_role_is_answer_free_and_allowlisted(tmp_path, monkeypatc
                 assert set(data['review']) == {'verdicts', 'batch_issues'}
                 assert all(set(v) == {'slot', 'pass', 'reason'} for v in data['review']['verdicts'])
             assert set(data) == allowed
-            assert data['items'] == projected[stream]
+            assert data['items'] == [{k: v for k, v in item.items() if k != 'source_hash'}
+                                     for item in projected[stream]]
             native = base['declared']['checkins']['check_ins'] if stream == 'checkin' else base['declared']['practice']['questions']
             for english, item in zip(native, data['items']):
-                assert set(item) <= {'slot', 'source_hash', 'format', 'question_text', 'instruction', 'statement', 'options'}
-                assert len(item['source_hash']) == 20
-                assert set(item) >= {'slot', 'source_hash', 'format', 'options'}
+                assert set(item) <= {'slot', 'format', 'question_text', 'instruction', 'statement', 'options'}
+                assert 'source_hash' not in item
+                assert set(item) >= {'slot', 'format', 'options'}
                 for field in ('question_text', 'instruction', 'statement'):
                     if field in english:
                         assert item[field] == english[field]
@@ -318,17 +319,13 @@ def test_reordered_final_slots_join_by_identity_and_revise_packs_use_source_idx_
     assert [i['question']['display'] for i in revision] == ['अंतिम revise:2', 'अंतिम revise:9']
 
 
-@pytest.mark.parametrize('defect', ('wrong_hash', 'missing_hash', 'missing', 'extra', 'duplicate', 'invalid_slot'))
-def test_unjoinable_final_retains_all_five_artifacts_and_exports_no_subset(tmp_path, monkeypatch, defect):
+@pytest.mark.parametrize('defect', ('missing', 'extra', 'duplicate', 'invalid_slot'))
+def test_unjoinable_final_stops_at_parse_with_raw_author_retained_and_no_subset(tmp_path, monkeypatch, defect):
     def break_identity(role, data, value):
         if role != 'translate_teaching_b001_final':
             return
         items = value['artifact']['items']
-        if defect == 'wrong_hash':
-            items[0]['source_hash'] = []
-        elif defect == 'missing_hash':
-            items[0].pop('source_hash')
-        elif defect == 'missing':
+        if defect == 'missing':
             items.pop()
         elif defect == 'extra':
             items.append({**items[0], 'slot': 'teaching:unknown'})
@@ -339,24 +336,23 @@ def test_unjoinable_final_retains_all_five_artifacts_and_exports_no_subset(tmp_p
 
     intercept(monkeypatch, break_identity)
     run = runner(tmp_path)
-    with pytest.raises(ValueError, match='operational assembly failed'):
+    with pytest.raises(ValueError, match='required stage unavailable'):
         invoke(run)
-    assert len(run.ledger['calls']) == 15
-    assert all(read(p)['status'] == 'ok' for p in (tmp_path/'checkpoints').glob('*.json'))
-    assert len(list((tmp_path/'artifacts').glob('translate_*_final.json'))) == 5
-    for stream in r.STREAMS:
-        role = f'translate_{stream}_b001_final'
-        assert read(tmp_path/'artifacts'/f'{role}.json') == run.output(role)['artifact']
+    # This fixture has no provider token receipt, so recovery cannot repeat it.
+    assert len(run.ledger['calls']) == 3
+    role = 'translate_teaching_b001_final'
+    assert read(tmp_path/'checkpoints'/f'{role}.json')['status'] == 'failed'
+    raw = read(tmp_path/'responses'/f'{role}.json')
+    assert json.loads(raw['output']['message']['content'][0]['text'])['artifact']['items']
+    assert not list((tmp_path/'artifacts').glob('translate_*_final.json'))
     assert not any((tmp_path/'artifacts'/name).exists() for name in PACKS)
     summary = report(tmp_path, r)
     assert summary['status'] == 'partial_or_failed'
-    assert all(status == 'ok' for status in summary['roles'].values())
-    assert summary['operational_stages']['translate_assembly']['status'] == 'failed'
-    assert read(tmp_path/'metrics/assembly.json') == {
-        'status': 'failed', 'kind': 'operational_identity_join', 'quality_gate': False, 'final_artifacts_preserved': True}
-    with pytest.raises(ValueError, match='operational assembly failed'):
+    assert summary['roles'][role] == 'failed'
+    assert summary['operational_stages']['translate_assembly']['status'] == 'unavailable'
+    with pytest.raises(ValueError, match='required stage unavailable'):
         invoke(Runner(tmp_path, r, resume=True))
-    assert len(read(tmp_path/'synthetic-ledger.json')['calls']) == 15
+    assert len(read(tmp_path/'synthetic-ledger.json')['calls']) == 3
 
 
 def test_imperfect_final_fields_are_retained_without_quality_veto_or_rewrite(tmp_path, monkeypatch):
@@ -366,7 +362,8 @@ def test_imperfect_final_fields_are_retained_without_quality_veto_or_rewrite(tmp
             item['options_display'] = ['अपूर्ण अंतिम विकल्प']
             item.pop('question_audio')
         elif role == 'translate_teaching_b001_final':
-            value['artifact']['items'][0]['lines'] = []
+            # Preserve native narration correspondence without judging wording.
+            value['artifact']['items'][0]['lines'][0]['display'] = ''
             value['artifact']['items'][0].pop('title_display')
 
     intercept(monkeypatch, imperfect)
@@ -375,10 +372,10 @@ def test_imperfect_final_fields_are_retained_without_quality_veto_or_rewrite(tmp
     assert report(tmp_path, r)['status'] == 'complete'
     assert len(run.ledger['calls']) == 15
     first = read(tmp_path/'artifacts/deck_hi.json')['items'][0]
-    assert first['lines'] == [] and 'title_display' not in first
+    assert first['lines'][0]['display'] == '' and 'title_display' not in first
     final = next(i for i in final_items(run, 'practice') if i.get('options_display') == ['अपूर्ण अंतिम विकल्प'])
     item = next(i for i in read(tmp_path/'artifacts/practice_hi.json')['items']
-                if i['source']['source_question_hash'] == final['source_hash'])
+                if i['source']['question_id'] == final['slot'].split(':', 1)[1])
     assert item['options_display'] == final['options_display'] and 'question_audio' not in item
     assert len(item['english_options']) > len(item['options_display'])
 

@@ -4,13 +4,17 @@ import math
 
 
 def validate_config(config):
+    optional = {'technical_retries'}
+    retries = config.get('technical_retries', 2)
+    if type(retries) is not int or not 0 <= retries <= 2:
+        raise ValueError('technical_retries must be an integer from 0 to 2')
     if config['provider'] == 'fixture':
-        if set(config) != {'provider', 'image_limit'}:
+        if set(config)-optional != {'provider', 'image_limit'}:
             raise ValueError('Fixture config cannot include live settings')
     elif config['provider'] == 'bedrock':
         required = {'provider', 'image_limit', 'model', 'region', 'max_output_tokens',
                     'input_token_bound', 'input_per_million', 'output_per_million', 'cap_usd'}
-        if set(config) != required:
+        if set(config)-optional != required:
             raise ValueError('Bedrock requires explicit model, region, token bounds, prices and cap')
         for key in ('input_per_million', 'output_per_million', 'cap_usd'):
             if type(config[key]) not in (int, float) or not math.isfinite(config[key]) or config[key] <= 0:
