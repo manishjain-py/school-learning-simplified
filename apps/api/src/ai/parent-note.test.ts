@@ -63,6 +63,52 @@ test('canonical lamp/orange grounding includes adult help in both languages and 
     assert(!prepared.prompt.includes('grading')); assert(!prepared.prompt.includes('audioUrl'));
   }
 });
+test('draft prompt requires a full named lesson note and the actual selected alias across chapters, languages and topic boundaries', async () => {
+  const cases = [
+    { chapter: 'Our Earth', index: 48, alias: 'source_001', observation: 'Anika needs another look at how Earth spins and travels around the Sun.' },
+    { chapter: 'Our Earth', index: 53, alias: 'source_003', observation: 'Anika completed her Our Earth practice set before today’s test. Map reading still needs a little practice.' },
+    { chapter: 'Animal Life', index: 32, alias: 'source_001', observation: 'Anika asked to revisit how animals are grouped by food.' },
+    { chapter: 'Animal Life', index: 104, alias: 'source_001', observation: 'Anika asked to revisit the order of a food chain.' },
+    { chapter: 'Animal Life', index: 134, alias: 'source_001', observation: 'Anika asked to revisit where young animals come from.' },
+  ];
+  for (const item of cases) for (const language of ['en', 'hi'] as const) {
+    const chapter = catalog.chapters.find((entry: { title: string }) => entry.title === item.chapter);
+    const cards: ParentNoteInput['cards'] = JSON.parse(readFileSync(resolve(root, `content/releases/m2/lessons/${chapter.id}/${language}.json`), 'utf8')).cards;
+    const selected = cards[item.index];
+    const value: ParentNoteInput = { ...input, chapter, cards, cardId: selected.id, language, observation: item.observation };
+    const prepared = prepareParentNote(value); const memory = memoryLedger(); let calls = 0;
+    const result = await draftParentNote(value, { enabled: true, now, ledger: memory.ledger, invoke: async prompt => {
+      calls++;
+      assert.equal(prompt, prepared.prompt);
+      const [system, userSection] = prompt.split('<|start_header_id|>user<|end_header_id|>\n\n');
+      const data = JSON.parse(userSection.split('<|eot_id|>')[0]);
+      assert.match(system, /70–90 words in FOUR short, complete sentences/);
+      assert.match(system, /name the selected chapter AND selected card naturally/);
+      assert.match(system, /Privacy applies to the text field/);
+      assert.match(system, /sourceCards is required metadata: copy exact supplied source aliases there/);
+      assert.match(system, /selected lesson as a separate invitation; do not invent a causal connection/);
+      assert.match(system, /If no safe activity or discussion can be grounded in the selected card/);
+      assert(!system.includes('If the observation cannot be addressed from these cards'));
+      assert(system.includes(`sourceCards MUST include "${item.alias}"`));
+      assert(system.includes(JSON.stringify({ text: '<four complete sentences, 70–90 words total>', sourceCards: [item.alias] })));
+      assert.equal(data.selectedSource, item.alias);
+      assert.equal(data.cards.find((card: { alias: string }) => card.alias === data.selectedSource).title, selected.title);
+      assert.equal(data.chapter.title, item.chapter);
+      assert.equal(data.observation, item.observation.replace('Anika', 'student_001'));
+      assert.equal(data.language, language);
+      assert(data.cards.every((card: { title: string }) => cards.some(candidate => candidate.partId === selected.partId && candidate.title === card.title)));
+      for (const privateValue of [value.schoolId, value.classId, value.actorId, value.draftId, value.student.id, value.chapter.id, selected.id, 'Anika', 'Rao', 'Kabir', 'Joshi']) assert(!prompt.includes(privateValue), privateValue);
+      assert(Buffer.byteLength(prompt, 'utf8') < MAX_PROMPT_BYTES);
+      const text = language === 'en'
+        ? `Please begin with the teacher’s observation when you discuss this lesson at home, keeping the conversation about what was actually recorded. Open “${chapter.title}” and look together at “${selected.title}”, keeping your discussion close to the explanation already prepared there. Invite your child to describe one detail from that idea and compare it with the words or illustration shown in the lesson. Please open the linked activity and take time to explore that same idea together without adding a new task.`
+        : `घर पर बात शुरू करते समय शिक्षक की बताई बात को ध्यान में रखें और उसी जानकारी पर चर्चा करें जो वास्तव में दर्ज हुई है। साथ बैठकर “${chapter.title}” अध्याय में “${selected.title}” खोलें और वहाँ दिए गए विचार को ध्यान से देखें। बच्चे से उस विचार की एक बात अपने शब्दों में बताने को कहें और उसे पाठ में दी गई जानकारी से मिलाकर देखें। कृपया जुड़ी हुई गतिविधि खोलें और बिना कोई नया काम जोड़े उसी विचार को साथ मिलकर समझें।`;
+      return { generation: JSON.stringify({ text, sourceCards: [data.selectedSource] }), inputTokens: 500, outputTokens: 150, stopReason: 'stop' };
+    } });
+    assert.equal(result.status, 'ready', `${item.chapter} card ${item.index + 1} ${language}: ${result.code}`);
+    assert.equal(result.activity?.cardId, selected.id); assert.equal(calls, 1);
+    assert.deepEqual(memory.steps, ['claim', 'complete']);
+  }
+});
 test('target names are aliased once; contacts, forged aliases and identifier-shaped values are removed', () => {
   const prepared = prepareParentNote({ ...input, observation: `Anika Rao and Anika mixed up day and night. Email parent@example.test; https://school.example.test; call +91 9876543210. ${input.actorId} ${cardId} student_999` });
   assert.equal(prepared.observation.match(/student_001/g)?.length, 2);
