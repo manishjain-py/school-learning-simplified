@@ -109,12 +109,21 @@ def technical_feedback(error, phase):
             feedback['requirement'] += (
                 ' Diagnostic beat/node indices are zero-based positions in the previous rejected '
                 'response artifact.beats and artifact.nodes; word indices refer to the original '
-                'task_inputs.narration.words (explicit word_index). Correct the identified emphasis beat. Eligible word indices '
-                'identify supplied words starting after all target draws finish: choose their exact '
-                'text with the corresponding block/occurrence, or another valid later anchor. '
-                'Missing-draw targets need a preceding draw. If no later anchor exists, author a '
-                'valid alternative timing or omit that optional emphasis while retaining scene '
-                'content. Return the entire plan, not a patch; the host does not move your cues.')
+                'task_inputs.narration.words (explicit word_index). Correct the identified emphasis beat.')
+            if set(details['missing_draw_target_node_indices']) == set(details['target_node_indices']):
+                feedback['requirement'] += (
+                    ' Every target of this beat is undrawn. Change this identified beat\'s action '
+                    'from emphasize to draw, keeping its existing anchor and targets, for their '
+                    'first reveal. Do not add simultaneous draw and emphasis for those nodes. '
+                    'Retain the authored node geometry and text and the other valid beats.')
+            else:
+                feedback['requirement'] += (
+                    ' Eligible word indices identify supplied words starting after all target draws '
+                    'finish: choose their exact text with the corresponding block/occurrence, or '
+                    'another valid later anchor. Missing-draw targets need a preceding draw. If no '
+                    'later anchor exists, author a valid alternative timing or omit that optional '
+                    'emphasis while retaining scene content.')
+            feedback['requirement'] += ' Return the entire plan, not a patch; the host does not move your cues.'
     if not isinstance(error, json.JSONDecodeError):
         return feedback
     # Inspect the rejected decoder document lexically. This does not parse a

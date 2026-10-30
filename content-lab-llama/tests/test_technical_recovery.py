@@ -674,3 +674,21 @@ def test_missing_draw_numeric_diagnostic_has_no_fabricated_later_anchor():
         runtime.NativeContractError('board_emphasis_after_draw', details=details), 'native')
     assert feedback['details'] == details
     assert 'latest_target_draw_end_ms' not in feedback['details']
+    assert 'from emphasize to draw' not in feedback['requirement']  # Some targets already have draws.
+
+
+def test_all_undrawn_targets_get_first_reveal_action_correction_without_host_plan_edit():
+    details = numeric_board_details()
+    details['target_draws'] = []
+    details['missing_draw_target_node_indices'] = [1, 2]
+    details.pop('latest_target_draw_end_ms')
+    details['eligible_word_indices'] = []
+    original = deepcopy(details)
+    feedback = runtime.technical_feedback(
+        runtime.NativeContractError('board_emphasis_after_draw', details=details), 'native')
+    assert details == original == feedback['details']
+    assert 'from emphasize to draw' in feedback['requirement']
+    assert 'keeping its existing anchor and targets' in feedback['requirement']
+    assert 'simultaneous draw and emphasis' in feedback['requirement']
+    assert 'host does not move your cues' in feedback['requirement']
+    assert 'Missing-draw targets need a preceding draw' not in feedback['requirement']
