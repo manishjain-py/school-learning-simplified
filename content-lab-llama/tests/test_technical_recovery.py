@@ -579,3 +579,32 @@ def test_guideline_legacy_single_call_evidence_remains_reportable(tmp_path):
         call.pop('attempt')
     save(run.ledger_path, run.ledger)
     assert report(tmp_path, guideline)['status'] == 'complete'
+
+
+def test_native_execution_feedback_is_fixed_and_does_not_promote_exception_text():
+    error = runtime.NativeContractError('board_emphasis_after_draw')
+    error.args = ('private task text and paths MUST NOT enter system',)
+    feedback = runtime.technical_feedback(error, 'native')
+    assert feedback == {'kind': 'native_contract_mismatch',
+                        'constraint': 'board_emphasis_after_draw',
+                        'requirement': runtime.NATIVE_CONSTRAINTS['board_emphasis_after_draw']}
+    assert 'MUST NOT' not in json.dumps(feedback)
+    with pytest.raises(ValueError, match='Unknown native execution constraint'):
+        runtime.NativeContractError('private invented constraint')
+    assert runtime.technical_feedback(ValueError('private parser details'), 'native') == {
+        'kind': 'native_contract_mismatch'}
+
+
+def test_native_timing_correction_keeps_original_task_and_previous_output_as_data():
+    feedback = runtime.technical_feedback(runtime.NativeContractError('board_emphasis_after_draw'), 'native')
+    original = deepcopy(REQUEST)
+    retry = runtime.recovery_request(original, 'rejected private authored plan', feedback)
+    assert original == REQUEST
+    assert retry['system'][:-1] == original['system']
+    system = retry['system'][-1]['text']
+    assert 'native execution timing constraint' in system
+    assert 'Beat array order does not change' in system
+    assert 'rejected private authored plan' not in system
+    assert retry['messages'][-1]['content'][:-1] == original['messages'][-1]['content']
+    assert json.loads(retry['messages'][-1]['content'][-1]['text'].split('\n', 1)[1]) == {
+        'previous_response_text': 'rejected private authored plan'}

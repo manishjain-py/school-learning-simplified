@@ -21,6 +21,29 @@ report_media = c.report_media
 def validate_inputs(bundle): c.validate(bundle, NAME)
 
 
+def parse_declared(role, text, declared, notes_pages=None):
+    """Require an executable native plan before the same author checkpoints.
+
+    Compilation only resolves supplied anchors, geometry and draw dependencies.
+    Return the author's exact envelope; this is not a content-quality review or
+    a host-authored timing/content replacement.
+    """
+    value = parse(role, text, notes_pages)
+    if role.endswith('_review'):
+        return value
+    plan = c.board_view(value['artifact'])
+    if plan.get('card_idx') != declared['card']['card_idx']:
+        raise ValueError('Board plan has wrong original R3 card_idx')
+    try:
+        media.compile_board(plan, declared['narration'])
+    except media.MediaError as error:
+        if str(error) == 'Emphasis requires an already completed node':
+            from ..runtime import NativeContractError
+            raise NativeContractError('board_emphasis_after_draw') from error
+        raise ValueError('Board native plan is not executable') from error
+    return value
+
+
 def report_roles(workspace):
     return tuple(f'boards_c{t["card"]["card_idx"]:03d}_{phase}'
                  for t in c.targets(read(workspace/'inputs.json'), NAME) for phase in ('author', 'review', 'final'))
