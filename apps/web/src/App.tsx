@@ -1,6 +1,6 @@
 import { uiText, uiError } from './uiCopy';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { ArrowRight, BookOpen, LogOut } from 'lucide-react';
+import { ArrowRight, BookOpen, LogOut, School } from 'lucide-react';
 import { AuthDialog } from './AuthDialog';
 import { SchoolWorkspace } from './school/SchoolWorkspace';
 import { parentUpdateLinkKey, parseParentUpdateLink } from './school/parentUpdateLink';
@@ -15,6 +15,7 @@ import { ApiError, clearSession, request, session, signOutOnThisDevice } from '.
 import { DEMO_WATCH_URL, GUIDE_URL } from './publicLinks';
 import type { Catalog, Config, Language, LearningMode, User } from './types';
 import type { Workspaces } from './school/types';
+import './student-polish.css';
 
 /** Resolve a new account's family role before offering learner setup. */
 function LearnerEntry({ config, user, path, navigate, children, language }: { config: Config; user: User; path: string; navigate: (path: string) => void; children: ReactNode; language: Language }) {
@@ -185,12 +186,12 @@ export default function App() {
   }
   return <>
     <a className="skip-link" href="#main">{copy("Skip to content")}</a>
-    <header className="site-header page-width"><a className="brand" href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }} aria-label={copy("School Learning Simplified home")}><span className="brand-mark"><BookOpen size={25} strokeWidth={1.8} /><span /></span><span>School Learning<span>Simplified</span></span></a><nav aria-label={copy("Main navigation")}><a className={!isSchool ? 'nav-link current' : 'nav-link'} href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }}>{copy("My library")}</a><a className={isSchool ? 'nav-link current' : 'nav-link'} href="/school" onClick={(event) => { event.preventDefault(); navigate('/school'); }}>{copy("School")}</a>{user ? <button className="button header-account" onClick={signOut} title={user.email}><LogOut size={16} />{copy("Sign out")}</button> : <button className="button header-account" onClick={() => setAuthMode('signin')} disabled={!config || accountStatus === 'restoring' || accountStatus === 'error'}>{copy("Sign in")}<ArrowRight size={16} /></button>}</nav></header>
+    <header className="site-header page-width"><a className="brand" href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }} aria-label={copy("School Learning Simplified home")}><span className="brand-mark"><BookOpen size={25} strokeWidth={1.8} /><span /></span><span>School Learning<span>Simplified</span></span></a><nav aria-label={copy("Main navigation")}><a className={!isSchool ? 'nav-link current' : 'nav-link'} href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }}>{copy("My library")}</a><a className={isSchool ? 'nav-link nav-school current' : 'nav-link nav-school'} href="/school" onClick={(event) => { event.preventDefault(); navigate('/school'); }}><School size={16} aria-hidden="true" />{copy("School")}</a>{user ? <button className="button header-account header-signout" onClick={signOut} title={user.email}><LogOut size={16} aria-hidden="true" />{copy("Sign out")}</button> : <button className="button header-account" onClick={() => setAuthMode('signin')} disabled={!config || accountStatus === 'restoring' || accountStatus === 'error'}>{copy("Sign in")}<ArrowRight size={16} /></button>}</nav></header>
     {sessionNotice && <div className="session-notice page-width" role="status">{uiError(language, sessionNotice)}<button className="text-button" onClick={() => setSessionNotice('')} aria-label={copy("Dismiss account notification")}>{copy("Dismiss")}</button></div>}
     <div id="main">
       {page()}
     </div>
-    <footer className="site-footer page-width"><div><span className="footer-name">School Learning Simplified</span><p>{copy("A little clearer. A little more curious.")}</p></div><div><span>{copy("Made for learning, together.")}</span><small>{copy(catalog?.schemaVersion === 2 ? 'Existing learning content, a new learning experience.' : 'Preview · Existing learning content, a new learning experience.')}</small></div></footer>
+    <footer className="site-footer page-width"><p className="footer-name">School Learning Simplified</p><p className="footer-note">{copy('Existing learning content, a new learning experience.')}</p></footer>
     {authMode && config && <AuthDialog language={language} config={config} initialMode={authMode} onClose={() => setAuthMode(null)} onSignedIn={(person) => { accountGeneration.current += 1; setUser(person); setAccountStatus('ready'); setAccountError(''); preferences.reload(); setAuthMode(null); setSessionNotice('You’re signed in to your own account.'); }} />}
   </>;
 }
