@@ -22,6 +22,32 @@ def validate_inputs(bundle):
     c.validate(bundle, NAME)
 
 
+def parse_declared(role, text, declared, notes_pages=None):
+    """Preflight the native executable body; retain the exact author envelope."""
+    value = parse(role, text, notes_pages)
+    if (role == 'visuals_decide' or role.endswith('_review') or
+            declared.get('mode') not in ('pixi', 'interactive')):
+        return value
+    native_rows = value['artifact'].get('visuals')
+    if (not isinstance(native_rows, list) or len(native_rows) != 1 or
+            not isinstance(native_rows[0], dict)):
+        raise ValueError('Visual native artifact requires one object-valued visual')
+    if not isinstance(native_rows[0].get('visual_explanation'), dict):
+        raise ValueError('Visual native explanation must be an object')
+    rows = c.visual_view(value['artifact'])['visuals']
+    card = declared['card']
+    if len(rows) != 1 or rows[0].get('card_idx') != card['card_idx']:
+        raise ValueError('Visual execution identity does not match explicit one-card target')
+    row = rows[0]
+    if row.get('expected_card_type') != card['card_type'] or row.get('expected_title') != card['title']:
+        raise ValueError('Visual execution target title/type differs from frozen card')
+    code = row['visual_explanation'].get('pixi_code')
+    if not media.visual_body_syntax(code):
+        from ..runtime import NativeContractError
+        raise NativeContractError('visual_executable_body')
+    return value
+
+
 def roles_for(bundle, routing=None):
     rows = ['visuals_decide']
     for target in c.targets(bundle, NAME):

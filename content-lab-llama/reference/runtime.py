@@ -13,6 +13,12 @@ from .providers import Bedrock, Fixture, validate_config
 
 
 NATIVE_CONSTRAINTS = {
+    'visual_executable_body': (
+        'pixi_code must be valid JavaScript statements inside the supplied async function body. '
+        'Return executable scene setup, not a bare anonymous function declaration or a whole '
+        'function wrapper. If you define a helper, invoke it from the body. The host supplies '
+        'app and PIXI; assign globalThis.renderAt(t_ms) before the body completes. Preserve the '
+        'authored scene and return the full native artifact with a corrected pixi_code string.'),
     'board_emphasis_after_draw': (
         'An emphasis cue must target nodes whose draw cues have already finished. '
         'Resolve each beat from its exact narration phrase and occurrence: every targeted '
@@ -92,8 +98,10 @@ def recovery_request(original, text, feedback, *, version=2):
         # The original native system contract remains an exact prefix. Only the
         # sanitized structural feedback is promoted; rejected output stays data.
         correction_scope = 'serialization, required field types and supplied item identities'
-        if feedback.get('constraint') in NATIVE_CONSTRAINTS:
+        if feedback.get('constraint') == 'board_emphasis_after_draw':
             correction_scope += ' and the identified native execution timing constraint'
+        elif feedback.get('constraint') == 'visual_executable_body':
+            correction_scope += ' and the required executable JavaScript body syntax'
         request.setdefault('system', []).append({'text': (
             'TECHNICAL RESPONSE CORRECTION, SAME ROLE:\n'
             'Regenerate the complete response for this same task as one strict JSON object, '

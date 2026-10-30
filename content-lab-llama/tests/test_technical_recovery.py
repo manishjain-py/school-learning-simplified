@@ -608,3 +608,15 @@ def test_native_timing_correction_keeps_original_task_and_previous_output_as_dat
     assert retry['messages'][-1]['content'][:-1] == original['messages'][-1]['content']
     assert json.loads(retry['messages'][-1]['content'][-1]['text'].split('\n', 1)[1]) == {
         'previous_response_text': 'rejected private authored plan'}
+
+
+def test_visual_syntax_feedback_is_fixed_and_keeps_rejected_code_out_of_system():
+    error = runtime.NativeContractError('visual_executable_body')
+    error.args = ('private local path and generated script must not enter system',)
+    feedback = runtime.technical_feedback(error, 'native')
+    retry = runtime.recovery_request(REQUEST, 'private rejected code', feedback)
+    assert feedback['constraint'] == 'visual_executable_body'
+    assert feedback['requirement'] == runtime.NATIVE_CONSTRAINTS['visual_executable_body']
+    assert retry['system'][:-1] == REQUEST['system']
+    assert 'required executable JavaScript body syntax' in retry['system'][-1]['text']
+    assert 'private' not in retry['system'][-1]['text']

@@ -101,6 +101,41 @@ def _run(args, timeout=120):
     return stdout
 
 
+def visual_body_syntax(code):
+    """Parse the exact Pixi viewer body without invoking any authored JavaScript.
+
+    The fixed Node program receives source on stdin, constructs the viewer's
+    function with its exact parameter/wrapper ABI, and never calls that function.
+    False means an actual SyntaxError; local tool failures remain nonrecoverable.
+    """
+    if not isinstance(code, str) or not code.strip():
+        raise ValueError('Visual pixi_code must be a nonblank string')
+    checker = r'''
+let source = '';
+process.stdin.setEncoding('utf8');
+process.stdin.on('data', chunk => { source += chunk; });
+process.stdin.on('end', () => {
+  try {
+    new Function('app', 'PIXI', '"use strict"; return (async()=>{' + source + '\n})();');
+    process.stdout.write('valid');
+  } catch (error) {
+    if (error instanceof SyntaxError) process.stdout.write('syntax_error');
+    else process.exitCode = 1;
+  }
+});
+'''
+    try:
+        result = subprocess.run([_tool('node'), '-e', checker], input=code, text=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+    except subprocess.TimeoutExpired as error:
+        raise MediaTimeout('Visual syntax checker timed out') from error
+    except OSError as error:
+        raise MediaError('Visual syntax checker unavailable') from error
+    if result.returncode or result.stdout not in ('valid', 'syntax_error'):
+        raise MediaError('Visual syntax checker failed')
+    return result.stdout == 'valid'
+
+
 def _descriptor(path, root, **metadata):
     return {'file': str(Path(path).relative_to(root)), 'sha256': _hash(path),
             'bytes': Path(path).stat().st_size, **metadata}
