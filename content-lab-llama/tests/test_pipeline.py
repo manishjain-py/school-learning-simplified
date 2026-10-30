@@ -2,6 +2,7 @@
 from copy import deepcopy
 import json
 from pathlib import Path
+import shutil
 import sys
 import pytest
 
@@ -105,6 +106,41 @@ def test_changed_runtime_inputs_and_stage_bindings_refuse(tmp_path, monkeypatch)
     path.write_text('CHANGED INPUT')
     with pytest.raises(RuntimeError, match='input bytes changed'):
         p.resume(workspace, stop_after='toc')
+
+
+@pytest.mark.parametrize('avatar_completed', (False, True))
+def test_changed_avatar_viewer_refuses_pipeline_resume_before_stage_dispatch(tmp_path, monkeypatch, avatar_completed):
+    import run_factory  # Bind factory prompt roots before isolating runtime sources.
+    from reference import inputs as input_module
+
+    runtime_root = tmp_path/'runtime'
+    # Mutate only an isolated source copy, never the repository or a live run.
+    for name in set(p.runtime_identity()['files']) | {'media/avatar-viewer.js'}:
+        target = runtime_root/name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT/name, target)
+    monkeypatch.setattr(input_module, 'ROOT', runtime_root)
+    workspace = tmp_path/'run'
+    p.start(EXAMPLE, workspace, 'fixture', stop_after='toc')
+    if avatar_completed:
+        # A synthetic completed-stage receipt exercises the conductor boundary
+        # without generating speech or claiming actual Avatar media evidence.
+        directory = workspace/'stages/avatar_en'
+        save(directory/'synthetic-test-evidence.json', {'synthetic_test_placeholder': True})
+        summary = {'status': 'complete', 'synthetic_test_placeholder': True}
+        save(directory/'summary.json', summary)
+        save(workspace/'completed/avatar_en.json', {'summary': summary, 'files': p.file_hashes(directory)})
+    before = p.file_hashes(workspace/'stages')
+    p.resume(workspace, stop_after='toc')  # Unchanged isolated runtime remains usable.
+    viewer = runtime_root/'media/avatar-viewer.js'
+    viewer.write_bytes(viewer.read_bytes()+b'\n// changed only in isolated test runtime\n')
+
+    def forbidden_stage(*args, **kwargs):
+        raise AssertionError('Changed runtime must refuse before dispatching any stage')
+    monkeypatch.setattr(p, 'stage_run', forbidden_stage)
+    with pytest.raises(RuntimeError, match='runtime/tools changed'):
+        p.resume(workspace)
+    assert p.file_hashes(workspace/'stages') == before
 
 
 def test_ambiguous_paid_reservation_retained_and_no_later_stage(tmp_path, monkeypatch):
