@@ -99,21 +99,22 @@ export async function requireClassStaff(user: VerifiedAccount, schoolId: string,
 function admin(role: string) { if (role !== 'admin') fail(403, 'ADMIN_REQUIRED', 'Only this school’s administrator can change its teachers, classes and roster.'); }
 
 /** Index rows only discover candidates. Each read rechecks the canonical roster and verified email. */
+async function rosterLinks(email: string, kind: 'STUDENT' | 'PARENT') {
+  const refs = await query(emailPK(email), `${kind}#`);
+  const links: { link: ChildLink; schoolCreatedAt: string }[] = [];
+  for (const ref of refs) {
+    const student = await get<Student>(classPK(ref.schoolId, ref.classId), `STUDENT#${ref.studentId}`);
+    if (!student?.active || (kind === 'STUDENT' ? student.studentEmail !== email : !student.parentEmails.includes(email))) continue;
+    const school = await get<School>(schoolPK(ref.schoolId), 'META');
+    const schoolClass = await get<SchoolClass>(schoolPK(ref.schoolId), `CLASS#${ref.classId}`);
+    if (school && schoolClass) links.push({ schoolCreatedAt: school.createdAt || '', link: { id: student.id, schoolId: school.id, schoolName: school.name, timeZone: school.timeZone, classId: schoolClass.id, className: schoolClass.name, name: student.name } });
+  }
+  // The longest-standing school comes first, so a link that another school adds later never displaces an existing one.
+  return links.sort((a, b) => a.schoolCreatedAt.localeCompare(b.schoolCreatedAt)).map((item) => item.link);
+}
 export async function linkedFamily(user: VerifiedAccount) {
   const email = normalizeEmail(user.email);
-  async function candidates(kind: 'STUDENT' | 'PARENT') {
-    const refs = await query(emailPK(email), `${kind}#`);
-    const links: ChildLink[] = [];
-    for (const ref of refs) {
-      const student = await get<Student>(classPK(ref.schoolId, ref.classId), `STUDENT#${ref.studentId}`);
-      if (!student?.active || (kind === 'STUDENT' ? student.studentEmail !== email : !student.parentEmails.includes(email))) continue;
-      const school = await get<School>(schoolPK(ref.schoolId), 'META');
-      const schoolClass = await get<SchoolClass>(schoolPK(ref.schoolId), `CLASS#${ref.classId}`);
-      if (school && schoolClass) links.push({ id: student.id, schoolId: school.id, schoolName: school.name, timeZone: school.timeZone, classId: schoolClass.id, className: schoolClass.name, name: student.name });
-    }
-    return links;
-  }
-  const [students, parents] = await Promise.all([candidates('STUDENT'), candidates('PARENT')]);
+  const [students, parents] = await Promise.all([rosterLinks(email, 'STUDENT'), rosterLinks(email, 'PARENT')]);
   return {
     student: { status: students.length > 1 ? 'ambiguous' as const : students.length ? 'linked' as const : 'missing' as const, children: students.length === 1 ? students : [], matchCount: students.length },
     parent: { status: parents.length ? 'linked' as const : 'missing' as const, children: parents },
@@ -145,13 +146,23 @@ export async function bindLearnerAccount(user: VerifiedAccount): Promise<ChildLi
   return child;
 }
 async function staffWorkspaces(user: VerifiedAccount) {
-  const [adminRefs, teacherRefs] = await Promise.all([query(`USER#${user.id}`, 'SCHOOL#'), query(emailPK(normalizeEmail(user.email)), 'TEACHER#')]);
+  const email = normalizeEmail(user.email);
+  const [adminRefs, teacherRefs] = await Promise.all([query(`USER#${user.id}`, 'SCHOOL#'), query(emailPK(email), 'TEACHER#')]);
   const workspaces = [];
   for (const schoolId of new Set([...adminRefs, ...teacherRefs].map((ref) => String(ref.schoolId)))) {
-    try { const context = await requireSchoolStaff(user, schoolId); workspaces.push({ school: publicSchool(context.school), role: context.role }); }
+    try {
+      const context = await requireSchoolStaff(user, schoolId);
+      // The same rule as the school page: administrators see every class, teachers see their assigned classes.
+      const hasClasses = (await query(schoolPK(schoolId), 'CLASS#')).some((item) => context.role === 'admin' || item.teacherEmails?.includes(email));
+      workspaces.push({ school: publicSchool(context.school), role: context.role, hasClasses });
+    }
     catch (issue) { if (!(issue instanceof SchoolError && issue.status === 403)) throw issue; }
   }
-  return workspaces;
+  // The school workspace opens the first school in this list. Schools with classes come first, then the
+  // longest-standing school, so a newly registered empty school never becomes the default.
+  return workspaces
+    .sort((a, b) => Number(b.hasClasses) - Number(a.hasClasses) || (a.school.createdAt || '').localeCompare(b.school.createdAt || ''))
+    .map(({ school, role }) => ({ school, role }));
 }
 async function classFields(body: RecordValue, schoolId: string) {
   const name = text(body.name, 'a class name', 100); const subject = text(body.subject, 'a subject', 100);
@@ -169,6 +180,15 @@ function studentFields(body: RecordValue) {
   const parentEmails = [...new Set(body.parentEmails.map(normalizeEmail))];
   if (parentEmails.includes(studentEmail)) return fail(400, 'SEPARATE_ACCOUNTS_REQUIRED', 'Use different student and parent emails. Each person verifies and signs in to their own account.');
   return { name, studentEmail, parentEmails };
+}
+/** Across schools, an email may repeat only as a parent email, for example for siblings at different schools.
+ * If another school recorded a student's email, that student's school link would become ambiguous, and an
+ * email recorded in the other role would turn a student account into a parent account, or the reverse. */
+async function requireEmailsFreeElsewhere(schoolId: string, studentEmail: string | null, parentEmails: string[]) {
+  const elsewhere = async (email: string, kind: 'STUDENT' | 'PARENT') => (await rosterLinks(email, kind)).some((link) => link.schoolId !== schoolId);
+  if (studentEmail && await elsewhere(studentEmail, 'STUDENT')) return fail(409, 'STUDENT_AT_ANOTHER_SCHOOL', 'This student is already enrolled at another school.');
+  if (studentEmail && await elsewhere(studentEmail, 'PARENT')) return fail(409, 'PARENT_AT_ANOTHER_SCHOOL', 'This email is recorded for a parent at another school. Use the student’s own email.');
+  for (const email of parentEmails) if (await elsewhere(email, 'STUDENT')) return fail(409, 'STUDENT_AT_ANOTHER_SCHOOL', 'A parent email is recorded for a student at another school. Use each parent’s own email.');
 }
 function rosterIndexes(schoolId: string, classId: string, student: Student) {
   const result = new Map<string, { PK: string; SK: string }>();
@@ -261,6 +281,7 @@ export async function handleSchool(event: APIGatewayProxyEventV2WithJWTAuthorize
     if (classTail === 'roster' && method === 'GET') return json(200, { students: (await query(classPK(schoolId, classId), 'STUDENT#')).filter((item) => item.active).map((item) => publicStudent(item as Student)) });
     if (classTail === 'roster' && method === 'POST') {
       admin(context.role); const fields = studentFields(bodyOf(event)); const student: Student = { id: randomUUID(), ...fields, version: 1, active: true };
+      await requireEmailsFreeElsewhere(schoolId, student.studentEmail, student.parentEmails);
       await saveStudent(schoolId, classId, student, null);
       const matches = await query(emailPK(student.studentEmail), 'STUDENT#');
       return json(201, { student: publicStudent(student), ...(matches.length > 1 ? { warning: 'This student email matches multiple roster records. Student school access is blocked until staff correct the duplicate.' } : {}) });
@@ -272,6 +293,8 @@ export async function handleSchool(event: APIGatewayProxyEventV2WithJWTAuthorize
       if (!old?.active) return fail(404, 'NOT_FOUND', 'This student is no longer on the class roster.');
       if (version(body.version) !== old.version) return fail(409, 'RECORD_CHANGED', 'This student record changed. Refresh and try again.');
       const student: Student = body.active === false ? { ...old, active: false, version: old.version + 1 } : { ...old, ...studentFields(body), version: old.version + 1 };
+      // Only emails new to this record are checked, so an existing record can always be corrected or removed.
+      if (student.active) await requireEmailsFreeElsewhere(schoolId, student.studentEmail !== old.studentEmail ? student.studentEmail : null, student.parentEmails.filter((email) => !old.parentEmails.includes(email)));
       await saveStudent(schoolId, classId, student, old);
       const matches = student.active ? await query(emailPK(student.studentEmail), 'STUDENT#') : [];
       return json(200, { student: publicStudent(student), active: student.active, ...(matches.length > 1 ? { warning: 'This student email matches multiple roster records. Student school access is blocked until staff correct the duplicate.' } : {}) });
