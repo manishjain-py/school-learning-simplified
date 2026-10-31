@@ -11,6 +11,7 @@
     "typecheck": "npm run typecheck --workspaces",
     "build:web": "npm run build --workspace @sls/web",
     "build:api": "npm run build --workspace @sls/api",
-    "build": "npm run typecheck && npm run build:web && npm run build:api"
+    "build": "npm run typecheck && npm run build:web && npm run build:api",
+    "test": "tsx --test $(find apps scripts -name '*.test.ts' -not -path '*/node_modules/*')"
   }
 }

@@ -87,8 +87,10 @@ The API, web and helper tests use Node's test runner with mocked AWS and model
 calls, so they need no cloud access:
 
 ```sh
-./node_modules/.bin/tsx --test $(find apps scripts -name '*.test.ts' -not -path '*/node_modules/*')
+npm test
 ```
+
+It runs `tsx --test` on every `*.test.ts` file under `apps` and `scripts`.
 
 The Content Lab has its own Python tests; see its README.
 
