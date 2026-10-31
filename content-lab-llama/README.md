@@ -7,6 +7,11 @@ independent drafts, reviewers that check them, and one final author whose
 revision is the factory's output. Reviews are kept as advice; no later step can
 veto the final author. Built with Llama.
 
+On 30 October 2026 the pipeline completed one full live run of all 18 stages on
+Llama: see [LIVE-RUN.md](LIVE-RUN.md). The agents' starting prompts and schemas were
+prepared by the founder before the event; the LangGraph code, the Llama integration
+and the runs are new.
+
 ## Factories
 
 | Factory | What it does |

@@ -65,10 +65,12 @@ npm run dev
 ```
 
 The API listens on 127.0.0.1:4181 and Vite forwards `/api`, `/content`, `/media`
-and `/config.json` to it. The local server shows the public lesson library only.
-Sign-in, saved progress, Practice grading, the school workspace and the Llama
-features need the deployed AWS services (Cognito, DynamoDB, S3, Bedrock and SES).
-Lesson audio and images are not stored in this repository.
+and `/config.json` to it. Locally you see the signed-out first page, and the API
+serves the lesson data, for example `/api/catalog` and
+`/api/lessons/<chapter id>?language=en`. Signing in, the learner screens, saved
+progress, Practice grading, the school workspace and the Llama features need the
+deployed AWS services (Cognito, DynamoDB, S3, Bedrock and SES). Lesson audio and
+images are not stored in this repository.
 
 Environment variables, by name only:
 

@@ -17,10 +17,30 @@ and parent start at [School](https://schoollearningsimplified.com/school); the
 student starts at [My library](https://schoollearningsimplified.com/).
 Their fictional school is **Neem Tree Public School · Class 4A**.
 
-Start as the student with **Our Earth → Learn**, then try the teacher’s results
-and the parent’s updates. Separate browser profiles let you keep roles open
-together. **Sign out** ends only the current session. Demo accounts are shared;
-keep names and messages fictional.
+**A five-minute path:**
+1. As the student, open **Our Earth → Learn**. Tap **Got it, next idea** to reach the
+   drawings.
+2. As the teacher, open your class's **Classroom notes** and save a note such as
+   “Test on Our Earth tomorrow.”
+3. As the student, tap **Refresh** on the home page: the test now appears at the top.
+4. As the parent, see the same next step on your child’s card.
+
+To try **Acknowledge**, publish an update as the teacher in **Family updates** (choose
+**One child and their linked parents**, and try **Draft with Llama**), then acknowledge
+it as the parent. Finish one Practice set as the student to fill the report card.
+
+Separate browser profiles let you keep roles open together. **Sign out** ends only the
+current session.
+
+**The demo accounts are shared with other judges:**
+- keep names and messages fictional;
+- if you switch the student to Hindi, switch back to English when you finish;
+- to try registering a school, use your own account and new email addresses, not the
+  demo accounts’ addresses;
+- the teacher’s saved drafts include earlier test drafts from our own checks.
+
+The film uses a separate fictional class (Amaltas Public School, Class 4B), so its names
+differ from the demo accounts’.
 
 **Trying it yourself:** choose **Sign up**, enter your own email and password,
 and confirm the emailed code. No school connection is needed to use the library.
