@@ -9,7 +9,7 @@ can also use the library independently.
 The current library has **Our Earth** and **Animal Life**, Class 4 CBSE
 Environmental Studies, in English and Hindi. It works in a phone or laptop browser.
 
-## Try it in two minutes
+## Try it
 
 **For judges:** use the teacher, student and parent sign-in details provided with
 the submission. These prepared accounts need no verification email. The teacher
@@ -20,8 +20,8 @@ Their fictional school is **Neem Tree Public School · Class 4A**.
 **A five-minute path:**
 1. As the student, open **Our Earth → Learn**. Tap **Got it, next idea** to reach the
    drawings.
-2. As the teacher, open your class's **Classroom notes** and save a note such as
-   “Test on Our Earth tomorrow.”
+2. As the teacher, open your class's **Classroom notes** and save the note
+   “Finished Our Earth today. Test tomorrow.”
 3. As the student, tap **Refresh** on the home page: the test now appears at the top.
 4. As the parent, see the same next step on your child’s card.
 
